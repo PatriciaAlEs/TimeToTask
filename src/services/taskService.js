@@ -20,9 +20,7 @@ export const taskService = {
     }
   },
 
-  /**
-   * Obtiene tareas por proyecto
-   */
+
   getByProject: async (projectId) => {
     try {
       return await api.tasks.getByProject(projectId);
