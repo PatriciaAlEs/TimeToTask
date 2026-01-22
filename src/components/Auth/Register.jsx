@@ -7,12 +7,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGlobalContext } from "@/store";
+import { useLanguage } from "@/i18n/LanguageContext";
 import api from "@/services/api";
 
 export default function Register() {
   const navigate = useNavigate();
   const { setUser, setToken, setError: setGlobalError, setLoading, loading } =
     useGlobalContext();
+  const { t, language, switchLanguage } = useLanguage();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -26,22 +28,22 @@ export default function Register() {
 
     // Validación
     if (!name || !email || !password || !confirmPassword) {
-      setValidationError("Por favor completa todos los campos");
+      setValidationError(t('completeAllFields'));
       return;
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setValidationError("Email inválido");
+      setValidationError(t('invalidEmail'));
       return;
     }
 
     if (password.length < 6) {
-      setValidationError("La contraseña debe tener al menos 6 caracteres");
+      setValidationError(t('passwordMinLength'));
       return;
     }
 
     if (password !== confirmPassword) {
-      setValidationError("Las contraseñas no coinciden");
+      setValidationError(t('passwordsNotMatch'));
       return;
     }
 
@@ -66,11 +68,33 @@ export default function Register() {
         {/* Card */}
         <div className="bg-white rounded-lg shadow-lg p-8">
           {/* Header */}
-          <div className="text-center mb-8">
+          <div className="text-center mb-6">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Crear Cuenta
+              {t('createAccount')}
             </h1>
-            <p className="text-gray-600">Únete a nuestra plataforma</p>
+            <p className="text-gray-600">{t('joinPlatform')}</p>
+
+            {/* Language Switcher */}
+            <div className="flex justify-center gap-2 mt-4">
+              <button
+                onClick={() => switchLanguage('es')}
+                className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${language === 'es'
+                    ? 'bg-indigo-600 text-white'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
+              >
+                ES
+              </button>
+              <button
+                onClick={() => switchLanguage('en')}
+                className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${language === 'en'
+                    ? 'bg-indigo-600 text-white'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
+              >
+                EN
+              </button>
+            </div>
           </div>
 
           {/* Error Alert */}
@@ -85,13 +109,13 @@ export default function Register() {
             {/* Name */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Nombre Completo
+                {t('fullName')}
               </label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Tu nombre"
+                placeholder={t('enterName')}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 disabled={loading}
               />
@@ -100,13 +124,13 @@ export default function Register() {
             {/* Email */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email
+                {t('email')}
               </label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="tu@email.com"
+                placeholder={t('enterEmail')}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 disabled={loading}
               />
@@ -115,13 +139,13 @@ export default function Register() {
             {/* Password */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Contraseña
+                {t('password')}
               </label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
+                placeholder={t('enterPassword')}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 disabled={loading}
               />
@@ -130,13 +154,13 @@ export default function Register() {
             {/* Confirm Password */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Confirmar Contraseña
+                {t('confirmPassword')}
               </label>
               <input
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="••••••••"
+                placeholder={t('enterPassword')}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 disabled={loading}
               />
@@ -148,19 +172,19 @@ export default function Register() {
               disabled={loading}
               className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 text-white font-medium py-2 px-4 rounded-lg transition duration-200"
             >
-              {loading ? "Creando cuenta..." : "Registrarse"}
+              {loading ? t('loading') : t('register')}
             </button>
           </form>
 
           {/* Footer */}
           <div className="mt-6 text-center">
             <p className="text-gray-600 text-sm">
-              ¿Ya tienes cuenta?{" "}
+              {t('haveAccount')}{" "}
               <button
                 onClick={() => navigate("/login")}
                 className="text-indigo-600 hover:text-indigo-700 font-medium"
               >
-                Inicia sesión
+                {t('signInHere')}
               </button>
             </p>
           </div>

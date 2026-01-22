@@ -70,9 +70,30 @@ export function MainLayout({ children }) {
             </main>
 
             {/* Footer */}
-            <footer className="bg-white border-t border-gray-200 mt-12">
-                <div className="container py-6 text-center text-sm text-gray-600">
-                    <p>© 2026 Jira Light - Gestor de tareas</p>
+            <footer className="bg-gradient-to-r from-primary-800 via-primary-900 to-primary-800 border-t-4 border-orange-500 mt-12">
+                <div className="container py-8">
+                    <div className="grid md:grid-cols-3 gap-8 mb-8">
+                        <div className="text-white">
+                            <h3 className="font-bold text-lg mb-3 text-orange-300">TimeToTask</h3>
+                            <p className="text-gray-200 text-sm">Gestor de tareas inteligente para optimizar tu productividad</p>
+                        </div>
+                        <div className="text-white">
+                            <h4 className="font-bold mb-3 text-orange-300">Enlaces</h4>
+                            <ul className="space-y-2 text-sm">
+                                <li><Link to="/" className="text-gray-200 hover:text-orange-300 transition-colors">Inicio</Link></li>
+                                <li><Link to="/dashboard" className="text-gray-200 hover:text-orange-300 transition-colors">Dashboard</Link></li>
+                                <li><Link to="/projects" className="text-gray-200 hover:text-orange-300 transition-colors">Proyectos</Link></li>
+                            </ul>
+                        </div>
+                        <div className="text-white">
+                            <h4 className="font-bold mb-3 text-orange-300">Contacto</h4>
+                            <p className="text-gray-200 text-sm">info@timetotask.com</p>
+                            <p className="text-gray-200 text-sm">+1 (555) 123-4567</p>
+                        </div>
+                    </div>
+                    <div className="border-t border-primary-700 pt-6 text-center">
+                        <p className="text-gray-300 text-sm">© 2026 TimeToTask - Todos los derechos reservados</p>
+                    </div>
                 </div>
             </footer>
         </div>
