@@ -1,42 +1,44 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   safelist: [
-    // Feature (OKLCH)
-    'from-[oklch(62.3%_0.214_259.815)]',
-    'to-[oklch(57%_0.19_259.815)]',
-    'bg-[oklch(25%_0.12_259.815)]',
-    'border-[oklch(55%_0.18_259.815)]',
-    'text-[oklch(62.3%_0.214_259.815)]',
-    // Bug
-    'from-[oklch(39.6%_0.141_25.723)]',
-    'to-[oklch(35%_0.12_25.723)]',
-    'bg-[oklch(20%_0.1_25.723)]',
-    'border-[oklch(50%_0.15_25.723)]',
-    'text-[oklch(39.6%_0.141_25.723)]',
-    // Improvement
-    'from-[oklch(55.5%_0.163_48.998)]',
-    'to-[oklch(50%_0.14_48.998)]',
-    'bg-[oklch(25%_0.1_48.998)]',
-    'border-[oklch(60%_0.16_48.998)]',
-    'text-[oklch(55.5%_0.163_48.998)]',
-    // Documentation
-    'from-[oklch(70.2%_0.183_293.541)]',
-    'to-[oklch(65%_0.16_293.541)]',
-    'bg-[oklch(30%_0.12_293.541)]',
-    'border-[oklch(65%_0.17_293.541)]',
-    'text-[oklch(70.2%_0.183_293.541)]',
+    // Modal base grey (OKLCH)
+    'bg-[oklch(44.2%_0.017_285.786)]',
+    // Feature (cyan theme)
+    'from-cyan-500',
+    'to-cyan-600',
+    'bg-cyan-500/15',
+    'border-cyan-500',
+    'text-cyan-300',
+    // Bug (red theme)
+    'from-red-500',
+    'to-red-600',
+    'bg-red-500/15',
+    'border-red-500',
+    'text-red-300',
+    // Improvement (orange theme)
+    'from-orange-500',
+    'to-orange-600',
+    'bg-orange-500/15',
+    'border-orange-500',
+    'text-orange-300',
+    // Documentation (purple theme)
+    'from-purple-500',
+    'to-purple-600',
+    'bg-purple-500/15',
+    'border-purple-500',
+    'text-purple-300',
     // Testing
     'from-green-500',
     'to-green-600',
-    'bg-green-900/70',
+    'bg-green-500/15',
     'border-green-500',
     'text-green-300',
-    // Design
-    'from-[oklch(71.2%_0.194_13.428)]',
-    'to-[oklch(65%_0.17_13.428)]',
-    'bg-[oklch(30%_0.12_13.428)]',
-    'border-[oklch(65%_0.18_13.428)]',
-    'text-[oklch(71.2%_0.194_13.428)]',
+    // Design (pink theme)
+    'from-pink-500',
+    'to-pink-600',
+    'bg-pink-500/15',
+    'border-pink-500',
+    'text-pink-300',
   ],
   content: [
     "./index.html",

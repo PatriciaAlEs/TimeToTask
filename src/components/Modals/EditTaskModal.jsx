@@ -1,11 +1,11 @@
 /**
- * Componente: Modal para agregar tareas
+ * Componente: Modal para editar tareas
  */
 
-import React, { useState } from 'react';
-import { TASK_TYPES, getTaskTypeList } from '../../config/taskTypes';
+import React, { useState, useEffect } from 'react';
+import { TASK_TYPES } from '../../config/taskTypes';
 
-export function AddTaskModal({ isOpen, onClose, onSubmit, projectId, selectedTaskType }) {
+export function EditTaskModal({ isOpen, onClose, onSubmit, task, selectedTaskType }) {
     const [formData, setFormData] = useState({
         title: '',
         description: '',
@@ -15,8 +15,20 @@ export function AddTaskModal({ isOpen, onClose, onSubmit, projectId, selectedTas
         status: 'backlog',
     });
 
-    // Obtener el config del tipo seleccionado
-    const selectedTypeConfig = selectedTaskType ? TASK_TYPES[selectedTaskType] : TASK_TYPES.feature;
+    useEffect(() => {
+        if (task) {
+            setFormData({
+                title: task.title || '',
+                description: task.description || '',
+                type: task.type || selectedTaskType || 'feature',
+                priority: task.priority || 'medium',
+                dueDate: task.dueDate ? task.dueDate.substring(0, 10) : '',
+                status: task.status || 'backlog',
+            });
+        }
+    }, [task, selectedTaskType]);
+
+    const selectedTypeConfig = (formData.type && TASK_TYPES[formData.type]) || TASK_TYPES.feature;
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -25,15 +37,8 @@ export function AddTaskModal({ isOpen, onClose, onSubmit, projectId, selectedTas
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSubmit({ ...formData, projectId });
-        setFormData({
-            title: '',
-            description: '',
-            type: selectedTaskType || 'feature',
-            priority: 'medium',
-            dueDate: '',
-            status: 'backlog',
-        });
+        if (!task?.id) return;
+        onSubmit(task.id, { ...formData });
         onClose();
     };
 
@@ -44,32 +49,20 @@ export function AddTaskModal({ isOpen, onClose, onSubmit, projectId, selectedTas
             <div className={`bg-[oklch(44.2%_0.017_285.786)] backdrop-blur-lg rounded-2xl border-2 ${selectedTypeConfig.borderColor} w-full max-w-md p-8 shadow-2xl animate-fade-in`}>
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-3">
-                        <i className={`fas ${selectedTypeConfig.icon} text-white text-2xl`}></i>
-                        <h2 className="text-2xl font-black text-white drop-shadow-lg">Nueva Tarea</h2>
-                    </div>
-                    <button
-                        onClick={onClose}
-                        className="text-white/70 hover:text-white text-2xl transition-colors"
-                    >
-                        ✕
-                    </button>
+                    <h2 className="text-2xl font-black text-white drop-shadow-lg">Editar Tarea</h2>
+                    <button onClick={onClose} className="text-white/70 hover:text-white text-2xl transition-colors">✕</button>
                 </div>
 
                 {/* Form */}
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {/* Title */}
                     <div>
-                        <label className="block text-sm font-bold text-white mb-2">
-                            <i className="fas fa-heading mr-2"></i>
-                            Título *
-                        </label>
+                        <label className="block text-sm font-bold text-white mb-2">Título *</label>
                         <input
                             type="text"
                             name="title"
                             value={formData.title}
                             onChange={handleChange}
-                            placeholder="Ej: Implementar login"
                             required
                             className={`w-full px-4 py-3 bg-gray-900/50 border-2 ${selectedTypeConfig.borderColor} rounded-xl text-white placeholder-gray-300 focus:outline-none transition-all`}
                         />
@@ -77,15 +70,11 @@ export function AddTaskModal({ isOpen, onClose, onSubmit, projectId, selectedTas
 
                     {/* Description */}
                     <div>
-                        <label className="block text-sm font-bold text-white mb-2">
-                            <i className="fas fa-align-left mr-2"></i>
-                            Descripción
-                        </label>
+                        <label className="block text-sm font-bold text-white mb-2">Descripción</label>
                         <textarea
                             name="description"
                             value={formData.description}
                             onChange={handleChange}
-                            placeholder="Detalles de la tarea..."
                             rows="3"
                             className={`w-full px-4 py-3 bg-gray-900/50 border-2 ${selectedTypeConfig.borderColor} rounded-xl text-white placeholder-gray-300 focus:outline-none transition-all resize-none`}
                         />
@@ -93,17 +82,14 @@ export function AddTaskModal({ isOpen, onClose, onSubmit, projectId, selectedTas
 
                     {/* Type */}
                     <div>
-                        <label className="block text-sm font-bold text-white mb-2">
-                            <i className="fas fa-tag mr-2"></i>
-                            Tipo de Tarea
-                        </label>
+                        <label className="block text-sm font-bold text-white mb-2">Tipo de Tarea</label>
                         <select
                             name="type"
                             value={formData.type}
                             onChange={handleChange}
                             className={`w-full px-4 py-3 bg-gray-900/50 border-2 ${selectedTypeConfig.borderColor} rounded-xl text-white focus:outline-none transition-all`}
                         >
-                            {getTaskTypeList().map((type) => (
+                            {Object.values(TASK_TYPES).map((type) => (
                                 <option key={type.id} value={type.id} className="bg-gray-800">
                                     {type.name}
                                 </option>
@@ -114,10 +100,7 @@ export function AddTaskModal({ isOpen, onClose, onSubmit, projectId, selectedTas
                     <div className="grid grid-cols-2 gap-4">
                         {/* Priority */}
                         <div>
-                            <label className="block text-sm font-bold text-white mb-2">
-                                <i className="fas fa-exclamation-circle mr-2"></i>
-                                Prioridad
-                            </label>
+                            <label className="block text-sm font-bold text-white mb-2">Prioridad</label>
                             <select
                                 name="priority"
                                 value={formData.priority}
@@ -132,10 +115,7 @@ export function AddTaskModal({ isOpen, onClose, onSubmit, projectId, selectedTas
 
                         {/* Due Date */}
                         <div>
-                            <label className="block text-sm font-bold text-white mb-2">
-                                <i className="fas fa-calendar mr-2"></i>
-                                Fecha límite
-                            </label>
+                            <label className="block text-sm font-bold text-white mb-2">Fecha límite</label>
                             <input
                                 type="date"
                                 name="dueDate"
@@ -148,10 +128,7 @@ export function AddTaskModal({ isOpen, onClose, onSubmit, projectId, selectedTas
 
                     {/* Status */}
                     <div>
-                        <label className="block text-sm font-bold text-white mb-2">
-                            <i className="fas fa-tag mr-2"></i>
-                            Estado
-                        </label>
+                        <label className="block text-sm font-bold text-white mb-2">Estado</label>
                         <select
                             name="status"
                             value={formData.status}
@@ -179,12 +156,12 @@ export function AddTaskModal({ isOpen, onClose, onSubmit, projectId, selectedTas
                             type="submit"
                             className={`flex-1 py-3 px-4 bg-gradient-to-br ${selectedTypeConfig.color} text-white rounded-xl font-bold transition-all shadow-lg transform hover:scale-105 border-2 ${selectedTypeConfig.borderColor}`}
                         >
-                            <i className="fas fa-plus mr-2"></i>
-                            Agregar
+                            <i className="fas fa-save mr-2"></i>
+                            Guardar cambios
                         </button>
                     </div>
                 </form>
-            </div >
-        </div >
+            </div>
+        </div>
     );
 }

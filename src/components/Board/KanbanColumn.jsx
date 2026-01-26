@@ -5,25 +5,22 @@
 
 import React from 'react';
 
-export function KanbanColumn({ title, tasks, color, icon, bgColor, textColor, borderColor }) {
+export function KanbanColumn({ title, tasks, color, bgColor, textColor, borderColor, onAddTask, onEditTask }) {
     const bgClass = bgColor || 'bg-white/5';
     const borderClass = borderColor || 'border-white/10'; return (
         <div className={`flex flex-col backdrop-blur-lg rounded-2xl border-2 transition-all hover:shadow-xl overflow-hidden ${borderClass} ${bgClass}`}>
             {/* Header */}
-            <div className={`bg-gradient-to-r ${color} px-4 py-3 flex items-center gap-2`}>
-                <i className={`fas ${icon} text-white text-xl`}></i>
-                <div>
-                    <h3 className="text-base font-bold text-white">{title}</h3>
-                    <p className="text-white/80 text-xs">{tasks?.length || 0} tareas</p>
-                </div>
+            <div className={`bg-gradient-to-r ${color} px-4 py-4 flex items-center justify-center`}>
+                <h3 className="text-2xl font-extrabold tracking-wide text-white text-center">{title}</h3>
             </div>
 
             {/* Tasks Container */}
-            <div className="p-3 space-y-2 max-h-[calc(100vh-300px)] overflow-y-auto">{tasks && tasks.length > 0 ? (
+            <div className="flex-1 p-3 space-y-2 max-h-[calc(100vh-300px)] overflow-y-auto">{tasks && tasks.length > 0 ? (
                 tasks.map((task) => (
                     <div
                         key={task.id}
                         className={`backdrop-blur-sm rounded-lg p-3 border-2 transition-all cursor-pointer group ${bgColor} ${borderColor} hover:opacity-80`}
+                        onClick={() => onEditTask && onEditTask(task)}
                     >
                         {/* Tag */}
                         <div className="flex items-center gap-2 mb-2">
@@ -77,10 +74,13 @@ export function KanbanColumn({ title, tasks, color, icon, bgColor, textColor, bo
             </div>
 
             {/* Add Task Button */}
-            <div className="p-3 border-t border-white/10">
-                <button className="w-full py-2 px-3 rounded-lg bg-white/10 hover:bg-white/20 text-white text-sm font-semibold transition-all flex items-center justify-center gap-2 group">
-                    <i className="fas fa-plus group-hover:scale-125 transition-transform"></i>
-                    Agregar
+            <div className="p-3 border-t border-white/10 flex items-center justify-center">
+                <button
+                    onClick={onAddTask}
+                    className={`w-10 h-10 rounded-full bg-white/90 hover:bg-white text-gray-800 text-sm font-bold transition-all flex items-center justify-center shadow-lg hover:shadow-xl border-2 ${borderColor}`}
+                    aria-label="Agregar tarea"
+                >
+                    <i className="fas fa-plus"></i>
                 </button>
             </div>
         </div>

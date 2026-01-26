@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { KanbanColumn } from '../components/Board/KanbanColumn';
 import { AddTaskModal } from '../components/Modals/AddTaskModal';
+import { EditTaskModal } from '../components/Modals/EditTaskModal';
 import { useGlobalContext } from '../store';
 import { useTasks } from '../hooks/useTasks.jsx';
 import { TASK_TYPES } from '../config/taskTypes';
@@ -13,11 +14,14 @@ import axios from 'axios';
 
 export default function BoardPage() {
     const { projects, selectedProject } = useGlobalContext();
-    const { addTask } = useTasks(selectedProject);
+    const { createTask, updateTaskData } = useTasks(selectedProject);
     const [tasks, setTasks] = useState([]);
     const [showAddTaskModal, setShowAddTaskModal] = useState(false);
+    const [selectedTaskType, setSelectedTaskType] = useState(null);
     const [isLoadingForm, setIsLoadingForm] = useState(false);
     const [errorForm, setErrorForm] = useState(null);
+    const [showEditTaskModal, setShowEditTaskModal] = useState(false);
+    const [selectedTaskToEdit, setSelectedTaskToEdit] = useState(null);
 
     // Cargar todas las tareas (sin autenticación para desarrollo)
     useEffect(() => {
@@ -63,18 +67,11 @@ export default function BoardPage() {
 
                 <div className="relative z-10">
                     {/* Header */}
-                    <div className="mb-8 px-4 flex items-center justify-between">
+                    <div className="mb-8 px-4">
                         <div>
-                            <h1 className="text-5xl font-black text-white mb-2 drop-shadow-lg">Tablero</h1>
-                            <p className="text-xl text-gray-100 font-semibold">Organiza tus tareas por tipo</p>
+                            <h1 className="text-5xl font-black text-white mb-2 drop-shadow-lg">Panel de trabajo</h1>
+                            <p className="text-lg text-gray-100 font-medium">Aquí organizamos y priorizamos tareas por tipo para visualizar el flujo de trabajo.</p>
                         </div>
-                        <button
-                            onClick={() => setShowAddTaskModal(true)}
-                            className="px-6 py-3 bg-gradient-to-br from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-xl font-bold shadow-lg hover:shadow-orange-500/50 transform hover:scale-105 transition-all flex items-center gap-2"
-                        >
-                            <i className="fas fa-plus"></i>
-                            Nueva Tarea
-                        </button>
                     </div>
 
                     {/* Kanban Board */}
@@ -86,10 +83,18 @@ export default function BoardPage() {
                                     title={column.title}
                                     tasks={column.tasks}
                                     color={column.color}
-                                    icon={column.icon}
                                     bgColor={column.bgColor}
                                     textColor={column.textColor}
                                     borderColor={column.borderColor}
+                                    onAddTask={() => {
+                                        setSelectedTaskType(column.type);
+                                        setShowAddTaskModal(true);
+                                    }}
+                                    onEditTask={(task) => {
+                                        setSelectedTaskType(column.type);
+                                        setSelectedTaskToEdit(task);
+                                        setShowEditTaskModal(true);
+                                    }}
                                 />
                             ))}
                         </div>
@@ -98,21 +103,46 @@ export default function BoardPage() {
                     {/* Modal */}
                     <AddTaskModal
                         isOpen={showAddTaskModal}
+                        selectedTaskType={selectedTaskType}
                         onClose={() => {
                             setShowAddTaskModal(false);
                             setErrorForm(null);
+                            setSelectedTaskType(null);
                         }}
                         onSubmit={async (data) => {
                             try {
                                 setIsLoadingForm(true);
                                 setErrorForm(null);
-                                if (addTask) {
-                                    await addTask(data);
-                                }
+                                await createTask(data);
                                 setShowAddTaskModal(false);
                             } catch (err) {
                                 setErrorForm(err.message);
                                 console.error('Error al crear tarea:', err);
+                            } finally {
+                                setIsLoadingForm(false);
+                            }
+                        }}
+                    />
+
+                    {/* Edit Modal */}
+                    <EditTaskModal
+                        isOpen={showEditTaskModal}
+                        selectedTaskType={selectedTaskType}
+                        task={selectedTaskToEdit}
+                        onClose={() => {
+                            setShowEditTaskModal(false);
+                            setSelectedTaskToEdit(null);
+                            setSelectedTaskType(null);
+                        }}
+                        onSubmit={async (taskId, data) => {
+                            try {
+                                setIsLoadingForm(true);
+                                setErrorForm(null);
+                                await updateTaskData(taskId, data);
+                                setShowEditTaskModal(false);
+                            } catch (err) {
+                                setErrorForm(err.message);
+                                console.error('Error al actualizar tarea:', err);
                             } finally {
                                 setIsLoadingForm(false);
                             }
