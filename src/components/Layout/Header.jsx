@@ -58,14 +58,6 @@ const Header = () => {
                                 <>
                                     <li>
                                         <Link
-                                            to="/"
-                                            className={`${isHomePage ? 'text-white hover:text-orange-300' : 'text-gray-200 hover:text-orange-300'} font-semibold transition-colors`}
-                                        >
-                                            {t('home')}
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link
                                             to="/login"
                                             className={`${isHomePage ? 'text-white hover:text-orange-300' : 'text-gray-200 hover:text-orange-300'} font-semibold transition-colors`}
                                         >

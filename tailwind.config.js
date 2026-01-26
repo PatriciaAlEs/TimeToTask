@@ -1,5 +1,43 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  safelist: [
+    // Feature (OKLCH)
+    'from-[oklch(62.3%_0.214_259.815)]',
+    'to-[oklch(57%_0.19_259.815)]',
+    'bg-[oklch(25%_0.12_259.815)]',
+    'border-[oklch(55%_0.18_259.815)]',
+    'text-[oklch(62.3%_0.214_259.815)]',
+    // Bug
+    'from-[oklch(39.6%_0.141_25.723)]',
+    'to-[oklch(35%_0.12_25.723)]',
+    'bg-[oklch(20%_0.1_25.723)]',
+    'border-[oklch(50%_0.15_25.723)]',
+    'text-[oklch(39.6%_0.141_25.723)]',
+    // Improvement
+    'from-[oklch(55.5%_0.163_48.998)]',
+    'to-[oklch(50%_0.14_48.998)]',
+    'bg-[oklch(25%_0.1_48.998)]',
+    'border-[oklch(60%_0.16_48.998)]',
+    'text-[oklch(55.5%_0.163_48.998)]',
+    // Documentation
+    'from-[oklch(70.2%_0.183_293.541)]',
+    'to-[oklch(65%_0.16_293.541)]',
+    'bg-[oklch(30%_0.12_293.541)]',
+    'border-[oklch(65%_0.17_293.541)]',
+    'text-[oklch(70.2%_0.183_293.541)]',
+    // Testing
+    'from-green-500',
+    'to-green-600',
+    'bg-green-900/70',
+    'border-green-500',
+    'text-green-300',
+    // Design
+    'from-[oklch(71.2%_0.194_13.428)]',
+    'to-[oklch(65%_0.17_13.428)]',
+    'bg-[oklch(30%_0.12_13.428)]',
+    'border-[oklch(65%_0.18_13.428)]',
+    'text-[oklch(71.2%_0.194_13.428)]',
+  ],
   content: [
     "./index.html",
     "./src/**/*.{js,jsx,ts,tsx}",

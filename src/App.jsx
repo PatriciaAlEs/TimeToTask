@@ -7,6 +7,8 @@ import Footer from './components/Layout/Footer';
 import ProtectedRoute from './components/Auth/ProtectedRoute';
 import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
+import Projects from './pages/Projects';
+import Board from './pages/Board';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
 
@@ -21,14 +23,10 @@ const App = () => {
                             <Route path="/" element={<Home />} />
                             <Route path="/login" element={<Login />} />
                             <Route path="/register" element={<Register />} />
-                            <Route
-                                path="/dashboard"
-                                element={
-                                    <ProtectedRoute>
-                                        <Dashboard />
-                                    </ProtectedRoute>
-                                }
-                            />
+                            {/* TODO: Volver a proteger estas rutas una vez que la autenticación esté lista */}
+                            <Route path="/dashboard" element={<Dashboard />} />
+                            <Route path="/projects" element={<Projects />} />
+                            <Route path="/board" element={<Board />} />
                         </Routes>
                     </main>
                     <Footer />

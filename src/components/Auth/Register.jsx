@@ -63,33 +63,43 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100 flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 flex items-center justify-center px-4 py-12 overflow-hidden relative">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute w-96 h-96 bg-primary-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob top-0 -left-4"></div>
+        <div className="absolute w-96 h-96 bg-orange-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000 top-0 -right-4"></div>
+        <div className="absolute w-96 h-96 bg-yellow-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000 bottom-0 left-20"></div>
+      </div>
+
+      <div className="w-full max-w-md relative z-10">
         {/* Card */}
-        <div className="bg-white rounded-lg shadow-lg p-8">
+        <div className="bg-primary-400/30 backdrop-blur-lg rounded-2xl shadow-2xl p-8 border border-primary-400/50">
           {/* Header */}
           <div className="text-center mb-6">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-orange-500 to-yellow-400 rounded-3xl mb-4 transform hover:scale-110 hover:rotate-6 transition-all duration-300 shadow-xl">
+              <i className="fas fa-user-plus text-4xl text-white drop-shadow-lg"></i>
+            </div>
+            <h1 className="text-4xl font-black text-white mb-2 drop-shadow-lg">
               {t('createAccount')}
             </h1>
-            <p className="text-gray-600">{t('joinPlatform')}</p>
+            <p className="text-gray-100 font-semibold">{t('joinPlatform')}</p>
 
             {/* Language Switcher */}
             <div className="flex justify-center gap-2 mt-4">
               <button
                 onClick={() => switchLanguage('es')}
-                className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${language === 'es'
-                    ? 'bg-indigo-600 text-white'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                className={`px-3 py-1 rounded-lg text-sm font-medium transition-all transform hover:scale-105 ${language === 'es'
+                  ? 'bg-gradient-to-br from-orange-500 to-orange-600 text-white shadow-lg'
+                  : 'bg-white/20 text-white hover:bg-white/30'
                   }`}
               >
                 ES
               </button>
               <button
                 onClick={() => switchLanguage('en')}
-                className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${language === 'en'
-                    ? 'bg-indigo-600 text-white'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                className={`px-3 py-1 rounded-lg text-sm font-medium transition-all transform hover:scale-105 ${language === 'en'
+                  ? 'bg-gradient-to-br from-orange-500 to-orange-600 text-white shadow-lg'
+                  : 'bg-white/20 text-white hover:bg-white/30'
                   }`}
               >
                 EN
@@ -99,8 +109,8 @@ export default function Register() {
 
           {/* Error Alert */}
           {validationError && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-red-800 text-sm">{validationError}</p>
+            <div className="mb-6 p-4 bg-red-500/20 backdrop-blur-lg border border-red-400 rounded-xl">
+              <p className="text-white text-sm font-semibold">{validationError}</p>
             </div>
           )}
 
@@ -108,7 +118,7 @@ export default function Register() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Name */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-bold text-white mb-2">
                 {t('fullName')}
               </label>
               <input
@@ -116,14 +126,14 @@ export default function Register() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder={t('enterName')}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/30 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all"
                 disabled={loading}
               />
             </div>
 
             {/* Email */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-bold text-white mb-2">
                 {t('email')}
               </label>
               <input
@@ -131,14 +141,14 @@ export default function Register() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder={t('enterEmail')}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/30 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all"
                 disabled={loading}
               />
             </div>
 
             {/* Password */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-bold text-white mb-2">
                 {t('password')}
               </label>
               <input
@@ -146,14 +156,14 @@ export default function Register() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder={t('enterPassword')}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/30 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all"
                 disabled={loading}
               />
             </div>
 
             {/* Confirm Password */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-bold text-white mb-2">
                 {t('confirmPassword')}
               </label>
               <input
@@ -161,7 +171,7 @@ export default function Register() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder={t('enterPassword')}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/30 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all"
                 disabled={loading}
               />
             </div>
@@ -170,7 +180,7 @@ export default function Register() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 text-white font-medium py-2 px-4 rounded-lg transition duration-200"
+              className="w-full bg-gradient-to-br from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-orange-500/50 transform hover:scale-105"
             >
               {loading ? t('loading') : t('register')}
             </button>
@@ -178,11 +188,11 @@ export default function Register() {
 
           {/* Footer */}
           <div className="mt-6 text-center">
-            <p className="text-gray-600 text-sm">
+            <p className="text-gray-100 text-sm">
               {t('haveAccount')}{" "}
               <button
                 onClick={() => navigate("/login")}
-                className="text-indigo-600 hover:text-indigo-700 font-medium"
+                className="text-orange-300 hover:text-orange-200 font-bold underline"
               >
                 {t('signInHere')}
               </button>
