@@ -10,9 +10,9 @@ import { useGlobalContext } from "@/store";
 import { useLanguage } from "@/i18n/LanguageContext";
 import api from "@/services/api";
 
-export default function Register() {
+export default function Register({ isModal = false, onClose = () => { } }) {
   const navigate = useNavigate();
-  const { setUser, setToken, setError: setGlobalError, setLoading, loading } =
+  const { setError: setGlobalError, setLoading, loading } =
     useGlobalContext();
   const { t, language, switchLanguage } = useLanguage();
 
@@ -50,10 +50,8 @@ export default function Register() {
     setLoading(true);
 
     try {
-      const result = await api.auth.register(email, password, name);
-      setUser(result.user);
-      setToken(result.token);
-      navigate("/dashboard");
+      await api.auth.register(email, password, name);
+      navigate("/login");
     } catch (err) {
       setGlobalError(err.message);
       setValidationError(err.message);
@@ -62,14 +60,16 @@ export default function Register() {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 flex items-center justify-center px-4 py-12 overflow-hidden relative">
+  const content = (
+    <>
       {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute w-96 h-96 bg-primary-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob top-0 -left-4"></div>
-        <div className="absolute w-96 h-96 bg-orange-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000 top-0 -right-4"></div>
-        <div className="absolute w-96 h-96 bg-yellow-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000 bottom-0 left-20"></div>
-      </div>
+      {!isModal && (
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute w-96 h-96 bg-primary-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob top-0 -left-4"></div>
+          <div className="absolute w-96 h-96 bg-orange-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000 top-0 -right-4"></div>
+          <div className="absolute w-96 h-96 bg-yellow-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000 bottom-0 left-20"></div>
+        </div>
+      )}
 
       <div className="w-full max-w-md relative z-10">
         {/* Card */}
@@ -83,6 +83,16 @@ export default function Register() {
               {t('createAccount')}
             </h1>
             <p className="text-gray-100 font-semibold">{t('joinPlatform')}</p>
+
+            {isModal && (
+              <button
+                onClick={onClose}
+                className="absolute right-4 top-4 text-white/70 hover:text-white text-2xl transition-colors"
+                aria-label="Cerrar"
+              >
+                ✕
+              </button>
+            )}
 
             {/* Language Switcher */}
             <div className="flex justify-center gap-2 mt-4">
@@ -200,6 +210,20 @@ export default function Register() {
           </div>
         </div>
       </div>
+    </>
+  );
+
+  if (isModal) {
+    return (
+      <div className="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm flex items-center justify-center px-4 py-12 overflow-y-auto">
+        {content}
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 flex items-center justify-center px-4 py-12 overflow-hidden relative">
+      {content}
     </div>
   );
 }

@@ -9,8 +9,6 @@ import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import Projects from './pages/Projects';
 import Board from './pages/Board';
-import Login from './components/Auth/Login';
-import Register from './components/Auth/Register';
 
 const App = () => {
     return (
@@ -21,12 +19,32 @@ const App = () => {
                     <main className="flex-grow">
                         <Routes>
                             <Route path="/" element={<Home />} />
-                            <Route path="/login" element={<Login />} />
-                            <Route path="/register" element={<Register />} />
-                            {/* TODO: Volver a proteger estas rutas una vez que la autenticación esté lista */}
-                            <Route path="/dashboard" element={<Dashboard />} />
-                            <Route path="/projects" element={<Projects />} />
-                            <Route path="/board" element={<Board />} />
+                            <Route path="/login" element={<Home />} />
+                            <Route path="/register" element={<Home />} />
+                            <Route
+                                path="/dashboard"
+                                element={
+                                    <ProtectedRoute>
+                                        <Dashboard />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="/projects"
+                                element={
+                                    <ProtectedRoute>
+                                        <Projects />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="/board"
+                                element={
+                                    <ProtectedRoute>
+                                        <Board />
+                                    </ProtectedRoute>
+                                }
+                            />
                         </Routes>
                     </main>
                     <Footer />

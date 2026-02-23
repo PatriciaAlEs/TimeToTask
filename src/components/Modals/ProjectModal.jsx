@@ -9,6 +9,7 @@ export function ProjectModal({ isOpen, onClose, onSubmit }) {
         name: '',
         description: '',
         color: 'from-orange-500 to-orange-600',
+        customColor: '#f97316',
     });
 
     const colors = [
@@ -18,6 +19,13 @@ export function ProjectModal({ isOpen, onClose, onSubmit }) {
         { name: 'Verde', value: 'from-green-500 to-green-600' },
         { name: 'Rojo', value: 'from-red-500 to-red-600' },
         { name: 'Rosa', value: 'from-pink-500 to-pink-600' },
+        { name: 'Índigo', value: 'from-indigo-500 to-indigo-600' },
+        { name: 'Cian', value: 'from-cyan-500 to-cyan-600' },
+        { name: 'Teal', value: 'from-teal-500 to-teal-600' },
+        { name: 'Lima', value: 'from-lime-500 to-lime-600' },
+        { name: 'Ámbar', value: 'from-amber-500 to-amber-600' },
+        { name: 'Violeta', value: 'from-violet-500 to-violet-600' },
+        { name: 'Personalizado', value: 'custom' },
     ];
 
     const handleChange = (e) => {
@@ -27,11 +35,16 @@ export function ProjectModal({ isOpen, onClose, onSubmit }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSubmit(formData);
+        const payload = {
+            ...formData,
+            color: formData.color === 'custom' ? formData.customColor : formData.color,
+        };
+        onSubmit(payload);
         setFormData({
             name: '',
             description: '',
             color: 'from-orange-500 to-orange-600',
+            customColor: '#f97316',
         });
         onClose();
     };
@@ -93,22 +106,42 @@ export function ProjectModal({ isOpen, onClose, onSubmit }) {
                             <i className="fas fa-palette mr-2"></i>
                             Color del Proyecto
                         </label>
-                        <div className="grid grid-cols-3 gap-3">
+                        <div className="grid grid-cols-4 gap-3">
                             {colors.map((color) => (
                                 <button
                                     key={color.value}
                                     type="button"
                                     onClick={() => setFormData((prev) => ({ ...prev, color: color.value }))}
-                                    className={`h-10 rounded-lg bg-gradient-to-br ${color.value} border-2 transition-all transform hover:scale-110 ${formData.color === color.value ? 'border-white scale-110' : 'border-transparent'
-                                        }`}
+                                    className={`h-10 rounded-lg border-2 transition-all transform hover:scale-110 ${color.value === 'custom'
+                                            ? 'bg-white/10'
+                                            : `bg-gradient-to-br ${color.value}`
+                                        } ${formData.color === color.value ? 'border-white scale-110' : 'border-transparent'}`}
                                     title={color.name}
                                 >
+                                    {color.value === 'custom' ? (
+                                        <i className="fas fa-droplet text-white"></i>
+                                    ) : null}
                                     {formData.color === color.value && (
                                         <i className="fas fa-check text-white"></i>
                                     )}
                                 </button>
                             ))}
                         </div>
+                        {formData.color === 'custom' && (
+                            <div className="mt-3 flex items-center gap-3 rounded-lg border border-white/20 bg-white/10 p-2">
+                                <input
+                                    type="color"
+                                    name="customColor"
+                                    value={formData.customColor}
+                                    onChange={handleChange}
+                                    className="h-10 w-14 cursor-pointer rounded border border-white/20 bg-transparent"
+                                />
+                                <div className="flex-1">
+                                    <p className="text-xs font-semibold text-white/80">Color personalizado</p>
+                                    <p className="text-xs text-white/60">Se guardará como color principal del proyecto</p>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     {/* Buttons */}

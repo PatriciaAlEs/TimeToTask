@@ -5,7 +5,19 @@
 
 import React from 'react';
 
-export function KanbanColumn({ title, tasks, color, bgColor, textColor, borderColor, onAddTask, onEditTask }) {
+export function KanbanColumn({
+    title,
+    tasks,
+    color,
+    bgColor,
+    textColor,
+    borderColor,
+    columnType,
+    onTaskDragStart,
+    onTaskDrop,
+    onAddTask,
+    onEditTask,
+}) {
     const bgClass = bgColor || 'bg-white/5';
     const borderClass = borderColor || 'border-white/10'; return (
         <div className={`flex flex-col backdrop-blur-lg rounded-2xl border-2 transition-all hover:shadow-xl overflow-hidden ${borderClass} ${bgClass}`}>
@@ -15,11 +27,17 @@ export function KanbanColumn({ title, tasks, color, bgColor, textColor, borderCo
             </div>
 
             {/* Tasks Container */}
-            <div className="flex-1 p-3 space-y-2 max-h-[calc(100vh-300px)] overflow-y-auto">{tasks && tasks.length > 0 ? (
+            <div
+                className="flex-1 p-3 space-y-2 max-h-[calc(100vh-300px)] overflow-y-auto"
+                onDragOver={(event) => event.preventDefault()}
+                onDrop={(event) => onTaskDrop && onTaskDrop(event, columnType)}
+            >{tasks && tasks.length > 0 ? (
                 tasks.map((task) => (
                     <div
                         key={task.id}
                         className={`backdrop-blur-sm rounded-lg p-3 border-2 transition-all cursor-pointer group ${bgColor} ${borderColor} hover:opacity-80`}
+                        draggable
+                        onDragStart={(event) => onTaskDragStart && onTaskDragStart(event, task.id)}
                         onClick={() => onEditTask && onEditTask(task)}
                     >
                         {/* Tag */}

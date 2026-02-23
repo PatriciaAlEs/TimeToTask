@@ -3,7 +3,7 @@
  * Envolve toda la aplicación para dar acceso al estado global
  */
 
-import React, { useReducer, useCallback } from "react";
+import React, { useReducer, useCallback, useEffect, useState } from "react";
 import { appReducer } from "./reducer.js";
 import { INITIAL_STATE } from "./store.js";
 import * as Actions from "./actions.js";
@@ -24,6 +24,28 @@ export const GlobalContext = React.createContext();
  */
 export function GlobalProvider({ children }) {
   const [state, dispatch] = useReducer(appReducer, INITIAL_STATE);
+  const [authReady, setAuthReady] = useState(false);
+
+  useEffect(() => {
+    try {
+      const savedToken = localStorage.getItem("token");
+      const savedUser = localStorage.getItem("user");
+
+      if (savedToken) {
+        dispatch(Actions.setToken(savedToken));
+      }
+
+      if (savedUser) {
+        const parsedUser = JSON.parse(savedUser);
+        dispatch(Actions.setUser(parsedUser));
+      }
+    } catch (error) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+    } finally {
+      setAuthReady(true);
+    }
+  }, []);
 
   /**
    * Callbacks memoizados para despachar acciones
@@ -40,6 +62,8 @@ export function GlobalProvider({ children }) {
   }, []);
 
   const logout = useCallback(() => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     dispatch(Actions.logout());
   }, []);
 
@@ -108,6 +132,7 @@ export function GlobalProvider({ children }) {
     user: state.user,
     token: state.token,
     isAuthenticated: state.isAuthenticated,
+    authReady,
     tasks: state.tasks,
     projects: state.projects,
     loading: state.loading,

@@ -9,6 +9,22 @@ import { Card, SimpleCard } from '../common/Cards';
 import { ButtonPrimary } from '../common/Buttons';
 import { Row } from '../common/Layout';
 
+const DEFAULT_PROJECT_COLOR = 'from-orange-500 to-orange-600';
+
+const resolveProjectColor = (projectColor) => {
+    if (!projectColor || typeof projectColor !== 'string') {
+        return { gradientClass: DEFAULT_PROJECT_COLOR, hexColor: null };
+    }
+
+    const trimmedColor = projectColor.trim();
+    const isHex = /^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6})$/.test(trimmedColor);
+
+    return {
+        gradientClass: isHex ? null : trimmedColor,
+        hexColor: isHex ? trimmedColor : null,
+    };
+};
+
 export function ProjectList({ projects, loading, onSelectProject }) {
     if (loading) {
         return (
@@ -36,37 +52,53 @@ export function ProjectList({ projects, loading, onSelectProject }) {
 
     return (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects.map((project) => (
-                <div
-                    key={project.id}
-                    className="group bg-primary-400/30 backdrop-blur-lg rounded-2xl p-6 border border-primary-400/50 hover:bg-primary-400/40 hover:scale-105 transform transition-all duration-300"
-                >
-                    <div className="mb-4">
-                        <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-orange-300 transition-colors">
-                            {project.name}
-                        </h3>
-                        <p className="text-gray-100 text-sm">{project.description}</p>
-                    </div>
+            {projects.map((project) => {
+                const { gradientClass, hexColor } = resolveProjectColor(project.color);
 
-                    <div className="mb-4 text-sm text-gray-200">
-                        <i className="fas fa-user mr-2"></i>
-                        Líder: {project.owner?.name}
-                    </div>
+                return (
+                    <div
+                        key={project.id}
+                        className="group bg-primary-400/30 backdrop-blur-lg rounded-2xl p-6 border border-primary-400/50 hover:bg-primary-400/40 hover:scale-105 transform transition-all duration-300 overflow-hidden"
+                    >
+                        <div
+                            className={`-mx-6 -mt-6 mb-4 h-2 ${gradientClass ? `bg-gradient-to-r ${gradientClass}` : ''}`}
+                            style={hexColor ? { backgroundColor: hexColor } : undefined}
+                        ></div>
+                        <div className="mb-4">
+                            <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-orange-300 transition-colors flex items-center gap-2">
+                                <span
+                                    className="inline-block h-3 w-3 rounded-full border border-white/60"
+                                    style={hexColor ? { backgroundColor: hexColor } : undefined}
+                                >
+                                    {!hexColor && (
+                                        <span className={`block h-full w-full rounded-full bg-gradient-to-r ${gradientClass || DEFAULT_PROJECT_COLOR}`}></span>
+                                    )}
+                                </span>
+                                {project.name}
+                            </h3>
+                            <p className="text-gray-100 text-sm">{project.description}</p>
+                        </div>
 
-                    <div className="flex items-center justify-between">
-                        <Link
-                            to={`/projects/${project.id}`}
-                            className="text-orange-300 hover:text-orange-200 font-bold flex items-center gap-2 group-hover:gap-3 transition-all"
-                        >
-                            Ver detalles
-                            <i className="fas fa-arrow-right"></i>
-                        </Link>
-                        <span className="px-3 py-1 bg-white/20 text-white rounded-lg text-sm font-bold">
-                            {project.taskCount || 0} tareas
-                        </span>
+                        <div className="mb-4 text-sm text-gray-200">
+                            <i className="fas fa-user mr-2"></i>
+                            Líder: {project.owner?.name}
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                            <Link
+                                to={`/board?projectId=${project.id}`}
+                                className="text-orange-300 hover:text-orange-200 font-bold flex items-center gap-2 group-hover:gap-3 transition-all"
+                            >
+                                Ver detalles
+                                <i className="fas fa-arrow-right"></i>
+                            </Link>
+                            <span className="px-3 py-1 bg-white/20 text-white rounded-lg text-sm font-bold">
+                                {project.taskCount || 0} tareas
+                            </span>
+                        </div>
                     </div>
-                </div>
-            ))}
+                );
+            })}
         </div>
     );
 }

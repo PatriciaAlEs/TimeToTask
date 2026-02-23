@@ -96,9 +96,7 @@ export function useTasks(projectId = null) {
 
     // Cargar inicial
     useEffect(() => {
-        if (projectId) {
-            fetchTasks();
-        }
+        fetchTasks();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [projectId]);
 

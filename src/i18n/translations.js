@@ -45,8 +45,10 @@ export const translations = {
         enterName: 'Tu nombre',
         createAccount: 'Crear Cuenta',
         joinPlatform: 'Únete a nuestra plataforma',
-        beginFree: 'Comenzar Gratis',
+        beginFree: 'Empezar nuevo proyecto',
         startNow: 'Empezar Ahora',
+        startWithProject: 'Empezar creando proyecto',
+        startWithProjectHelp: 'Ir al dashboard para crear tu primer proyecto',
         register: 'Registrarse',        // Validation errors
         completeAllFields: 'Por favor completa todos los campos',
         invalidEmail: 'Email inválido',
@@ -140,8 +142,10 @@ export const translations = {
         enterName: 'Your name',
         createAccount: 'Create Account',
         joinPlatform: 'Join our platform',
-        beginFree: 'Get Started Free',
+        beginFree: 'Start New Project',
         startNow: 'Start Now',
+        startWithProject: 'Start by creating a project',
+        startWithProjectHelp: 'Go to dashboard to create your first project',
         register: 'Sign Up',        // Validation errors
         completeAllFields: 'Please complete all fields',
         invalidEmail: 'Invalid email',

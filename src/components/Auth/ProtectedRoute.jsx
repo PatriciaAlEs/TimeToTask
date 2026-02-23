@@ -9,10 +9,10 @@ import { Navigate } from "react-router-dom";
 import { useGlobalContext } from "@/store";
 
 export default function ProtectedRoute({ children }) {
-  const { isAuthenticated, loading } = useGlobalContext();
+  const { isAuthenticated, authReady } = useGlobalContext();
 
   // Si está cargando, mostrar pantalla de carga
-  if (loading) {
+  if (!authReady) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">

@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useGlobalContext } from '@/store';
 import { useLanguage } from '@/i18n/LanguageContext';
+import api from '@/services/api';
 
 const Header = () => {
     const location = useLocation();
@@ -10,7 +11,8 @@ const Header = () => {
 
     const isHomePage = location.pathname === '/';
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
+        await api.auth.logout();
         logout();
         window.location.href = '/';
     };
@@ -20,7 +22,7 @@ const Header = () => {
             <div className="container mx-auto px-4 py-4">
                 <div className="flex justify-between items-center">
                     {/* Logo */}
-                    <Link to="/" className="flex items-center gap-2 group">
+                    <Link to={isAuthenticated ? "/dashboard" : "/"} className="flex items-center gap-2 group">
                         <div className={`w-10 h-10 ${isHomePage ? 'bg-white/20 backdrop-blur-lg' : 'bg-gradient-to-br from-orange-500 to-yellow-400'} rounded-lg flex items-center justify-center transform group-hover:scale-110 transition-transform`}>
                             <i className="fas fa-tasks text-white"></i>
                         </div>

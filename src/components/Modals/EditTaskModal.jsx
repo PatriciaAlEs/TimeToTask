@@ -5,7 +5,7 @@
 import React, { useState, useEffect } from 'react';
 import { TASK_TYPES } from '../../config/taskTypes';
 
-export function EditTaskModal({ isOpen, onClose, onSubmit, task, selectedTaskType }) {
+export function EditTaskModal({ isOpen, onClose, onSubmit, task, selectedTaskType, errorMessage }) {
     const [formData, setFormData] = useState({
         title: '',
         description: '',
@@ -39,7 +39,6 @@ export function EditTaskModal({ isOpen, onClose, onSubmit, task, selectedTaskTyp
         e.preventDefault();
         if (!task?.id) return;
         onSubmit(task.id, { ...formData });
-        onClose();
     };
 
     if (!isOpen) return null;
@@ -55,6 +54,11 @@ export function EditTaskModal({ isOpen, onClose, onSubmit, task, selectedTaskTyp
 
                 {/* Form */}
                 <form onSubmit={handleSubmit} className="space-y-4">
+                    {errorMessage && (
+                        <div className="rounded-xl border border-red-400/60 bg-red-500/20 px-4 py-3 text-sm text-red-100">
+                            {errorMessage}
+                        </div>
+                    )}
                     {/* Title */}
                     <div>
                         <label className="block text-sm font-bold text-white mb-2">Título *</label>

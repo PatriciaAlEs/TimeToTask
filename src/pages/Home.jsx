@@ -1,9 +1,15 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/i18n/LanguageContext';
+import Login from '@/components/Auth/Login';
+import Register from '@/components/Auth/Register';
 
 const Home = () => {
     const { t } = useLanguage();
+    const location = useLocation();
+    const navigate = useNavigate();
+    const isLoginModalOpen = location.pathname === '/login';
+    const isRegisterModalOpen = location.pathname === '/register';
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 overflow-hidden">
@@ -241,6 +247,20 @@ const Home = () => {
                     animation-fill-mode: both;
                 }
             `}</style>
+
+            {isLoginModalOpen && (
+                <Login
+                    isModal
+                    onClose={() => navigate('/')}
+                />
+            )}
+
+            {isRegisterModalOpen && (
+                <Register
+                    isModal
+                    onClose={() => navigate('/')}
+                />
+            )}
         </div>
     );
 };
