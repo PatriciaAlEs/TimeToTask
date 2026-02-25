@@ -26,10 +26,10 @@ export const TASK_TYPES = {
         id: 'improvement',
         name: 'Mejora',
         icon: 'fa-arrow-up',
-        color: 'from-[#FFFFFF] to-[#F4E285]',
-        bgColor: 'bg-[#F4A259]/15',
-        textColor: 'text-[#FFF9E0]',
-        borderColor: 'border-[#F4A259]'
+        color: 'from-[#9CA3AF] to-[#6B7280]',
+        bgColor: 'bg-[#9CA3AF]/16',
+        textColor: 'text-[#E5E7EB]',
+        borderColor: 'border-[#9CA3AF]'
     },
     documentation: {
         id: 'documentation',
@@ -74,9 +74,9 @@ export const TASK_TYPE_SOFT_THEME = {
         headerFrom: 'rgba(244, 226, 133, 0.72)',
         headerTo: 'rgba(244, 162, 89, 0.72)',
         surface: 'rgba(244, 226, 133, 0.12)',
-        surfaceBorder: 'rgba(244, 226, 133, 0.40)',
+        surfaceBorder: 'rgba(244, 226, 133, 0.62)',
         cardSurface: 'rgba(244, 226, 133, 0.14)',
-        cardBorder: 'rgba(244, 226, 133, 0.50)',
+        cardBorder: 'rgba(244, 226, 133, 0.58)',
         inputSurface: 'rgba(15, 23, 42, 0.48)',
     },
     bug: {
@@ -89,12 +89,12 @@ export const TASK_TYPE_SOFT_THEME = {
         inputSurface: 'rgba(15, 23, 42, 0.48)',
     },
     improvement: {
-        headerFrom: 'rgba(255, 255, 255, 0.70)',
-        headerTo: 'rgba(244, 226, 133, 0.70)',
-        surface: 'rgba(255, 255, 255, 0.10)',
-        surfaceBorder: 'rgba(255, 255, 255, 0.34)',
-        cardSurface: 'rgba(255, 255, 255, 0.12)',
-        cardBorder: 'rgba(255, 255, 255, 0.46)',
+        headerFrom: 'rgba(156, 163, 175, 0.78)',
+        headerTo: 'rgba(107, 114, 128, 0.78)',
+        surface: 'rgba(156, 163, 175, 0.16)',
+        surfaceBorder: 'rgba(156, 163, 175, 0.62)',
+        cardSurface: 'rgba(156, 163, 175, 0.18)',
+        cardBorder: 'rgba(156, 163, 175, 0.66)',
         inputSurface: 'rgba(15, 23, 42, 0.48)',
     },
     documentation: {

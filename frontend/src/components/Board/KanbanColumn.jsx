@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { useLanguage } from '@/i18n/LanguageContext';
 
 export function KanbanColumn({
     title,
@@ -15,6 +16,7 @@ export function KanbanColumn({
     onAddTask,
     onEditTask,
 }) {
+    const { t } = useLanguage();
     const columnStyle = {
         backgroundColor: theme?.surface || 'rgba(255, 255, 255, 0.06)',
         borderColor: theme?.surfaceBorder || 'rgba(255, 255, 255, 0.20)',
@@ -86,7 +88,7 @@ export function KanbanColumn({
                         <div className="flex items-center justify-between text-xs text-gray-300">
                             <div className="flex items-center gap-1">
                                 <i className="fas fa-calendar"></i>
-                                {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'Sin fecha'}
+                                {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : t('noDateSet')}
                             </div>
                             {task.assignee && (
                                 <div className="w-6 h-6 rounded-full bg-white/20 border border-white/20 flex items-center justify-center text-white text-xs font-bold">
@@ -100,7 +102,7 @@ export function KanbanColumn({
                 <div className="flex items-center justify-center h-32 text-gray-400">
                     <div className="text-center">
                         <i className="fas fa-inbox text-2xl mb-2 opacity-50"></i>
-                        <p className="text-xs">Sin tareas</p>
+                        <p className="text-xs">{t('noTasksColumn')}</p>
                     </div>
                 </div>
             )}

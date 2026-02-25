@@ -1,11 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useLanguage } from '@/i18n/LanguageContext';
 
 const Footer = () => {
     const currentYear = new Date().getFullYear();
+    const { t } = useLanguage();
 
     return (
-        <footer id="app-footer" className="bg-gradient-to-r from-primary-800 via-primary-900 to-primary-800 border-t-4 border-accent-300/60 text-gray-200 py-16">
+        <footer id="app-footer" className="light-theme-footer bg-gradient-to-r from-primary-800 via-primary-900 to-primary-800 border-t-4 border-accent-300/60 text-gray-200 py-16">
             <div className="container mx-auto px-4">
                 <div className="grid md:grid-cols-5 gap-8 mb-12">
                     {/* Brand */}
@@ -14,10 +16,10 @@ const Footer = () => {
                             <div className="w-12 h-12 bg-gradient-to-br from-primary-400 to-secondary-400 backdrop-blur-lg rounded-lg flex items-center justify-center">
                                 <i className="fas fa-tasks text-xl text-white"></i>
                             </div>
-                            <span className="text-2xl font-semibold text-white">TimeToTask</span>
+                            <span className="font-display-title text-2xl font-bold text-white light-theme-text">{t('appName')}</span>
                         </div>
-                        <p className="text-gray-300 text-sm">
-                            Gestiona tu tiempo de forma inteligente y alcanza tus objetivos.
+                        <p className="text-gray-300 light-theme-muted text-sm">
+                            {t('footerTagline')}
                         </p>
                         <div className="flex gap-3 mt-4">
                             <a href="#" className="w-10 h-10 bg-primary-400 hover:bg-primary-500 rounded-lg flex items-center justify-center transition-colors">
@@ -37,31 +39,31 @@ const Footer = () => {
 
                     {/* Producto */}
                     <div>
-                        <h3 className="font-bold mb-4 text-lg text-accent-300">Producto</h3>
-                        <ul className="space-y-2 text-gray-300">
+                        <h3 className="font-bold mb-4 text-lg text-accent-300">{t('product')}</h3>
+                        <ul className="space-y-2 text-gray-300 light-theme-muted">
                             <li>
                                 <Link to="/" className="hover:text-accent-300 transition-colors text-sm">
-                                    Características
+                                    {t('features')}
                                 </Link>
                             </li>
                             <li>
                                 <Link to="/dashboard" className="hover:text-accent-300 transition-colors text-sm">
-                                    Precios
+                                    {t('pricing')}
                                 </Link>
                             </li>
                             <li>
                                 <Link to="/" className="hover:text-accent-300 transition-colors text-sm">
-                                    Seguridad
+                                    {t('security')}
                                 </Link>
                             </li>
                             <li>
                                 <Link to="/" className="hover:text-accent-300 transition-colors text-sm">
-                                    Roadmap
+                                    {t('roadmap')}
                                 </Link>
                             </li>
                             <li>
                                 <Link to="/" className="hover:text-accent-300 transition-colors text-sm">
-                                    Actualizaciones
+                                    {t('updates')}
                                 </Link>
                             </li>
                         </ul>
@@ -69,16 +71,16 @@ const Footer = () => {
 
                     {/* Soporte */}
                     <div>
-                        <h3 className="font-bold mb-4 text-lg text-accent-300">Soporte</h3>
-                        <ul className="space-y-2 text-gray-300">
+                        <h3 className="font-bold mb-4 text-lg text-accent-300">{t('support')}</h3>
+                        <ul className="space-y-2 text-gray-300 light-theme-muted">
                             <li>
                                 <a href="#" className="hover:text-accent-300 transition-colors text-sm">
-                                    Centro de Ayuda
+                                    {t('helpCenter')}
                                 </a>
                             </li>
                             <li>
                                 <a href="#" className="hover:text-accent-300 transition-colors text-sm">
-                                    Documentación
+                                    {t('documentation')}
                                 </a>
                             </li>
                             <li>
@@ -88,12 +90,12 @@ const Footer = () => {
                             </li>
                             <li>
                                 <a href="#" className="hover:text-accent-300 transition-colors text-sm">
-                                    Contacto
+                                    {t('contactUs')}
                                 </a>
                             </li>
                             <li>
                                 <a href="#" className="hover:text-accent-300 transition-colors text-sm">
-                                    Estado del Sistema
+                                    {t('systemStatus')}
                                 </a>
                             </li>
                         </ul>
@@ -101,31 +103,31 @@ const Footer = () => {
 
                     {/* Empresa */}
                     <div>
-                        <h3 className="font-bold mb-4 text-lg text-accent-300">Empresa</h3>
-                        <ul className="space-y-2 text-gray-300">
+                        <h3 className="font-bold mb-4 text-lg text-accent-300">{t('company')}</h3>
+                        <ul className="space-y-2 text-gray-300 light-theme-muted">
                             <li>
                                 <a href="#" className="hover:text-accent-300 transition-colors text-sm">
-                                    Nosotros
+                                    {t('aboutUs')}
                                 </a>
                             </li>
                             <li>
                                 <a href="#" className="hover:text-accent-300 transition-colors text-sm">
-                                    Blog
+                                    {t('blog')}
                                 </a>
                             </li>
                             <li>
                                 <a href="#" className="hover:text-accent-300 transition-colors text-sm">
-                                    Empleo
+                                    {t('careers')}
                                 </a>
                             </li>
                             <li>
                                 <a href="#" className="hover:text-accent-300 transition-colors text-sm">
-                                    Prensa
+                                    {t('press')}
                                 </a>
                             </li>
                             <li>
                                 <a href="#" className="hover:text-accent-300 transition-colors text-sm">
-                                    Asociados
+                                    {t('partners')}
                                 </a>
                             </li>
                         </ul>
@@ -133,31 +135,31 @@ const Footer = () => {
 
                     {/* Legal */}
                     <div>
-                        <h3 className="font-bold mb-4 text-lg text-accent-300">Legal</h3>
-                        <ul className="space-y-2 text-gray-300">
+                        <h3 className="font-bold mb-4 text-lg text-accent-300">{t('legal')}</h3>
+                        <ul className="space-y-2 text-gray-300 light-theme-muted">
                             <li>
                                 <a href="#" className="hover:text-accent-300 transition-colors text-sm">
-                                    Privacidad
+                                    {t('privacy')}
                                 </a>
                             </li>
                             <li>
                                 <a href="#" className="hover:text-accent-300 transition-colors text-sm">
-                                    Términos de Servicio
+                                    {t('termsOfService')}
                                 </a>
                             </li>
                             <li>
                                 <Link to="/cookies" className="hover:text-accent-300 transition-colors text-sm">
-                                    Cookies
+                                    {t('cookiesPolicy')}
                                 </Link>
                             </li>
                             <li>
                                 <a href="#" className="hover:text-accent-300 transition-colors text-sm">
-                                    Conformidad
+                                    {t('compliance')}
                                 </a>
                             </li>
                             <li>
                                 <a href="#" className="hover:text-accent-300 transition-colors text-sm">
-                                    Licencias
+                                    {t('licenses')}
                                 </a>
                             </li>
                         </ul>
@@ -166,13 +168,13 @@ const Footer = () => {
 
                 {/* Bottom Bar */}
                 <div className="border-t border-primary-700 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-                    <p className="text-gray-400 text-sm">
-                        &copy; {currentYear} TimeToTask. Todos los derechos reservados.
+                    <p className="text-gray-400 light-theme-muted text-sm">
+                        &copy; {currentYear} {t('appName')}. {t('copyright').replace('© 2024 TimeToTask. ', '')}
                     </p>
-                    <div className="flex gap-6 text-sm text-gray-400">
-                        <a href="#" className="hover:text-accent-300 transition-colors">Privacidad</a>
-                        <a href="#" className="hover:text-accent-300 transition-colors">Términos</a>
-                        <Link to="/cookies" className="hover:text-accent-300 transition-colors">Cookies</Link>
+                    <div className="flex gap-6 text-sm text-gray-400 light-theme-muted">
+                        <a href="#" className="hover:text-accent-300 transition-colors">{t('privacy')}</a>
+                        <a href="#" className="hover:text-accent-300 transition-colors">{t('terms')}</a>
+                        <Link to="/cookies" className="hover:text-accent-300 transition-colors">{t('cookiesPolicy')}</Link>
                     </div>
                 </div>
             </div>

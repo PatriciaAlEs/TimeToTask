@@ -4,6 +4,8 @@
  */
 
 import React, { useState } from 'react';
+import { useLanguage } from '../i18n/LanguageContext';
+import { useTheme } from '../theme/ThemeContext';
 import { PageContainer, Section, DashboardGrid, Row } from '../components/common/Layout';
 import { ProjectList } from '../components/Projects/ProjectList';
 import { ProjectModal } from '../components/Modals/ProjectModal';
@@ -13,6 +15,8 @@ import { Card, CardBody } from '../components/common/Cards';
 import { Input } from '../components/common/Inputs';
 
 export default function ProjectsPage() {
+    const { t } = useLanguage();
+    const { theme } = useTheme();
     const {
         projects,
         loading,
@@ -45,7 +49,7 @@ export default function ProjectsPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700">
+        <div className={`min-h-screen ${theme === 'dark' ? 'bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700' : 'light-theme-page'}`}>
             <div className="relative min-h-screen px-4 py-8">
                 {/* Animated Background Elements */}
                 <div className="absolute inset-0 overflow-hidden">
@@ -58,27 +62,27 @@ export default function ProjectsPage() {
                     {/* Header */}
                     <div className="flex items-start justify-between mb-8">
                         <div>
-                            <h1 className="text-5xl font-semibold text-white mb-2 drop-shadow-lg">Proyectos</h1>
-                            <p className="text-xl text-gray-100 font-semibold">Gestiona todos tus proyectos</p>
+                            <h1 className="text-5xl font-semibold text-white mb-2 drop-shadow-lg">{t('projectsTitle')}</h1>
+                            <p className="text-xl text-gray-100 font-semibold">{t('manageProjects')}</p>
                         </div>
                         <button
                             onClick={() => setShowForm(!showForm)}
                             className="px-6 py-3 text-white rounded-xl font-bold shadow-2xl transform hover:scale-110 transition-all duration-300"
                             style={{ backgroundImage: 'linear-gradient(135deg, rgba(140, 179, 105, 0.9), rgba(91, 142, 125, 0.9))' }}
                         >
-                            {showForm ? 'Cancelar' : '+ Nuevo Proyecto'}
+                            {showForm ? t('cancel') : `+ ${t('newProject')}`}
                         </button>
                     </div>
 
                     {/* Formulario nuevo proyecto */}
                     {showForm && (
                         <div className="mb-8">
-                            <h2 className="text-3xl font-bold text-white mb-4 drop-shadow-lg">Crear Nuevo Proyecto</h2>
+                            <h2 className="text-3xl font-bold text-white mb-4 drop-shadow-lg">{t('createNewProject')}</h2>
                             <div className="bg-primary-400/30 backdrop-blur-lg rounded-2xl p-6 border border-primary-400/50">
                                 <form onSubmit={handleSubmit} className="space-y-4">
                                     <div>
                                         <label htmlFor="name" className="block text-white font-bold mb-2">
-                                            Nombre del Proyecto
+                                            {t('projectName')}
                                         </label>
                                         <input
                                             id="name"
@@ -86,14 +90,14 @@ export default function ProjectsPage() {
                                             type="text"
                                             value={formData.name}
                                             onChange={handleChange}
-                                            placeholder="Mi Proyecto"
+                                            placeholder={t('projectName')}
                                             required
                                             className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/30 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-transparent transition-all"
                                         />
                                     </div>
                                     <div>
                                         <label htmlFor="description" className="block text-white font-bold mb-2">
-                                            Descripción
+                                            {t('description')}
                                         </label>
                                         <input
                                             id="description"
@@ -101,7 +105,7 @@ export default function ProjectsPage() {
                                             type="text"
                                             value={formData.description}
                                             onChange={handleChange}
-                                            placeholder="Descripción breve"
+                                            placeholder={t('shortDescription')}
                                             className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/30 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-transparent transition-all"
                                         />
                                     </div>
@@ -112,7 +116,7 @@ export default function ProjectsPage() {
                                             className="px-6 py-3 text-white rounded-xl font-bold shadow-lg transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                                             style={{ backgroundImage: 'linear-gradient(135deg, rgba(140, 179, 105, 0.9), rgba(91, 142, 125, 0.9))' }}
                                         >
-                                            {loading ? 'Creando...' : 'Crear Proyecto'}
+                                            {loading ? t('creating') : t('createProject')}
                                         </button>
                                     </div>
                                 </form>
@@ -129,7 +133,7 @@ export default function ProjectsPage() {
 
                     {/* Lista de proyectos */}
                     <div>
-                        <h2 className="text-3xl font-bold text-white mb-4 drop-shadow-lg">Tus Proyectos</h2>
+                        <h2 className="text-3xl font-bold text-white mb-4 drop-shadow-lg">{t('yourProjects')}</h2>
                         <ProjectList
                             projects={projects}
                             loading={loading}

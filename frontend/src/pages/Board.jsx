@@ -6,6 +6,8 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { useLanguage } from '../i18n/LanguageContext';
+import { useTheme } from '../theme/ThemeContext';
 import { KanbanColumn } from '../components/Board/KanbanColumn';
 import { AddTaskModal } from '../components/Modals/AddTaskModal';
 import { EditTaskModal } from '../components/Modals/EditTaskModal';
@@ -16,6 +18,8 @@ import api from '../services/api';
 
 export default function BoardPage() {
     const { projects } = useGlobalContext();
+    const { t } = useLanguage();
+    const { theme } = useTheme();
     const { createTask, updateTaskData } = useTasks();
     const location = useLocation();
     const [tasks, setTasks] = useState([]);
@@ -111,7 +115,7 @@ export default function BoardPage() {
             tasks: tasksByType[typeKey],
         });
     }); return (
-        <div className="min-h-screen bg-gradient-to-br from-[#1E1E1E] via-[#2B2B2B] to-[#000000]">
+        <div className={`min-h-screen ${theme === 'dark' ? 'bg-gradient-to-br from-[#1E1E1E] via-[#2B2B2B] to-[#000000]' : 'light-theme-page'}`}>
             <div className="relative min-h-screen px-4 py-8">
                 {/* Animated Background Elements */}
                 <div className="absolute inset-0 overflow-hidden">
@@ -127,14 +131,14 @@ export default function BoardPage() {
                             <div className="mb-3 flex items-center gap-3">
                                 <span className="inline-flex items-center gap-2 rounded-full border border-[#F4E285]/45 bg-[#F4E285]/12 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[#F4E285]">
                                     <i className="fas fa-grip-horizontal"></i>
-                                    Board Kanban
+                                    {t('boardKanban')}
                                 </span>
                                 <button
                                     type="button"
                                     onClick={() => setShowBoardInfo((prev) => !prev)}
                                     className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#B6D1C7]/55 bg-[#B6D1C7]/15 text-[#EAF4E2] transition hover:bg-[#B6D1C7]/25"
-                                    aria-label="Información de esta página"
-                                    title="Información de esta página"
+                                    aria-label={t('boardInfo')}
+                                    title={t('boardInfo')}
                                 >
                                     <i className="fas fa-info text-xs"></i>
                                 </button>
@@ -145,8 +149,8 @@ export default function BoardPage() {
                                 </h1>
                             </div>
                             {showBoardInfo && (
-                                <div className="mt-3 rounded-xl border border-[#B6D1C7]/35 bg-[#1E1E1E]/70 p-3 text-sm text-[#E6E6E6] shadow-lg backdrop-blur">
-                                    Aquí organizas las tareas por columnas según su tipo. La idea es mover, crear y editar tareas para visualizar el flujo de trabajo del proyecto de forma clara.
+                                <div className="mt-3 rounded-xl border border-[#B6D1C7]/35 bg-[#1E1E1E]/70 light-theme-card p-3 text-sm text-[#E6E6E6] shadow-lg backdrop-blur">
+                                    {t('boardInfo')}
                                 </div>
                             )}
                         </div>
@@ -201,10 +205,10 @@ export default function BoardPage() {
                                     setTasks((prevTasks) => [...prevTasks, normalizedTask]);
                                 }
                                 setShowAddTaskModal(false);
-                                showSuccessToast('Tarea agregada correctamente');
+                                showSuccessToast(t('taskCreated'));
                             } catch (err) {
                                 setErrorForm(err.message);
-                                showErrorToast('No se pudo agregar la tarea');
+                                showErrorToast(t('error'));
                                 console.error('Error al crear tarea:', err);
                             } finally {
                                 setIsLoadingForm(false);
