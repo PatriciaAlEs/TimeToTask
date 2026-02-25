@@ -11,51 +11,64 @@ import { useTasks } from '../hooks/useTasks.jsx';
 import { useProjects } from '../hooks/useProjects.jsx';
 import { TASK_TYPES } from '../config/taskTypes';
 
-function DonutChart({ segments, total }) {
-    const size = 88;
-    const strokeWidth = 12;
-    const radius = (size - strokeWidth) / 2;
-    const circumference = 2 * Math.PI * radius;
+function PieChart({ segments, total, size = 88 }) {
+    const radius = size / 2;
+    const center = radius;
+
+    const polarToCartesian = (cx, cy, chartRadius, angleInDegrees) => {
+        const angleInRadians = (angleInDegrees - 90) * (Math.PI / 180);
+
+        return {
+            x: cx + chartRadius * Math.cos(angleInRadians),
+            y: cy + chartRadius * Math.sin(angleInRadians),
+        };
+    };
+
+    const describeSlice = (cx, cy, chartRadius, startAngle, endAngle) => {
+        const start = polarToCartesian(cx, cy, chartRadius, endAngle);
+        const end = polarToCartesian(cx, cy, chartRadius, startAngle);
+        const largeArcFlag = endAngle - startAngle <= 180 ? '0' : '1';
+
+        return [
+            `M ${cx} ${cy}`,
+            `L ${start.x} ${start.y}`,
+            `A ${chartRadius} ${chartRadius} 0 ${largeArcFlag} 0 ${end.x} ${end.y}`,
+            'Z',
+        ].join(' ');
+    };
+
     let accumulatedValue = 0;
+    const activeSegments = segments.filter((segment) => segment.value > 0);
 
     return (
-        <div className="relative h-24 w-24">
+        <div className="relative" style={{ width: size, height: size }}>
             <svg width={size} height={size} className="-rotate-90">
                 <circle
-                    cx={size / 2}
-                    cy={size / 2}
+                    cx={center}
+                    cy={center}
                     r={radius}
-                    fill="none"
-                    stroke="currentColor"
+                    fill="currentColor"
                     className="text-white/15"
-                    strokeWidth={strokeWidth}
                 />
                 {total > 0 &&
-                    segments
-                        .filter((segment) => segment.value > 0)
-                        .map((segment) => {
-                            const arcLength = (segment.value / total) * circumference;
-                            const strokeDashoffset = circumference - (accumulatedValue / total) * circumference;
-                            accumulatedValue += segment.value;
+                    activeSegments.map((segment) => {
+                        const startAngle = (accumulatedValue / total) * 360;
+                        accumulatedValue += segment.value;
+                        const endAngle = (accumulatedValue / total) * 360;
 
-                            return (
-                                <circle
-                                    key={segment.id}
-                                    cx={size / 2}
-                                    cy={size / 2}
-                                    r={radius}
-                                    fill="none"
-                                    stroke="currentColor"
-                                    className={segment.colorClass}
-                                    strokeWidth={strokeWidth}
-                                    strokeDasharray={`${arcLength} ${circumference - arcLength}`}
-                                    strokeDashoffset={strokeDashoffset}
-                                />
-                            );
-                        })}
+                        return (
+                            <path
+                                key={segment.id}
+                                d={describeSlice(center, center, radius, startAngle, endAngle)}
+                                fill={segment.color}
+                                stroke="rgba(255,255,255,0.25)"
+                                strokeWidth="1"
+                            />
+                        );
+                    })}
             </svg>
             <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-lg font-black text-white">{total}</span>
+                <span className="text-base font-bold text-white">{total}</span>
             </div>
         </div>
     );
@@ -68,6 +81,7 @@ export default function DashboardPage() {
     const [showAddProjectModal, setShowAddProjectModal] = useState(false);
     const [isLoadingForm, setIsLoadingForm] = useState(false);
     const [errorForm, setErrorForm] = useState(null);
+    const [expandedSection, setExpandedSection] = useState(null);
     const [selectedMonth, setSelectedMonth] = useState(() => {
         const now = new Date();
         const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -140,39 +154,48 @@ export default function DashboardPage() {
         {
             id: 'backlog',
             label: 'Backlog',
-            colorClass: 'text-slate-300',
+            color: '#cbd5e1',
             value: tasks.filter((task) => task.status === 'backlog').length,
         },
         {
             id: 'selected',
             label: 'Seleccionadas',
-            colorClass: 'text-amber-300',
+            color: '#fcd34d',
             value: tasks.filter((task) => task.status === 'selected').length,
         },
         {
             id: 'inProgress',
             label: 'En progreso',
-            colorClass: 'text-blue-300',
+            color: '#93c5fd',
             value: tasks.filter((task) => task.status === 'inProgress').length,
         },
         {
             id: 'inReview',
             label: 'En revisión',
-            colorClass: 'text-purple-300',
+            color: '#d8b4fe',
             value: tasks.filter((task) => task.status === 'inReview').length,
         },
         {
             id: 'completed',
             label: 'Completadas',
-            colorClass: 'text-green-200',
+            color: '#bbf7d0',
             value: tasks.filter((task) => isTaskCompleted(task)).length,
         },
     ];
 
+    const typeColorMap = {
+        feature: '#67e8f9',
+        bug: '#fca5a5',
+        improvement: '#fdba74',
+        documentation: '#d8b4fe',
+        testing: '#bbf7d0',
+        design: '#f9a8d4',
+    };
+
     const typeSegments = Object.entries(TASK_TYPES).map(([typeKey, typeConfig]) => ({
         id: typeKey,
         label: typeConfig.name,
-        colorClass: typeKey === 'testing' ? 'text-green-200' : typeConfig.textColor,
+        color: typeColorMap[typeKey] || '#cbd5e1',
         value: tasks.filter((task) => (task.type || 'feature') === typeKey).length,
     }));
 
@@ -180,19 +203,19 @@ export default function DashboardPage() {
         {
             id: 'high',
             label: 'Alta',
-            colorClass: 'text-red-300',
+            color: '#fca5a5',
             value: tasks.filter((task) => task.priority === 'high').length,
         },
         {
             id: 'medium',
             label: 'Media',
-            colorClass: 'text-yellow-300',
+            color: '#fde68a',
             value: tasks.filter((task) => task.priority === 'medium').length,
         },
         {
             id: 'low',
             label: 'Baja',
-            colorClass: 'text-green-300',
+            color: '#bbf7d0',
             value: tasks.filter((task) => task.priority === 'low').length,
         },
     ];
@@ -355,14 +378,19 @@ export default function DashboardPage() {
                                         <span className="text-2xl font-black text-orange-300">{section.total}</span>
                                     </div>
 
-                                    <div className="mb-4 flex items-center justify-center">
-                                        <DonutChart segments={section.segments} total={section.total} />
-                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => setExpandedSection(section)}
+                                        className="mb-4 flex w-full items-center justify-center rounded-xl p-2 transition hover:bg-white/10"
+                                        title="Ver gráfico ampliado"
+                                    >
+                                        <PieChart segments={section.segments} total={section.total} />
+                                    </button>
 
                                     <div className="space-y-1">
                                         {section.segments.map((segment) => (
                                             <div key={`${section.id}-${segment.id}`} className="flex items-center justify-between text-sm">
-                                                <span className={`font-semibold ${segment.colorClass}`}>{segment.label}</span>
+                                                <span className="font-semibold" style={{ color: segment.color }}>{segment.label}</span>
                                                 <span className="font-bold text-white">{segment.value}</span>
                                             </div>
                                         ))}
@@ -454,6 +482,44 @@ export default function DashboardPage() {
                             }
                         }}
                     />
+
+                    {expandedSection && (
+                        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 p-4">
+                            <div className="w-full max-w-2xl rounded-2xl border border-white/20 bg-primary-800/95 p-6 backdrop-blur-lg">
+                                <div className="mb-4 flex items-center justify-between">
+                                    <h3 className="text-2xl font-bold text-white">{expandedSection.title} · Detalle por área</h3>
+                                    <button
+                                        type="button"
+                                        onClick={() => setExpandedSection(null)}
+                                        className="rounded-lg px-3 py-1 text-white/80 hover:bg-white/10 hover:text-white"
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
+
+                                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:items-center">
+                                    <div className="flex justify-center">
+                                        <PieChart segments={expandedSection.segments} total={expandedSection.total} size={260} />
+                                    </div>
+
+                                    <div className="space-y-3">
+                                        {expandedSection.segments.map((segment) => (
+                                            <div key={`expanded-${expandedSection.id}-${segment.id}`} className="flex items-center justify-between rounded-lg bg-white/5 px-3 py-2">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="h-3 w-3 rounded-full" style={{ backgroundColor: segment.color }}></span>
+                                                    <span className="font-semibold text-white">{segment.label}</span>
+                                                </div>
+                                                <span className="font-bold text-white">{segment.value} tareas</span>
+                                            </div>
+                                        ))}
+                                        <div className="pt-2 text-right text-sm text-white/80">
+                                            Total: <span className="font-bold text-white">{expandedSection.total} tareas</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
