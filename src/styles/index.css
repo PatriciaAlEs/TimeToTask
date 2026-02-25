@@ -8,7 +8,7 @@
   }
 
   body {
-    @apply bg-gray-200 text-primary-900 font-sans;
+    @apply bg-gray-200 text-primary-500 font-sans;
     min-height: 100vh;
   }
 
@@ -26,7 +26,7 @@
   h4,
   h5,
   h6 {
-    @apply font-bold text-primary-900 leading-tight;
+    @apply font-semibold text-primary-900 leading-tight;
   }
 
   h1 {
@@ -54,6 +54,142 @@
 
   a {
     @apply text-primary-500 hover:text-primary-600 transition-colors;
+  }
+}
+
+@layer utilities {
+  .font-black {
+    font-weight: 700;
+  }
+
+  .font-extrabold {
+    font-weight: 700;
+  }
+
+  .font-bold {
+    font-weight: 600;
+  }
+
+  .bg-gradient-to-br .text-primary-900,
+  .bg-gradient-to-r .text-primary-900,
+  .bg-gradient-to-br .text-gray-900,
+  .bg-gradient-to-r .text-gray-900,
+  .bg-primary-900 .text-primary-900,
+  .bg-primary-900 .text-gray-900,
+  .bg-primary-800 .text-primary-900,
+  .bg-primary-800 .text-gray-900 {
+    @apply text-gray-100;
+  }
+
+  p.text-black,
+  span.text-black,
+  label.text-black,
+  small.text-black,
+  li.text-black,
+  a.text-black,
+  button.text-black,
+  div.text-black,
+  input.text-black,
+  textarea.text-black,
+  select.text-black,
+  p.text-gray-900,
+  span.text-gray-900,
+  label.text-gray-900,
+  small.text-gray-900,
+  li.text-gray-900,
+  a.text-gray-900,
+  button.text-gray-900,
+  div.text-gray-900,
+  input.text-gray-900,
+  textarea.text-gray-900,
+  select.text-gray-900,
+  p.text-primary-900,
+  span.text-primary-900,
+  label.text-primary-900,
+  small.text-primary-900,
+  li.text-primary-900,
+  a.text-primary-900,
+  button.text-primary-900,
+  div.text-primary-900,
+  input.text-primary-900,
+  textarea.text-primary-900,
+  select.text-primary-900 {
+    color: #7fa3d5;
+  }
+
+  p.text-gray-800,
+  span.text-gray-800,
+  label.text-gray-800,
+  small.text-gray-800,
+  li.text-gray-800,
+  a.text-gray-800,
+  button.text-gray-800,
+  div.text-gray-800,
+  input.text-gray-800,
+  textarea.text-gray-800,
+  select.text-gray-800,
+  p.text-primary-800,
+  span.text-primary-800,
+  label.text-primary-800,
+  small.text-primary-800,
+  li.text-primary-800,
+  a.text-primary-800,
+  button.text-primary-800,
+  div.text-primary-800,
+  input.text-primary-800,
+  textarea.text-primary-800,
+  select.text-primary-800 {
+    color: #7fa3d5;
+  }
+
+  p.text-gray-700,
+  span.text-gray-700,
+  label.text-gray-700,
+  small.text-gray-700,
+  li.text-gray-700,
+  a.text-gray-700,
+  button.text-gray-700,
+  div.text-gray-700,
+  input.text-gray-700,
+  textarea.text-gray-700,
+  select.text-gray-700,
+  p.text-primary-700,
+  span.text-primary-700,
+  label.text-primary-700,
+  small.text-primary-700,
+  li.text-primary-700,
+  a.text-primary-700,
+  button.text-primary-700,
+  div.text-primary-700,
+  input.text-primary-700,
+  textarea.text-primary-700,
+  select.text-primary-700 {
+    color: #b8cae3;
+  }
+
+  p.text-gray-600,
+  span.text-gray-600,
+  label.text-gray-600,
+  small.text-gray-600,
+  li.text-gray-600,
+  a.text-gray-600,
+  button.text-gray-600,
+  div.text-gray-600,
+  input.text-gray-600,
+  textarea.text-gray-600,
+  select.text-gray-600,
+  p.text-primary-600,
+  span.text-primary-600,
+  label.text-primary-600,
+  small.text-primary-600,
+  li.text-primary-600,
+  a.text-primary-600,
+  button.text-primary-600,
+  div.text-primary-600,
+  input.text-primary-600,
+  textarea.text-primary-600,
+  select.text-primary-600 {
+    color: #f9c784;
   }
 }
 

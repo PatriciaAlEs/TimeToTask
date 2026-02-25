@@ -22,7 +22,7 @@ export function KanbanColumn({
     const borderClass = borderColor || 'border-white/10'; return (
         <div className={`flex flex-col backdrop-blur-lg rounded-2xl border-2 transition-all hover:shadow-xl overflow-hidden ${borderClass} ${bgClass}`}>
             {/* Header */}
-            <div className={`bg-gradient-to-r ${color} px-4 py-4 flex items-center justify-center`}>
+            <div className={`${color} px-4 py-4 flex items-center justify-center`}>
                 <h3 className="text-2xl font-extrabold tracking-wide text-white text-center">{title}</h3>
             </div>
 
@@ -42,7 +42,7 @@ export function KanbanColumn({
                     >
                         {/* Tag */}
                         <div className="flex items-center gap-2 mb-2">
-                            <span className={`text-xs font-bold px-2 py-1 rounded-full text-white bg-gradient-to-r ${color}`}>
+                            <span className={`text-xs font-bold px-2 py-1 rounded-full text-white ${color}`}>
                                 {title}
                             </span>
                             {task.priority && (

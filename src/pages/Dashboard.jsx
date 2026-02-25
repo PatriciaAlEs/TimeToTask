@@ -164,7 +164,7 @@ export default function DashboardPage() {
         {
             id: 'completed',
             label: 'Completadas',
-            colorClass: 'text-green-300',
+            colorClass: 'text-green-200',
             value: tasks.filter((task) => isTaskCompleted(task)).length,
         },
     ];
@@ -172,7 +172,7 @@ export default function DashboardPage() {
     const typeSegments = Object.entries(TASK_TYPES).map(([typeKey, typeConfig]) => ({
         id: typeKey,
         label: typeConfig.name,
-        colorClass: typeConfig.textColor,
+        colorClass: typeKey === 'testing' ? 'text-green-200' : typeConfig.textColor,
         value: tasks.filter((task) => (task.type || 'feature') === typeKey).length,
     }));
 
@@ -342,7 +342,7 @@ export default function DashboardPage() {
 
                     {/* Resumen + actualizaciones */}
                     <div className="mb-8">
-                        <h2 className="mb-6 text-3xl font-bold text-white drop-shadow-lg">Resumen y actualizaciones</h2>
+                        <h2 className="mb-6 text-3xl font-bold text-white drop-shadow-lg">Resumen</h2>
 
                         <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
                             {summarySections.map((section) => (
@@ -398,7 +398,7 @@ export default function DashboardPage() {
                                                 </div>
                                                 <div className="ml-3 text-right">
                                                     <p className="text-[11px] text-white/70">{updatedDate.toLocaleDateString()} {updatedDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
-                                                    <p className={`text-xs font-bold ${wasCompleted ? 'text-green-300' : 'text-blue-300'}`}>
+                                                    <p className={`text-xs font-bold ${wasCompleted ? 'text-green-200' : 'text-blue-300'}`}>
                                                         {wasCompleted ? 'Completada' : 'Actualizada'}
                                                     </p>
                                                 </div>
