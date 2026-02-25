@@ -1,0 +1,232 @@
+/**
+ * Componente Login
+ * Formulario de inicio de sesión con validación y estado global
+ * Props: None
+ */
+
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useGlobalContext } from "@/store";
+import { useLanguage } from "@/i18n/LanguageContext";
+import api from "@/services/api";
+
+export default function Login({ isModal = false, onClose = () => { } }) {
+  const navigate = useNavigate();
+  const { setUser, setToken, setError: setGlobalError, setLoading, loading } =
+    useGlobalContext();
+  const { t, language, switchLanguage } = useLanguage();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [validationError, setValidationError] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setValidationError("");
+
+    // Validación
+    if (!email || !password || !confirmPassword) {
+      setValidationError(t('completeAllFields'));
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setValidationError(t('invalidEmail'));
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setValidationError(t('passwordsNotMatch'));
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const result = await api.auth.login(email, password);
+      setUser(result.user);
+      setToken(result.token);
+      navigate("/dashboard");
+    } catch (err) {
+      setGlobalError(err.message);
+      setValidationError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const content = (
+    <>
+      {/* Animated Background Elements */}
+      {!isModal && (
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute w-96 h-96 bg-primary-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob top-0 -left-4"></div>
+          <div className="absolute w-96 h-96 bg-[#F4E285] rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000 top-0 -right-4"></div>
+          <div className="absolute w-96 h-96 bg-[#F4A259] rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000 bottom-0 left-20"></div>
+        </div>
+      )}
+
+      <div className={`w-full max-w-md relative z-10 ${isModal ? '' : ''}`}>
+        {/* Card */}
+        <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-8 border border-white/20">
+          {/* Header */}
+          <div className="text-center mb-6">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary-400 to-secondary-400 rounded-3xl mb-4 transform hover:scale-110 hover:rotate-6 transition-all duration-300 shadow-xl">
+              <i className="fas fa-tasks text-4xl text-white drop-shadow-lg"></i>
+            </div>
+            <h1 className="text-4xl font-semibold text-white mb-2 drop-shadow-lg">
+              {t('welcome')}
+            </h1>
+            <p className="text-gray-100 font-semibold">{t('signIn')}</p>
+
+            {isModal && (
+              <button
+                onClick={onClose}
+                className="absolute right-4 top-4 text-white/70 hover:text-white text-2xl transition-colors"
+                aria-label="Cerrar"
+              >
+                ✕
+              </button>
+            )}
+
+            {/* Language Switcher */}
+            <div className="flex justify-center gap-2 mt-4">
+              <button
+                onClick={() => switchLanguage('es')}
+                className={`px-3 py-1 rounded-lg text-sm font-medium transition-all transform hover:scale-105 ${language === 'es'
+                  ? 'bg-gradient-to-br from-primary-400 to-secondary-400 text-white shadow-lg'
+                  : 'bg-white/20 text-white hover:bg-white/30'
+                  }`}
+              >
+                ES
+              </button>
+              <button
+                onClick={() => switchLanguage('en')}
+                className={`px-3 py-1 rounded-lg text-sm font-medium transition-all transform hover:scale-105 ${language === 'en'
+                  ? 'bg-gradient-to-br from-primary-400 to-secondary-400 text-white shadow-lg'
+                  : 'bg-white/20 text-white hover:bg-white/30'
+                  }`}
+              >
+                EN
+              </button>
+            </div>
+          </div>
+
+          {/* Error Alert */}
+          {validationError && (
+            <div className="mb-6 p-4 bg-red-500/20 backdrop-blur-lg border border-red-400 rounded-xl">
+              <p className="text-white text-sm font-semibold">{validationError}</p>
+            </div>
+          )}
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Email */}
+            <div>
+              <label className="block text-sm font-bold text-white mb-2">
+                {t('email')}
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder={t('enterEmail')}
+                className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/30 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-transparent transition-all"
+                disabled={loading}
+              />
+            </div>
+
+            {/* Password */}
+            <div>
+              <label className="block text-sm font-bold text-white mb-2">
+                {t('password')}
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder={t('enterPassword')}
+                  className="w-full px-4 py-3 pr-12 bg-white/10 backdrop-blur-sm border border-white/30 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-transparent transition-all"
+                  disabled={loading}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute inset-y-0 right-0 px-3 text-white/80 hover:text-white transition-colors"
+                  aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                >
+                  <i className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+                </button>
+              </div>
+            </div>
+
+            {/* Confirm Password */}
+            <div>
+              <label className="block text-sm font-bold text-white mb-2">
+                {t('confirmPassword')}
+              </label>
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder={t('enterPassword')}
+                  className="w-full px-4 py-3 pr-12 bg-white/10 backdrop-blur-sm border border-white/30 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-transparent transition-all"
+                  disabled={loading}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword((prev) => !prev)}
+                  className="absolute inset-y-0 right-0 px-3 text-white/80 hover:text-white transition-colors"
+                  aria-label={showConfirmPassword ? "Ocultar confirmación de contraseña" : "Mostrar confirmación de contraseña"}
+                >
+                  <i className={`fas ${showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+                </button>
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-gradient-to-br from-primary-400 to-secondary-400 hover:from-primary-500 hover:to-secondary-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-primary-300/40 transform hover:scale-105"
+            >
+              {loading ? t('loading') : t('signIn')}
+            </button>
+          </form>
+
+          {/* Footer */}
+          <div className="mt-6 text-center">
+            <p className="text-gray-100 text-sm">
+              {t('dontHaveAccount')}{" "}
+              <button
+                onClick={() => navigate("/register")}
+                className="text-accent-300 hover:text-accent-100 font-bold underline"
+              >
+                {t('signUpHere')}
+              </button>
+            </p>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+
+  if (isModal) {
+    return (
+      <div className="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm flex items-center justify-center px-4 py-12 overflow-y-auto">
+        {content}
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 flex items-center justify-center px-4 py-12 overflow-hidden relative">
+      {content}
+    </div>
+  );
+}
