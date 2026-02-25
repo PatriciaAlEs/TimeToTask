@@ -7,8 +7,32 @@ import { useEffect } from 'react';
 import { useGlobalContext } from '../store';
 import { taskService } from '../services/taskService';
 
+const normalizeTask = (response) => {
+    if (!response) {
+        return null;
+    }
+
+    if (response.data && typeof response.data === 'object' && !Array.isArray(response.data)) {
+        return response.data;
+    }
+
+    return response;
+};
+
+const normalizeTaskList = (response) => {
+    if (Array.isArray(response)) {
+        return response;
+    }
+
+    if (Array.isArray(response?.data)) {
+        return response.data;
+    }
+
+    return [];
+};
+
 export function useTasks(projectId = null) {
-    const { tasks, loading, error, setTasks, setLoading, setError, updateTask, deleteTask, moveTask } =
+    const { tasks, loading, error, setTasks, addTask, setLoading, setError, updateTask, deleteTask, moveTask } =
         useGlobalContext();
 
     // Cargar tareas
@@ -18,7 +42,7 @@ export function useTasks(projectId = null) {
             const data = projectId
                 ? await taskService.getByProject(projectId)
                 : await taskService.getAll();
-            setTasks(data);
+            setTasks(normalizeTaskList(data));
         } catch (err) {
             setError(err.response?.data?.message || 'Error cargando tareas');
         } finally {
@@ -30,9 +54,14 @@ export function useTasks(projectId = null) {
     const createTask = async (taskData) => {
         setLoading(true);
         try {
-            const newTask = await taskService.create(taskData);
-            setTasks([...tasks, newTask]);
-            return newTask;
+            const created = await taskService.create(taskData);
+            const normalizedTask = normalizeTask(created);
+
+            if (normalizedTask) {
+                addTask(normalizedTask);
+            }
+
+            return normalizedTask;
         } catch (err) {
             setError(err.response?.data?.message || 'Error creando tarea');
             throw err;
@@ -46,8 +75,10 @@ export function useTasks(projectId = null) {
         setLoading(true);
         try {
             const updated = await taskService.update(taskId, taskData);
-            updateTask(taskId, updated);
-            return updated;
+            const normalizedTask = normalizeTask(updated);
+            const updatePayload = normalizedTask || taskData;
+            updateTask(taskId, updatePayload);
+            return normalizedTask;
         } catch (err) {
             setError(err.response?.data?.message || 'Error actualizando tarea');
             throw err;

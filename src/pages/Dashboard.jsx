@@ -63,7 +63,7 @@ function DonutChart({ segments, total }) {
 
 export default function DashboardPage() {
     const { projects, loading, createProject } = useProjects();
-    const { tasks, addTask } = useTasks();
+    const { tasks, createTask } = useTasks();
     const [showAddTaskModal, setShowAddTaskModal] = useState(false);
     const [showAddProjectModal, setShowAddProjectModal] = useState(false);
     const [isLoadingForm, setIsLoadingForm] = useState(false);
@@ -423,9 +423,7 @@ export default function DashboardPage() {
                             try {
                                 setIsLoadingForm(true);
                                 setErrorForm(null);
-                                if (addTask) {
-                                    await addTask(data);
-                                }
+                                await createTask(data);
                                 setShowAddTaskModal(false);
                             } catch (err) {
                                 setErrorForm(err.message);

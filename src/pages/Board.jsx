@@ -3,7 +3,7 @@
  * Gestión de tareas por estados
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { KanbanColumn } from '../components/Board/KanbanColumn';
 import { AddTaskModal } from '../components/Modals/AddTaskModal';
@@ -11,13 +11,13 @@ import { EditTaskModal } from '../components/Modals/EditTaskModal';
 import { useGlobalContext } from '../store';
 import { useTasks } from '../hooks/useTasks.jsx';
 import { TASK_TYPES } from '../config/taskTypes';
-import api from '../services/api';
 
 export default function BoardPage() {
     const { projects } = useGlobalContext();
-    const { createTask, updateTaskData } = useTasks();
     const location = useLocation();
-    const [tasks, setTasks] = useState([]);
+    const queryParams = new URLSearchParams(location.search);
+    const activeProjectId = queryParams.get('projectId');
+    const { tasks, createTask, updateTaskData } = useTasks(activeProjectId);
     const [showAddTaskModal, setShowAddTaskModal] = useState(false);
     const [selectedTaskType, setSelectedTaskType] = useState(null);
     const [isLoadingForm, setIsLoadingForm] = useState(false);
@@ -25,8 +25,6 @@ export default function BoardPage() {
     const [showEditTaskModal, setShowEditTaskModal] = useState(false);
     const [selectedTaskToEdit, setSelectedTaskToEdit] = useState(null);
 
-    const queryParams = new URLSearchParams(location.search);
-    const activeProjectId = queryParams.get('projectId');
     const selectedProjectInfo = projects.find((project) => String(project.id) === String(activeProjectId));
 
     const handleDragStart = (event, taskId) => {
@@ -47,34 +45,12 @@ export default function BoardPage() {
             return;
         }
 
-        const updatedTasks = tasks.map((task) =>
-            task.id === taskToMove.id ? { ...task, type: targetType } : task
-        );
-
-        setTasks(updatedTasks);
-
         try {
             await updateTaskData(taskToMove.id, { type: targetType });
         } catch (error) {
             console.error('Error updating task type:', error);
         }
     };
-
-    // Cargar tareas autenticadas
-    useEffect(() => {
-        const fetchTasks = async () => {
-            try {
-                const fetchedTasks = activeProjectId
-                    ? await api.tasks.getByProject(activeProjectId)
-                    : await api.tasks.getAll();
-                setTasks(Array.isArray(fetchedTasks) ? fetchedTasks : []);
-            } catch (error) {
-                console.error('Error loading tasks:', error);
-                setTasks([]);
-            }
-        };
-        fetchTasks();
-    }, [activeProjectId]);
 
     // Agrupar tareas por tipo
     const tasksByType = {};
@@ -163,10 +139,6 @@ export default function BoardPage() {
                                     ...data,
                                     ...(activeProjectId ? { projectId: Number(activeProjectId) } : {}),
                                 });
-                                if (createdTask) {
-                                    const normalizedTask = createdTask.data ? createdTask.data : createdTask;
-                                    setTasks((prevTasks) => [...prevTasks, normalizedTask]);
-                                }
                                 setShowAddTaskModal(false);
                             } catch (err) {
                                 setErrorForm(err.message);
@@ -193,13 +165,6 @@ export default function BoardPage() {
                             try {
                                 setIsLoadingForm(true);
                                 setErrorForm(null);
-                                setTasks((prevTasks) =>
-                                    prevTasks.map((task) =>
-                                        task.id === taskId
-                                            ? { ...task, ...data, updated_at: new Date().toISOString() }
-                                            : task
-                                    )
-                                );
                                 setShowEditTaskModal(false);
                                 setSelectedTaskToEdit(null);
                                 setSelectedTaskType(null);
