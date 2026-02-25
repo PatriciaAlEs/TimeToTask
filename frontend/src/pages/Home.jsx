@@ -1,18 +1,20 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/i18n/LanguageContext';
+import { useTheme } from '@/theme/ThemeContext';
 import Login from '@/components/Auth/Login';
 import Register from '@/components/Auth/Register';
 
 const Home = () => {
     const { t } = useLanguage();
+    const { theme } = useTheme();
     const location = useLocation();
     const navigate = useNavigate();
     const isLoginModalOpen = location.pathname === '/login';
     const isRegisterModalOpen = location.pathname === '/register';
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 overflow-hidden">
+        <div className={`min-h-screen overflow-hidden ${theme === 'dark' ? 'bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700' : 'light-theme-page'}`}>
             {/* Hero Section */}
             <div className="relative min-h-screen flex items-center justify-center px-4">
                 {/* Animated Background Elements */}
@@ -116,13 +118,13 @@ const Home = () => {
             </div>
 
             {/* Additional Benefits Section */}
-            <div className="relative bg-gradient-to-br from-primary-700 via-primary-800 to-primary-900 backdrop-blur-sm py-20 px-4 border-t-4 border-accent-300/60">
+            <div className={`relative backdrop-blur-sm py-20 px-4 border-t-4 border-accent-300/60 ${theme === 'dark' ? 'bg-gradient-to-br from-primary-700 via-primary-800 to-primary-900' : 'light-theme-page'}`}>
                 <div className="max-w-6xl mx-auto">
                     <h2 className="text-5xl font-semibold text-white text-center mb-4 drop-shadow-lg">
                         {t('whyChoose')}
                     </h2>
-                    <p className="text-center text-gray-200 text-lg mb-16 max-w-2xl mx-auto">
-                        Descubre por qué miles de usuarios confían en nosotros para gestionar sus proyectos
+                    <p className="text-center text-gray-200 light-theme-muted text-lg mb-16 max-w-2xl mx-auto">
+                        {t('discoverWhy')}
                     </p>
 
                     <div className="grid md:grid-cols-2 gap-8">
@@ -170,7 +172,7 @@ const Home = () => {
                     {/* Final CTA */}
                     <div className="text-center mt-20 p-8 bg-white/5 backdrop-blur rounded-2xl border border-accent-300/35">
                         <p className="text-3xl font-semibold text-white mb-2 drop-shadow-lg">{t('startNow')}</p>
-                        <p className="text-gray-200 mb-6">Empieza a organizar tus tareas de forma inteligente</p>
+                        <p className="text-gray-200 light-theme-muted mb-6">{t('startSmartly')}</p>
                         <Link
                             to="/register"
                             className="inline-flex items-center gap-3 px-12 py-5 bg-gradient-to-br from-primary-400 via-primary-500 to-secondary-400 text-white rounded-xl font-semibold text-lg shadow-2xl hover:shadow-primary-300/60 transform hover:scale-110 hover:-rotate-1 transition-all duration-300"

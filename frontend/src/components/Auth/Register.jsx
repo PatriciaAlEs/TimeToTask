@@ -237,7 +237,7 @@ export default function Register({ isModal = false, onClose = () => { } }) {
 
   if (isModal) {
     return (
-      <div className="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm flex items-center justify-center px-4 py-12 overflow-y-auto">
+      <div className="fixed inset-0 z-[60] bg-black/80 flex items-center justify-center px-4 py-12 overflow-y-auto">
         {content}
       </div>
     );

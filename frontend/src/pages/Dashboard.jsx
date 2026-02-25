@@ -5,6 +5,8 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
+import { useLanguage } from '../i18n/LanguageContext';
+import { useTheme } from '../theme/ThemeContext';
 import { ProjectList } from '../components/Projects/ProjectList';
 import { AddTaskModal } from '../components/Modals/AddTaskModal';
 import { ProjectModal } from '../components/Modals/ProjectModal';
@@ -104,6 +106,8 @@ function PieChart({ segments, total, size = 88, showSliceValues = false }) {
 export default function DashboardPage() {
     const { projects, loading, createProject, updateProjectData, deleteProject } = useProjects();
     const { tasks, addTask } = useTasks();
+    const { t } = useLanguage();
+    const { theme } = useTheme();
     const [showAddTaskModal, setShowAddTaskModal] = useState(false);
     const [showAddProjectModal, setShowAddProjectModal] = useState(false);
     const [isLoadingForm, setIsLoadingForm] = useState(false);
@@ -245,8 +249,8 @@ export default function DashboardPage() {
 
         toast.warning(
             pendingTasksDueTomorrow.length === 1
-                ? 'Tienes 1 tarea pendiente con entrega para mañana.'
-                : `Tienes ${pendingTasksDueTomorrow.length} tareas pendientes con entrega para mañana.`,
+                ? t('tomorrowDueOne')
+                : t('tomorrowDueMany').replace('{{count}}', String(pendingTasksDueTomorrow.length)),
             {
                 className: 'timetotask-toast',
                 icon: '⏰',
@@ -413,7 +417,7 @@ export default function DashboardPage() {
         const timestamp = date.getTime();
 
         if (Number.isNaN(timestamp)) {
-            return 'Sin fecha';
+            return t('noDate');
         }
 
         const diffMs = Math.max(0, nowTimestamp - timestamp);
@@ -451,7 +455,7 @@ export default function DashboardPage() {
         : null;
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#1E1E1E] via-[#2B2B2B] to-[#000000]">
+        <div className={`min-h-screen ${theme === 'dark' ? 'bg-gradient-to-br from-[#1E1E1E] via-[#2B2B2B] to-[#000000]' : 'light-theme-page'}`}>
             <div className="relative min-h-screen px-4 py-8">
                 {/* Animated Background Elements */}
                 <div className="absolute inset-0 overflow-hidden">
@@ -466,26 +470,30 @@ export default function DashboardPage() {
                         <div className="mb-3 flex items-center gap-3">
                             <span className="inline-flex items-center gap-2 rounded-full border border-[#8CB369]/45 bg-[#8CB369]/12 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[#B6D1C7]">
                                 <i className="fas fa-chart-pie"></i>
-                                Panel principal
+                                {t('mainPanel')}
                             </span>
                             <button
                                 type="button"
                                 onClick={() => setShowDashboardInfo((prev) => !prev)}
-                                className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#F4E285]/45 bg-[#F4E285]/15 text-[#FFF6D0] transition hover:bg-[#F4E285]/25"
-                                aria-label="Información de esta página"
-                                title="Información de esta página"
+                                className="inline-flex h-9 w-9 items-center justify-center rounded-full border-2 bg-[#F4E285]/15 text-[#FFF6D0] transition hover:bg-[#F4E285]/25 shadow-sm"
+                                style={{ borderColor: theme === 'dark' ? 'rgba(244, 226, 133, 0.62)' : 'rgba(151, 114, 31, 0.80)' }}
+                                aria-label={t('mainPanel')}
+                                title={t('mainPanel')}
                             >
                                 <i className="fas fa-info text-xs"></i>
                             </button>
                         </div>
-                        <div className="inline-block rounded-2xl border border-[#B6D1C7]/35 bg-black/15 px-6 py-4 shadow-[0_12px_30px_rgba(0,0,0,0.38)]">
+                        <div
+                            className="inline-block rounded-2xl border-2 bg-black/15 px-6 py-4 shadow-[0_12px_30px_rgba(0,0,0,0.38)]"
+                            style={{ borderColor: theme === 'dark' ? 'rgba(182, 209, 199, 0.55)' : 'rgba(151, 114, 31, 0.78)' }}
+                        >
                             <h1 className="font-display-title text-6xl md:text-7xl font-bold mb-0 drop-shadow-lg tracking-wide bg-gradient-to-r from-[#B6D1C7] via-white to-[#F4E285] bg-clip-text text-transparent">
                                 Dashboard
                             </h1>
                         </div>
                         {showDashboardInfo && (
-                            <div className="mt-3 rounded-xl border border-[#F4E285]/35 bg-[#1E1E1E]/70 p-3 text-sm text-[#E6E6E6] shadow-lg backdrop-blur">
-                                Esta página muestra el estado general de tus proyectos: métricas, calendario y últimas actualizaciones. En el calendario verás las tareas en su fecha límite de entrega para priorizar mejor el trabajo.
+                            <div className="mt-3 rounded-xl border border-[#F4E285]/35 bg-[#1E1E1E]/70 light-theme-card p-3 text-sm text-[#E6E6E6] shadow-lg backdrop-blur">
+                                {t('startWithProjectHelp')}
                             </div>
                         )}
                     </div>
@@ -502,7 +510,7 @@ export default function DashboardPage() {
                             <div className="flex items-center justify-between mb-4">
                                 <h2 className="text-2xl font-semibold text-[#D8E7E0]">
                                     <i className="fas fa-folder-open mr-2 text-[#8CB369]"></i>
-                                    Mis Proyectos
+                                    {t('myProjects')}
                                 </h2>
                                 <button
                                     onClick={() => setShowAddProjectModal(true)}
@@ -510,12 +518,12 @@ export default function DashboardPage() {
                                     style={{ backgroundImage: 'linear-gradient(135deg, rgba(140, 179, 105, 0.9), rgba(91, 142, 125, 0.9))' }}
                                 >
                                     <i className="fas fa-plus"></i>
-                                    Nuevo Proyecto
+                                    {t('newProject')}
                                 </button>
                             </div>
 
                             <p className="text-[#EAF4E2] font-medium mb-4">
-                                Crea primero tu proyecto y luego agrega tareas en Board para que aparezcan automáticamente en calendario y resumen.
+                                {t('startWithProjectHelp')}
                             </p>
 
                             <ProjectList
@@ -535,22 +543,24 @@ export default function DashboardPage() {
                     {/* Calendario de tareas agregadas */}
                     <div className="mb-8">
                         <div
-                            className="backdrop-blur-lg rounded-2xl border p-6"
+                            className="backdrop-blur-lg rounded-2xl border-2 p-6"
                             style={{
-                                borderColor: 'rgba(244, 226, 133, 0.45)',
-                                background: 'linear-gradient(145deg, rgba(244, 226, 133, 0.30), rgba(244, 162, 89, 0.16))',
+                                borderColor: theme === 'dark' ? 'rgba(244, 226, 133, 0.55)' : 'rgba(151, 114, 31, 0.75)',
+                                background: theme === 'dark'
+                                    ? 'linear-gradient(145deg, rgba(244, 226, 133, 0.34), rgba(244, 162, 89, 0.20))'
+                                    : 'linear-gradient(145deg, rgba(221, 181, 84, 0.42), rgba(186, 141, 40, 0.30))',
                             }}
                         >
                             <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                                 <div>
                                     <h2 className="text-2xl font-semibold text-[#FFF6D0] mb-2">
                                         <i className="fas fa-calendar-alt mr-2 text-[#F4E285]"></i>
-                                        Calendario de tareas
+                                        {t('calendarTasks')}
                                     </h2>
-                                    <p className="text-sm text-gray-100">Tareas por fecha límite de entrega (agenda mensual)</p>
+                                    <p className="text-sm text-gray-100">{t('calendarByDueDate')}</p>
                                 </div>
                                 <div className="flex items-center gap-3">
-                                    <label className="text-sm text-white/80">Mes</label>
+                                    <label className="text-sm text-white/80">{t('month')}</label>
                                     <input
                                         type="month"
                                         value={selectedMonth}
@@ -562,14 +572,23 @@ export default function DashboardPage() {
 
                             <div className="mt-6 grid grid-cols-7 gap-3">
                                 {weekdayLabels.map((label) => (
-                                    <div key={label} className="text-center text-xs font-semibold uppercase tracking-wide text-[#FFF6D0]">
+                                    <div key={label} className="text-center text-xs font-semibold uppercase tracking-wide text-[#FFF6D0] light-theme-text">
                                         {label}
                                     </div>
                                 ))}
 
                                 {calendarCells.map((cell) => {
                                     if (cell.isEmpty) {
-                                        return <div key={cell.key} className="min-h-[140px] rounded-xl border border-[#F4E285]/25 bg-black/10"></div>;
+                                        return (
+                                            <div
+                                                key={cell.key}
+                                                className="h-[140px] rounded-xl border"
+                                                style={{
+                                                    borderColor: theme === 'dark' ? 'rgba(244, 226, 133, 0.35)' : 'rgba(151, 114, 31, 0.55)',
+                                                    backgroundColor: theme === 'dark' ? 'rgba(0, 0, 0, 0.10)' : 'rgba(255, 246, 214, 0.42)',
+                                                }}
+                                            ></div>
+                                        );
                                     }
 
                                     const dayTasks = tasksByDay[cell.day] || [];
@@ -577,10 +596,10 @@ export default function DashboardPage() {
                                     return (
                                         <div
                                             key={cell.key}
-                                            className="min-h-[140px] rounded-xl border p-2 backdrop-blur-sm"
+                                            className="h-[140px] rounded-xl border p-2 backdrop-blur-sm flex flex-col"
                                             style={{
-                                                borderColor: 'rgba(244, 226, 133, 0.40)',
-                                                backgroundColor: 'rgba(36, 29, 9, 0.22)',
+                                                borderColor: theme === 'dark' ? 'rgba(244, 226, 133, 0.45)' : 'rgba(151, 114, 31, 0.70)',
+                                                backgroundColor: theme === 'dark' ? 'rgba(36, 29, 9, 0.24)' : 'rgba(253, 243, 201, 0.58)',
                                             }}
                                         >
                                             <div className="mb-2 flex items-center justify-between">
@@ -588,7 +607,7 @@ export default function DashboardPage() {
                                                 <span className="text-[11px] text-[#F4E285]">{dayTasks.length}</span>
                                             </div>
 
-                                            <div className="space-y-2">
+                                            <div className="space-y-2 min-h-0 overflow-y-auto pr-1">
                                                 {dayTasks.slice(0, 4).map((task) => {
                                                     const typeTheme = TASK_TYPE_SOFT_THEME[task.type] || TASK_TYPE_SOFT_THEME.default;
 
@@ -611,7 +630,7 @@ export default function DashboardPage() {
 
                                                 {dayTasks.length > 4 && (
                                                     <p className="text-[11px] font-semibold text-[#FFEFB2]">
-                                                        +{dayTasks.length - 4} más
+                                                        +{dayTasks.length - 4} {t('more')}
                                                     </p>
                                                 )}
                                             </div>
@@ -626,12 +645,21 @@ export default function DashboardPage() {
                     <div className="mb-8">
                         <h2 className="mb-6 text-2xl font-semibold text-[#EAF4E2]">
                             <i className="fas fa-chart-bar mr-2 text-[#8CB369]"></i>
-                            Resumen
+                            {t('summary')}
                         </h2>
 
                         <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
                             {summarySections.map((section) => (
-                                <div key={section.id} className="rounded-2xl border border-white/20 bg-white/[0.09] p-5 backdrop-blur-lg">
+                                <div
+                                    key={section.id}
+                                    className="rounded-2xl border-2 p-5 backdrop-blur-lg"
+                                    style={{
+                                        borderColor: theme === 'dark' ? 'rgba(244, 226, 133, 0.35)' : 'rgba(151, 114, 31, 0.70)',
+                                        background: theme === 'dark'
+                                            ? 'linear-gradient(145deg, rgba(255,255,255,0.10), rgba(255,255,255,0.06))'
+                                            : 'linear-gradient(145deg, rgba(221, 181, 84, 0.30), rgba(186, 141, 40, 0.22))',
+                                    }}
+                                >
                                     <div className="mb-4 flex items-center justify-between">
                                         <h3 className="text-lg font-black text-white">
                                             <i className={`fas ${section.icon} mr-2`}></i>
@@ -673,12 +701,12 @@ export default function DashboardPage() {
                             <div className="mb-3 flex items-center justify-between">
                                 <h3 className="text-lg font-semibold text-[#EAF4E2]">
                                     <i className="fas fa-history mr-2"></i>
-                                    Últimas actualizaciones
+                                    {t('latestUpdates')}
                                 </h3>
                                 <span className="text-sm font-semibold text-white/80">
                                     {latestUpdateDate && !Number.isNaN(latestUpdateDate.getTime())
-                                        ? `Última actualización: ${getTimeAgoLabel(latestUpdateDate)}`
-                                        : 'Sin actualizaciones'}
+                                        ? `${t('lastUpdate')}: ${getTimeAgoLabel(latestUpdateDate)}`
+                                        : t('noUpdatesYet')}
                                 </span>
                             </div>
 
@@ -706,7 +734,7 @@ export default function DashboardPage() {
                                                 <div className="ml-3 text-right">
                                                     <p className="text-[11px] text-white/70">{getTimeAgoLabel(updatedDate)}</p>
                                                     <p className={`text-xs font-bold ${wasCompleted ? 'text-[#8CB369]' : 'text-[#F4E285]'}`}>
-                                                        {wasCompleted ? 'Completada' : 'Actualizada'}
+                                                        {wasCompleted ? t('completed') : t('updated')}
                                                     </p>
                                                 </div>
                                             </div>
@@ -714,7 +742,7 @@ export default function DashboardPage() {
                                     })}
                                 </div>
                             ) : (
-                                <p className="text-sm text-white/70">No hay actualizaciones registradas todavía.</p>
+                                <p className="text-sm text-white/70">{t('noUpdatesYet')}</p>
                             )}
                         </div>
                     </div>
@@ -760,14 +788,14 @@ export default function DashboardPage() {
                                     await updateProjectData(projectToEdit.id, data);
                                 } else {
                                     await createProject(data);
-                                    showSuccessToast('Proyecto creado correctamente');
+                                    showSuccessToast(t('projectCreated'));
                                 }
                                 setShowAddProjectModal(false);
                                 setProjectToEdit(null);
                             } catch (err) {
                                 setErrorForm(err.message);
                                 if (!projectToEdit) {
-                                    showErrorToast('No se pudo crear el proyecto');
+                                    showErrorToast(t('error'));
                                 }
                                 console.error('Error al guardar proyecto:', err);
                             } finally {
@@ -780,7 +808,7 @@ export default function DashboardPage() {
                         <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/70 p-4">
                             <div className="w-full max-w-2xl rounded-2xl border border-white/25 bg-[#1E1E1E]/95 p-6 backdrop-blur-lg">
                                 <div className="mb-4 flex items-center justify-between">
-                                    <h3 className="text-2xl font-semibold text-white">{expandedSection.title} · Detalle por área</h3>
+                                    <h3 className="text-2xl font-semibold text-white">{expandedSection.title} · {t('detailByArea')}</h3>
                                     <button
                                         type="button"
                                         onClick={() => setExpandedSection(null)}

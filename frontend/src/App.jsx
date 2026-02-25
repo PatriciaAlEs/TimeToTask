@@ -4,6 +4,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { GlobalProvider } from './store';
 import { LanguageProvider } from './i18n/LanguageContext';
+import { ThemeProvider, useTheme } from './theme/ThemeContext';
 import Header from './components/Layout/Header';
 import Footer from './components/Layout/Footer';
 import CookieConsentModal from './components/common/CookieConsentModal';
@@ -17,7 +18,8 @@ import CookiesPolicy from './pages/CookiesPolicy';
 
 const COOKIE_CONSENT_KEY = 'cookie_consent_status';
 
-const App = () => {
+const AppShell = () => {
+    const { theme } = useTheme();
     const [showCookieModal, setShowCookieModal] = useState(false);
 
     useEffect(() => {
@@ -39,64 +41,72 @@ const App = () => {
     };
 
     return (
+        <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+            <Header />
+            <main className="flex-grow">
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/login" element={<Home />} />
+                    <Route path="/register" element={<Home />} />
+                    <Route path="/cookies" element={<CookiesPolicy />} />
+                    <Route
+                        path="/dashboard"
+                        element={
+                            <ProtectedRoute>
+                                <Dashboard />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/projects"
+                        element={
+                            <ProtectedRoute>
+                                <Projects />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/board"
+                        element={
+                            <ProtectedRoute>
+                                <Board />
+                            </ProtectedRoute>
+                        }
+                    />
+                </Routes>
+            </main>
+            {showCookieModal && (
+                <CookieConsentModal
+                    onAcceptAll={() => saveConsent('all')}
+                    onAcceptNecessary={() => saveConsent('necessary')}
+                />
+            )}
+            <FooterHintArrow hidden={showCookieModal} />
+            <ToastContainer
+                toastClassName="timetotask-toast"
+                bodyClassName="timetotask-toast-body"
+                progressClassName="timetotask-toast-progress"
+                position="top-right"
+                autoClose={2200}
+                hideProgressBar={false}
+                newestOnTop
+                closeOnClick
+                pauseOnHover
+                draggable
+                theme={theme === 'dark' ? 'dark' : 'light'}
+            />
+            <Footer />
+        </Router>
+    );
+};
+
+const App = () => {
+    return (
         <GlobalProvider>
             <LanguageProvider>
-                <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-                    <Header />
-                    <main className="flex-grow">
-                        <Routes>
-                            <Route path="/" element={<Home />} />
-                            <Route path="/login" element={<Home />} />
-                            <Route path="/register" element={<Home />} />
-                            <Route path="/cookies" element={<CookiesPolicy />} />
-                            <Route
-                                path="/dashboard"
-                                element={
-                                    <ProtectedRoute>
-                                        <Dashboard />
-                                    </ProtectedRoute>
-                                }
-                            />
-                            <Route
-                                path="/projects"
-                                element={
-                                    <ProtectedRoute>
-                                        <Projects />
-                                    </ProtectedRoute>
-                                }
-                            />
-                            <Route
-                                path="/board"
-                                element={
-                                    <ProtectedRoute>
-                                        <Board />
-                                    </ProtectedRoute>
-                                }
-                            />
-                        </Routes>
-                    </main>
-                    {showCookieModal && (
-                        <CookieConsentModal
-                            onAcceptAll={() => saveConsent('all')}
-                            onAcceptNecessary={() => saveConsent('necessary')}
-                        />
-                    )}
-                    <FooterHintArrow hidden={showCookieModal} />
-                    <ToastContainer
-                        toastClassName="timetotask-toast"
-                        bodyClassName="timetotask-toast-body"
-                        progressClassName="timetotask-toast-progress"
-                        position="top-right"
-                        autoClose={2200}
-                        hideProgressBar={false}
-                        newestOnTop
-                        closeOnClick
-                        pauseOnHover
-                        draggable
-                        theme="dark"
-                    />
-                    <Footer />
-                </Router>
+                <ThemeProvider>
+                    <AppShell />
+                </ThemeProvider>
             </LanguageProvider>
         </GlobalProvider>
     );
