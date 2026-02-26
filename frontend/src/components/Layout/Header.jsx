@@ -29,7 +29,7 @@ const Header = () => {
                 <div className="flex justify-between items-center">
                     {/* Logo */}
                     <Link to={isAuthenticated ? "/dashboard" : "/"} className="flex items-center gap-3 group">
-                        <div className={`w-11 h-11 ${isLightTheme ? 'bg-gradient-to-br from-[#7b6740] to-[#a58a53] border-[#6e5b38]/60' : (isHomePage ? 'bg-white/20 backdrop-blur-lg border-white/35' : 'bg-gradient-to-br from-primary-400 to-secondary-400 border-white/35')} rounded-xl flex items-center justify-center transform group-hover:scale-110 transition-transform border shadow-lg`}>
+                        <div className={`w-11 h-11 ${isLightTheme ? 'bg-gradient-to-br from-[#5B8E7D] to-[#8CB369] border-[#4E7C6D]/60' : (isHomePage ? 'bg-white/20 backdrop-blur-lg border-white/35' : 'bg-gradient-to-br from-primary-400 to-secondary-400 border-white/35')} rounded-xl flex items-center justify-center transform group-hover:scale-110 transition-transform border shadow-lg`}>
                             <i className="fas fa-tasks text-white text-lg"></i>
                         </div>
                         <span className={`font-display-title text-2xl tracking-wide font-bold drop-shadow-md ${isLightTheme ? 'text-[#1f2937]' : 'bg-gradient-to-r from-white via-[#F4E285] to-[#F4A259] bg-clip-text text-transparent'}`}>
@@ -88,7 +88,7 @@ const Header = () => {
                                     <li>
                                         <Link
                                             to="/register"
-                                            className={`px-5 py-2 ${isLightTheme ? 'bg-[#7b6740] text-white hover:bg-[#685532]' : (isHomePage ? 'bg-primary-400 text-white hover:bg-primary-500' : 'bg-primary-400 text-white hover:bg-primary-500')} rounded-lg font-bold transition-all transform hover:scale-105 shadow-lg`}
+                                            className={`px-5 py-2 ${isLightTheme ? 'bg-gradient-to-br from-[#5B8E7D] to-[#8CB369] text-white hover:from-[#4E7C6D] hover:to-[#7AA65A]' : (isHomePage ? 'bg-primary-400 text-white hover:bg-primary-500' : 'bg-primary-400 text-white hover:bg-primary-500')} rounded-lg font-bold transition-all transform hover:scale-105 shadow-lg`}
                                         >
                                             <i className="fas fa-user-plus mr-1"></i>
                                             {t('register')}

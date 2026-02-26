@@ -48,9 +48,15 @@ const Home = () => {
                     <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16 animate-slide-up animation-delay-600">
                         <Link
                             to="/register"
-                            className="group relative px-10 py-5 bg-gradient-to-br from-primary-400 to-secondary-400 text-white rounded-xl font-bold text-lg shadow-2xl hover:shadow-primary-300/40 transform hover:scale-110 transition-all duration-300 w-full sm:w-auto overflow-hidden"
+                            className={`group relative px-10 py-5 text-white rounded-xl font-bold text-lg shadow-2xl transform hover:scale-110 transition-all duration-300 w-full sm:w-auto overflow-hidden ${theme === 'light'
+                                ? 'bg-gradient-to-br from-[#5B8E7D] to-[#8CB369] hover:shadow-[#5B8E7D]/40'
+                                : 'bg-gradient-to-br from-primary-400 to-secondary-400 hover:shadow-primary-300/40'
+                                }`}
                         >
-                            <div className="absolute inset-0 bg-gradient-to-r from-accent-300 to-secondary-300 opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                            <div className={`absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity ${theme === 'light'
+                                ? 'bg-gradient-to-r from-[#8CB369] to-[#B6D1C7]'
+                                : 'bg-gradient-to-r from-accent-300 to-secondary-300'
+                                }`}></div>
                             <span className="relative flex items-center justify-center gap-2">
                                 <i className="fas fa-rocket text-xl"></i>
                                 <span>{t('beginFree')}</span>
@@ -175,7 +181,10 @@ const Home = () => {
                         <p className="text-gray-200 light-theme-muted mb-6">{t('startSmartly')}</p>
                         <Link
                             to="/register"
-                            className="inline-flex items-center gap-3 px-12 py-5 bg-gradient-to-br from-primary-400 via-primary-500 to-secondary-400 text-white rounded-xl font-semibold text-lg shadow-2xl hover:shadow-primary-300/60 transform hover:scale-110 hover:-rotate-1 transition-all duration-300"
+                            className={`inline-flex items-center gap-3 px-12 py-5 text-white rounded-xl font-semibold text-lg shadow-2xl transform hover:scale-110 hover:-rotate-1 transition-all duration-300 ${theme === 'light'
+                                ? 'bg-gradient-to-br from-[#5B8E7D] via-[#6FA08E] to-[#8CB369] hover:shadow-[#5B8E7D]/60'
+                                : 'bg-gradient-to-br from-primary-400 via-primary-500 to-secondary-400 hover:shadow-primary-300/60'
+                                }`}
                         >
                             <i className="fas fa-user-plus text-xl"></i>
                             {t('register')}
