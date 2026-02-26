@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 const FOOTER_ID = 'app-footer';
 
 export default function FooterHintArrow({ hidden = false }) {
     const [showHint, setShowHint] = useState(false);
+    const { pathname, search } = useLocation();
+    const isInDevelopmentPage = pathname === '/en-desarrollo';
 
     useEffect(() => {
         const updateVisibility = () => {
@@ -20,17 +23,18 @@ export default function FooterHintArrow({ hidden = false }) {
             setShowHint(!isFooterVisible);
         };
 
-        updateVisibility();
+        const frame = requestAnimationFrame(updateVisibility);
         window.addEventListener('scroll', updateVisibility, { passive: true });
         window.addEventListener('resize', updateVisibility);
 
         return () => {
+            cancelAnimationFrame(frame);
             window.removeEventListener('scroll', updateVisibility);
             window.removeEventListener('resize', updateVisibility);
         };
-    }, []);
+    }, [pathname, search]);
 
-    if (hidden || !showHint) {
+    if (hidden || isInDevelopmentPage || !showHint) {
         return null;
     }
 
