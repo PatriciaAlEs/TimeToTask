@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { GlobalProvider } from './store';
@@ -15,40 +15,39 @@ import Dashboard from './pages/Dashboard';
 import Projects from './pages/Projects';
 import Board from './pages/Board';
 import CookiesPolicy from './pages/CookiesPolicy';
+import InDevelopmentPage from './pages/InDevelopment';
 
 const COOKIE_CONSENT_KEY = 'cookie_consent_status';
 
-const AppShell = () => {
-    const { theme } = useTheme();
-    const [showCookieModal, setShowCookieModal] = useState(false);
+const ScrollToTop = () => {
+    const { pathname, search } = useLocation();
 
     useEffect(() => {
-        const consent = localStorage.getItem(COOKIE_CONSENT_KEY);
-        if (!consent) {
-            setShowCookieModal(true);
-        }
-    }, []);
+        window.scrollTo({ top: 0, behavior: 'auto' });
+    }, [pathname, search]);
 
-    const saveConsent = (value) => {
-        localStorage.setItem(
-            COOKIE_CONSENT_KEY,
-            JSON.stringify({
-                value,
-                acceptedAt: new Date().toISOString(),
-            })
-        );
-        setShowCookieModal(false);
-    };
+    return null;
+};
+
+const AppLayout = ({ showCookieModal, saveConsent, theme }) => {
+    const location = useLocation();
+    const isInDevelopmentRoute = location.pathname === '/en-desarrollo';
 
     return (
-        <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <>
+            <ScrollToTop />
             <Header />
-            <main className="flex-grow">
+            <main
+                className={`flex-grow ${isInDevelopmentRoute
+                    ? `${theme === 'dark' ? 'bg-gradient-to-br from-[#1E1E1E] via-[#2B2B2B] to-[#000000]' : 'bg-[#DDE3EA]'}`
+                    : ''}`}
+            >
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/login" element={<Home />} />
                     <Route path="/register" element={<Home />} />
                     <Route path="/cookies" element={<CookiesPolicy />} />
+                    <Route path="/en-desarrollo" element={<InDevelopmentPage />} />
                     <Route
                         path="/dashboard"
                         element={
@@ -96,6 +95,35 @@ const AppShell = () => {
                 theme={theme === 'dark' ? 'dark' : 'light'}
             />
             <Footer />
+        </>
+    );
+};
+
+const AppShell = () => {
+    const { theme } = useTheme();
+    const [showCookieModal, setShowCookieModal] = useState(false);
+
+    useEffect(() => {
+        const consent = localStorage.getItem(COOKIE_CONSENT_KEY);
+        if (!consent) {
+            setShowCookieModal(true);
+        }
+    }, []);
+
+    const saveConsent = (value) => {
+        localStorage.setItem(
+            COOKIE_CONSENT_KEY,
+            JSON.stringify({
+                value,
+                acceptedAt: new Date().toISOString(),
+            })
+        );
+        setShowCookieModal(false);
+    };
+
+    return (
+        <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+            <AppLayout showCookieModal={showCookieModal} saveConsent={saveConsent} theme={theme} />
         </Router>
     );
 };
