@@ -9,9 +9,25 @@ import { Card, CardHeader, CardTitle, CardBody, CardFooter } from '../common/Car
 import { Button, ButtonPrimary, ButtonSecondary, ButtonDanger } from '../common/Buttons';
 import { Input, Textarea, Select } from '../common/Inputs';
 import { Row } from '../common/Layout';
+import { useModalDismiss } from '../../hooks/useModalDismiss.jsx';
 
-export function TaskModal({ task, isOpen, onClose, onSave, onDelete }) {
+export function TaskModal({
+    task,
+    isOpen,
+    onClose,
+    onSave,
+    onDelete,
+    closeOnEsc = true,
+    closeOnBackdrop = true,
+}) {
     const [formData, setFormData] = useState(task || {});
+
+    const { handleBackdropMouseDown } = useModalDismiss({
+        isOpen,
+        onClose,
+        closeOnEsc,
+        closeOnBackdrop,
+    });
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -28,6 +44,7 @@ export function TaskModal({ task, isOpen, onClose, onSave, onDelete }) {
             {isOpen && (
                 <motion.div
                     className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+                    onMouseDown={handleBackdropMouseDown}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}

@@ -16,6 +16,8 @@ export function KanbanColumn({
     onTaskDrop,
     onAddTask,
     onEditTask,
+    onCompleteTask,
+    onDiscardTask,
 }) {
     const { t } = useLanguage();
     const { theme: appTheme } = useTheme();
@@ -60,7 +62,7 @@ export function KanbanColumn({
                 tasks.map((task) => (
                     <div
                         key={task.id}
-                        className="backdrop-blur-sm rounded-lg p-3 border-2 transition-all cursor-pointer group hover:opacity-90"
+                        className={`backdrop-blur-sm rounded-lg p-3 border-2 transition-all cursor-pointer group hover:opacity-90 ${task.completed ? 'opacity-85' : ''}`}
                         style={taskStyle}
                         draggable
                         onDragStart={(event) => onTaskDragStart && onTaskDragStart(event, task.id)}
@@ -79,10 +81,16 @@ export function KanbanColumn({
                                     {task.priority}
                                 </span>
                             )}
+
+                            {task.completed && (
+                                <span className="text-xs font-bold px-2 py-1 rounded-full border bg-[#8CB369]/25 border-[#8CB369]/45 text-[#EAF4E2]">
+                                    Finalizada
+                                </span>
+                            )}
                         </div>
 
                         {/* Title */}
-                        <h4 className="font-bold text-white mb-2 group-hover:text-white/85 transition-colors line-clamp-2 text-sm">
+                        <h4 className={`font-bold text-white mb-2 group-hover:text-white/85 transition-colors line-clamp-2 text-sm ${task.completed ? 'line-through opacity-80' : ''}`}>
                             {task.title || task.name}
                         </h4>
 
@@ -104,6 +112,37 @@ export function KanbanColumn({
                                     {task.assignee.charAt(0).toUpperCase()}
                                 </div>
                             )}
+                        </div>
+
+                        <div className="mt-2 flex items-center justify-end gap-2">
+                            {!task.completed && (
+                                <button
+                                    type="button"
+                                    onClick={(event) => {
+                                        event.stopPropagation();
+                                        onDiscardTask && onDiscardTask(task.id);
+                                    }}
+                                    className="text-[11px] font-bold px-2 py-1 rounded-md border transition-all bg-[#1E1E1E]/45 border-white/25 text-white hover:bg-[#F4A259]/20 hover:border-[#F4A259]/50"
+                                >
+                                    Descartar
+                                </button>
+                            )}
+
+                            <button
+                                type="button"
+                                onClick={(event) => {
+                                    event.stopPropagation();
+                                    if (!task.completed) {
+                                        onCompleteTask && onCompleteTask(task.id);
+                                    }
+                                }}
+                                disabled={task.completed}
+                                className={`text-[11px] font-bold px-2 py-1 rounded-md border transition-all ${task.completed
+                                    ? 'bg-[#8CB369]/25 border-[#8CB369]/45 text-[#EAF4E2] cursor-default'
+                                    : 'bg-[#1E1E1E]/45 border-white/25 text-white hover:bg-[#8CB369]/20 hover:border-[#8CB369]/50'}`}
+                            >
+                                {task.completed ? 'Finalizada' : 'Finalizar'}
+                            </button>
                         </div>
                     </div>
                 ))

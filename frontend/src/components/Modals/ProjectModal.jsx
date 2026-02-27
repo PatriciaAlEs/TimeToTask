@@ -5,8 +5,18 @@
 import React, { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { DEFAULT_PROJECT_COLOR, PROJECT_COLOR_OPTIONS, resolveProjectColorVisual } from '../../config/projectColors';
+import { useModalDismiss } from '../../hooks/useModalDismiss.jsx';
 
-export function ProjectModal({ isOpen, onClose, onSubmit, initialData = null, mode = 'create' }) {
+export function ProjectModal({
+    isOpen,
+    onClose,
+    onSubmit,
+    initialData = null,
+    mode = 'create',
+    isSubmitting = false,
+    closeOnEsc = true,
+    closeOnBackdrop = true,
+}) {
     const initialFormState = {
         name: '',
         description: '',
@@ -45,6 +55,13 @@ export function ProjectModal({ isOpen, onClose, onSubmit, initialData = null, mo
         borderColor: activeColorVisual.cardBorder,
     };
 
+    const { handleBackdropMouseDown } = useModalDismiss({
+        isOpen,
+        onClose,
+        closeOnEsc: closeOnEsc && !isSubmitting,
+        closeOnBackdrop: closeOnBackdrop && !isSubmitting,
+    });
+
     useEffect(() => {
         if (!isOpen) {
             return;
@@ -71,15 +88,13 @@ export function ProjectModal({ isOpen, onClose, onSubmit, initialData = null, mo
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const payload = {
             ...formData,
             color: formData.color === 'custom' ? formData.customColor : formData.color,
         };
-        onSubmit(payload);
-        setFormData({ ...initialFormState });
-        onClose();
+        await onSubmit(payload);
     };
 
     return (
@@ -87,6 +102,7 @@ export function ProjectModal({ isOpen, onClose, onSubmit, initialData = null, mo
             {isOpen && (
                 <motion.div
                     className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+                    onMouseDown={handleBackdropMouseDown}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
@@ -107,6 +123,7 @@ export function ProjectModal({ isOpen, onClose, onSubmit, initialData = null, mo
                             </h2>
                             <button
                                 onClick={onClose}
+                                disabled={isSubmitting}
                                 className="text-white/70 hover:text-white text-2xl transition-colors"
                             >
                                 ✕
@@ -128,6 +145,7 @@ export function ProjectModal({ isOpen, onClose, onSubmit, initialData = null, mo
                                     onChange={handleChange}
                                     placeholder="Ej: Mi App Web"
                                     required
+                                    disabled={isSubmitting}
                                     className="w-full px-4 py-3 backdrop-blur-sm border rounded-xl text-white placeholder-gray-300 focus:outline-none transition-all"
                                     style={inputStyle}
                                 />
@@ -145,6 +163,7 @@ export function ProjectModal({ isOpen, onClose, onSubmit, initialData = null, mo
                                     onChange={handleChange}
                                     placeholder="¿En qué consiste este proyecto?"
                                     rows="3"
+                                    disabled={isSubmitting}
                                     className="w-full px-4 py-3 backdrop-blur-sm border rounded-xl text-white placeholder-gray-300 focus:outline-none transition-all resize-none"
                                     style={inputStyle}
                                 ></textarea>
@@ -185,6 +204,7 @@ export function ProjectModal({ isOpen, onClose, onSubmit, initialData = null, mo
                                             key={color.value}
                                             type="button"
                                             onClick={() => setFormData((prev) => ({ ...prev, color: color.value }))}
+                                            disabled={isSubmitting}
                                             className={`h-10 rounded-lg border-2 transition-all transform hover:scale-110 ${color.value === 'custom' ? 'bg-white/10' : ''} ${formData.color === color.value ? 'border-white scale-110' : 'border-transparent'}`}
                                             style={color.value !== 'custom' ? { background: `linear-gradient(135deg, ${color.start}, ${color.end})` } : undefined}
                                             title={color.name}
@@ -205,6 +225,7 @@ export function ProjectModal({ isOpen, onClose, onSubmit, initialData = null, mo
                                             name="customColor"
                                             value={formData.customColor}
                                             onChange={handleChange}
+                                            disabled={isSubmitting}
                                             className="h-10 w-14 cursor-pointer rounded border border-white/20 bg-transparent"
                                         />
                                         <div className="flex-1">
@@ -220,6 +241,7 @@ export function ProjectModal({ isOpen, onClose, onSubmit, initialData = null, mo
                                 <button
                                     type="button"
                                     onClick={onClose}
+                                    disabled={isSubmitting}
                                     className="flex-1 py-3 px-4 hover:bg-white/20 text-white rounded-xl font-bold transition-all border"
                                     style={{ borderColor: activeColorVisual.border, backgroundColor: 'rgba(15, 23, 42, 0.35)' }}
                                 >
@@ -227,11 +249,12 @@ export function ProjectModal({ isOpen, onClose, onSubmit, initialData = null, mo
                                 </button>
                                 <button
                                     type="submit"
-                                    className="flex-1 py-3 px-4 text-white rounded-xl font-bold transition-all shadow-lg transform hover:scale-105 border"
+                                    disabled={isSubmitting}
+                                    className="flex-1 py-3 px-4 text-white rounded-xl font-bold transition-all shadow-lg transform hover:scale-105 border disabled:opacity-60 disabled:cursor-not-allowed"
                                     style={submitButtonStyle}
                                 >
                                     <i className={`fas ${mode === 'edit' ? 'fa-pen' : 'fa-plus'} mr-2`}></i>
-                                    {mode === 'edit' ? 'Guardar cambios' : 'Crear'}
+                                    {isSubmitting ? 'Guardando...' : mode === 'edit' ? 'Guardar cambios' : 'Crear'}
                                 </button>
                             </div>
                         </form>

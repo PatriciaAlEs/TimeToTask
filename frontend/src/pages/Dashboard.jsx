@@ -13,8 +13,11 @@ import { AddTaskModal } from '../components/Modals/AddTaskModal';
 import { ProjectModal } from '../components/Modals/ProjectModal';
 import { useTasks } from '../hooks/useTasks.jsx';
 import { useProjects } from '../hooks/useProjects.jsx';
+import { get } from '../services/api';
 import { TASK_TYPES, TASK_TYPE_SOFT_THEME } from '../config/taskTypes';
 import { getCurrentWeather, getWeatherIconUrl } from '../services/weatherService';
+
+const ACTIVITY_PAGE_SIZE = 8;
 
 function PieChart({ segments, total, size = 88, showSliceValues = false }) {
     const radius = size / 2;
@@ -130,6 +133,12 @@ export default function DashboardPage() {
     const [weather, setWeather] = useState(null);
     const [weatherLoading, setWeatherLoading] = useState(false);
     const [weatherError, setWeatherError] = useState('');
+    const [recentActivities, setRecentActivities] = useState([]);
+    const [activitiesLoading, setActivitiesLoading] = useState(false);
+    const [activitiesError, setActivitiesError] = useState('');
+    const [activitiesPage, setActivitiesPage] = useState(1);
+    const [activitiesHasMore, setActivitiesHasMore] = useState(false);
+    const [activitiesLoadingMore, setActivitiesLoadingMore] = useState(false);
     const [weatherLocationSource, setWeatherLocationSource] = useState('city');
     const weatherDetailsQuery = encodeURIComponent((weather?.city || configuredWeatherCity || '').replace(',', ' '));
     const weatherDetailsUrl = `https://openweathermap.org/find?q=${weatherDetailsQuery}`;
@@ -196,6 +205,51 @@ export default function DashboardPage() {
         const intervalId = setInterval(fetchWeather, 1000 * 60 * 15);
         return () => clearInterval(intervalId);
     }, [language]);
+
+    const fetchRecentActivities = async (page = 1, { append = false } = {}) => {
+        try {
+            if (append) {
+                setActivitiesLoadingMore(true);
+            } else {
+                setActivitiesLoading(true);
+            }
+            setActivitiesError('');
+            const response = await get(`/activities?limit=${ACTIVITY_PAGE_SIZE}&page=${page}`);
+            const items = Array.isArray(response?.items) ? response.items : [];
+            const total = Number(response?.total) || 0;
+            const resolvedLimit = Number(response?.limit) || ACTIVITY_PAGE_SIZE;
+            const hasMore = page * resolvedLimit < total;
+
+            setRecentActivities((prev) => (append ? [...prev, ...items] : items));
+            setActivitiesPage(page);
+            setActivitiesHasMore(hasMore);
+        } catch (error) {
+            setActivitiesError(error.message || 'No se pudo cargar la actividad reciente.');
+            if (!append) {
+                setRecentActivities([]);
+                setActivitiesPage(1);
+                setActivitiesHasMore(false);
+            }
+        } finally {
+            if (append) {
+                setActivitiesLoadingMore(false);
+            } else {
+                setActivitiesLoading(false);
+            }
+        }
+    };
+
+    useEffect(() => {
+        fetchRecentActivities(1, { append: false });
+    }, [tasks]);
+
+    const handleLoadMoreActivities = () => {
+        if (activitiesLoading || activitiesLoadingMore || !activitiesHasMore) {
+            return;
+        }
+
+        fetchRecentActivities(activitiesPage + 1, { append: true });
+    };
 
     const showSuccessToast = (message) => {
         toast.success(message, {
@@ -469,15 +523,6 @@ export default function DashboardPage() {
         return null;
     }
 
-    const recentUpdates = [...tasks]
-        .filter((task) => task.updated_at || task.updatedAt || task.created_at || task.createdAt)
-        .sort((firstTask, secondTask) => {
-            const firstDate = parseTaskTimestamp(firstTask.updated_at || firstTask.updatedAt || firstTask.created_at || firstTask.createdAt) || new Date(0);
-            const secondDate = parseTaskTimestamp(secondTask.updated_at || secondTask.updatedAt || secondTask.created_at || secondTask.createdAt) || new Date(0);
-            return secondDate - firstDate;
-        })
-        .slice(0, 8);
-
     const getTimeAgoLabel = (dateValue) => {
         const date = dateValue instanceof Date ? dateValue : new Date(dateValue);
         const timestamp = date.getTime();
@@ -511,14 +556,33 @@ export default function DashboardPage() {
         return `Hace ${days} día${days === 1 ? '' : 's'}`;
     };
 
-    const latestUpdateDate = recentUpdates.length > 0
-        ? parseTaskTimestamp(
-            recentUpdates[0].updated_at ||
-            recentUpdates[0].updatedAt ||
-            recentUpdates[0].created_at ||
-            recentUpdates[0].createdAt
-        )
+    const latestUpdateDate = recentActivities.length > 0
+        ? parseTaskTimestamp(recentActivities[0].created_at)
         : null;
+
+    const getActivityVisuals = (activityType) => {
+        if (activityType === 'task_created') {
+            return {
+                icon: 'fa-plus-circle',
+                accent: '#8CB369',
+                label: 'Creación',
+            };
+        }
+
+        if (activityType === 'status_changed') {
+            return {
+                icon: 'fa-sync-alt',
+                accent: '#F4E285',
+                label: 'Estado',
+            };
+        }
+
+        return {
+            icon: 'fa-history',
+            accent: '#B6D1C7',
+            label: 'Actividad',
+        };
+    };
 
     return (
         <div className={`min-h-screen ${theme === 'dark' ? 'bg-gradient-to-br from-[#1E1E1E] via-[#2B2B2B] to-[#000000]' : 'light-theme-page'}`}>
@@ -887,7 +951,7 @@ export default function DashboardPage() {
                             <div className="mb-3 flex items-center justify-between">
                                 <h3 className="text-lg font-semibold text-[#EAF4E2]">
                                     <i className="fas fa-history mr-2"></i>
-                                    {t('latestUpdates')}
+                                    Actividad reciente
                                 </h3>
                                 <span className="text-sm font-semibold text-white/80">
                                     {latestUpdateDate && !Number.isNaN(latestUpdateDate.getTime())
@@ -896,17 +960,19 @@ export default function DashboardPage() {
                                 </span>
                             </div>
 
-                            {recentUpdates.length > 0 ? (
+                            {activitiesLoading ? (
+                                <p className="text-sm text-white/70">Cargando actividad...</p>
+                            ) : activitiesError ? (
+                                <p className="text-sm text-white/70">No se pudo cargar la actividad reciente.</p>
+                            ) : recentActivities.length > 0 ? (
                                 <div className="space-y-2">
-                                    {recentUpdates.map((task) => {
-                                        const typeConfig = TASK_TYPES[task.type] || TASK_TYPES.feature;
-                                        const typeTheme = TASK_TYPE_SOFT_THEME[task.type] || TASK_TYPE_SOFT_THEME.default;
-                                        const updatedDate = parseTaskTimestamp(task.updated_at || task.updatedAt || task.created_at || task.createdAt);
-                                        const wasCompleted = isTaskCompleted(task);
+                                    {recentActivities.map((activity) => {
+                                        const visual = getActivityVisuals(activity.type);
+                                        const updatedDate = parseTaskTimestamp(activity.created_at);
 
                                         return (
                                             <div
-                                                key={`update-${task.id}`}
+                                                key={`activity-${activity.id}`}
                                                 className="flex items-center justify-between rounded-xl border px-3 py-2"
                                                 style={{
                                                     borderColor: 'rgba(140, 179, 105, 0.35)',
@@ -914,18 +980,34 @@ export default function DashboardPage() {
                                                 }}
                                             >
                                                 <div className="min-w-0">
-                                                    <p className="line-clamp-1 text-sm font-semibold text-white">{task.title || task.name}</p>
-                                                    <p className="text-xs font-semibold" style={{ color: typeTheme.headerFrom }}>{typeConfig.name}</p>
+                                                    <p className="line-clamp-1 text-sm font-semibold text-white">{activity.message}</p>
+                                                    <p className="text-xs font-semibold" style={{ color: visual.accent }}>
+                                                        <i className={`fas ${visual.icon} mr-1`}></i>
+                                                        {visual.label}
+                                                    </p>
                                                 </div>
                                                 <div className="ml-3 text-right">
                                                     <p className="text-[11px] text-white/70">{getTimeAgoLabel(updatedDate)}</p>
-                                                    <p className={`text-xs font-bold ${wasCompleted ? 'text-[#8CB369]' : 'text-[#F4E285]'}`}>
-                                                        {wasCompleted ? t('completed') : t('updated')}
+                                                    <p className="text-xs font-bold text-[#B6D1C7]">
+                                                        #{activity.id}
                                                     </p>
                                                 </div>
                                             </div>
                                         );
                                     })}
+
+                                    {activitiesHasMore && (
+                                        <div className="pt-2 flex justify-center">
+                                            <button
+                                                type="button"
+                                                onClick={handleLoadMoreActivities}
+                                                disabled={activitiesLoadingMore}
+                                                className="rounded-lg border border-[#F4E285]/45 px-3 py-1 text-xs font-semibold text-[#FFF6D0] transition hover:bg-[#F4E285]/12 disabled:opacity-60 disabled:cursor-not-allowed"
+                                            >
+                                                {activitiesLoadingMore ? 'Cargando...' : 'Ver más'}
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             ) : (
                                 <p className="text-sm text-white/70">{t('noUpdatesYet')}</p>
@@ -936,6 +1018,7 @@ export default function DashboardPage() {
                     {/* Modales */}
                     <AddTaskModal
                         isOpen={showAddTaskModal}
+                        isSubmitting={isLoadingForm}
                         onClose={() => {
                             setShowAddTaskModal(false);
                             setErrorForm(null);
@@ -959,6 +1042,7 @@ export default function DashboardPage() {
 
                     <ProjectModal
                         isOpen={showAddProjectModal}
+                        isSubmitting={isLoadingForm}
                         mode={projectToEdit ? 'edit' : 'create'}
                         initialData={projectToEdit}
                         onClose={() => {

@@ -159,6 +159,7 @@ export default function ProjectsPage() {
 
                     <ProjectModal
                         isOpen={showEditProjectModal}
+                        isSubmitting={loading}
                         mode="edit"
                         initialData={projectToEdit}
                         onClose={() => {

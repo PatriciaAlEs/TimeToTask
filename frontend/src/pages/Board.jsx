@@ -18,6 +18,7 @@ import { TASK_TYPES, TASK_TYPE_SOFT_THEME } from '../config/taskTypes';
 import api from '../services/api';
 
 export default function BoardPage() {
+    const archivedPreviewLimit = 5;
     const { projects } = useGlobalContext();
     const { t } = useLanguage();
     const { theme } = useTheme();
@@ -31,6 +32,20 @@ export default function BoardPage() {
     const [showEditTaskModal, setShowEditTaskModal] = useState(false);
     const [selectedTaskToEdit, setSelectedTaskToEdit] = useState(null);
     const [showBoardInfo, setShowBoardInfo] = useState(false);
+    const [showArchivedTasks, setShowArchivedTasks] = useState(false);
+    const [showAllFinalized, setShowAllFinalized] = useState(false);
+    const [showAllDiscarded, setShowAllDiscarded] = useState(false);
+
+    const isArchivedTask = (task) => {
+        const normalizedStatus = String(task?.status || '').toLowerCase();
+        return (
+            task?.completed === true ||
+            normalizedStatus === 'done' ||
+            normalizedStatus === 'completed' ||
+            normalizedStatus === 'discarded' ||
+            normalizedStatus === 'cancelled'
+        );
+    };
 
     const showSuccessToast = (message) => {
         toast.success(message, {
@@ -44,6 +59,81 @@ export default function BoardPage() {
             className: 'timetotask-toast timetotask-toast-error',
             icon: '⚠️',
         });
+    };
+
+    const handleCompleteTask = async (taskId) => {
+        const targetTask = tasks.find((task) => task.id === taskId);
+        if (!targetTask || targetTask.completed === true) {
+            return;
+        }
+
+        const previousTasks = tasks;
+        const nextTasks = tasks.map((task) =>
+            task.id === taskId
+                ? { ...task, completed: true, status: 'done', updated_at: new Date().toISOString() }
+                : task
+        );
+
+        setTasks(nextTasks);
+
+        try {
+            await updateTaskData(taskId, { completed: true, status: 'done' });
+            showSuccessToast('Tarea finalizada');
+        } catch (error) {
+            setTasks(previousTasks);
+            showErrorToast('No se pudo finalizar la tarea');
+            console.error('Error finishing task:', error);
+        }
+    };
+
+    const handleDiscardTask = async (taskId) => {
+        const targetTask = tasks.find((task) => task.id === taskId);
+        if (!targetTask || String(targetTask.status).toLowerCase() === 'discarded') {
+            return;
+        }
+
+        const previousTasks = tasks;
+        const nextTasks = tasks.map((task) =>
+            task.id === taskId
+                ? { ...task, completed: false, status: 'discarded', updated_at: new Date().toISOString() }
+                : task
+        );
+
+        setTasks(nextTasks);
+
+        try {
+            await updateTaskData(taskId, { completed: false, status: 'discarded' });
+            showSuccessToast('Tarea descartada');
+        } catch (error) {
+            setTasks(previousTasks);
+            showErrorToast('No se pudo descartar la tarea');
+            console.error('Error discarding task:', error);
+        }
+    };
+
+    const handleRestoreTask = async (taskId) => {
+        const targetTask = tasks.find((task) => task.id === taskId);
+        if (!targetTask) {
+            return;
+        }
+
+        const previousTasks = tasks;
+        const nextTasks = tasks.map((task) =>
+            task.id === taskId
+                ? { ...task, completed: false, status: 'backlog', updated_at: new Date().toISOString() }
+                : task
+        );
+
+        setTasks(nextTasks);
+
+        try {
+            await updateTaskData(taskId, { completed: false, status: 'backlog' });
+            showSuccessToast('Tarea reabierta');
+        } catch (error) {
+            setTasks(previousTasks);
+            showErrorToast('No se pudo reabrir la tarea');
+            console.error('Error restoring task:', error);
+        }
     };
 
     const queryParams = new URLSearchParams(location.search);
@@ -98,9 +188,24 @@ export default function BoardPage() {
     }, [activeProjectId]);
 
     // Agrupar tareas por tipo
+    const activeTasks = tasks.filter((task) => !isArchivedTask(task));
+    const archivedTasks = [...tasks]
+        .filter((task) => isArchivedTask(task))
+        .sort((a, b) => {
+            const aDate = new Date(a.updated_at || a.updatedAt || a.created_at || a.createdAt || 0);
+            const bDate = new Date(b.updated_at || b.updatedAt || b.created_at || b.createdAt || 0);
+            return bDate - aDate;
+        });
+    const discardedTasks = archivedTasks.filter(
+        (task) => String(task.status || '').toLowerCase() === 'discarded'
+    );
+    const finalizedTasks = archivedTasks.filter(
+        (task) => String(task.status || '').toLowerCase() !== 'discarded'
+    );
+
     const tasksByType = {};
     Object.keys(TASK_TYPES).forEach((typeKey) => {
-        tasksByType[typeKey] = tasks.filter((t) => t.type === typeKey || (!t.type && typeKey === 'feature'));
+        tasksByType[typeKey] = activeTasks.filter((t) => t.type === typeKey || (!t.type && typeKey === 'feature'));
     });
 
     // Crear columnas dinámicas basadas en tipos de tareas
@@ -204,14 +309,128 @@ export default function BoardPage() {
                                         setErrorForm(null);
                                         setShowEditTaskModal(true);
                                     }}
+                                    onCompleteTask={handleCompleteTask}
+                                    onDiscardTask={handleDiscardTask}
                                 />
                             ))}
+                        </div>
+
+                        <div className="mt-4 rounded-xl border border-white/15 bg-black/15 px-4 py-3">
+                            <div className="flex items-center justify-between gap-3">
+                                <p className="text-sm font-semibold text-white/80">
+                                    Archivadas: <span className="text-[#F4E285]">{archivedTasks.length}</span>
+                                    <span className="ml-2 text-[#8CB369]">Finalizadas {finalizedTasks.length}</span>
+                                    <span className="ml-2 text-[#F4A259]">Descartadas {discardedTasks.length}</span>
+                                </p>
+                                <button
+                                    type="button"
+                                    onClick={() => setShowArchivedTasks((prev) => !prev)}
+                                    className="rounded-md border border-white/20 px-3 py-1 text-xs font-semibold text-white/85 transition hover:bg-white/10"
+                                >
+                                    {showArchivedTasks ? 'Ocultar' : 'Ver'}
+                                </button>
+                            </div>
+
+                            <AnimatePresence>
+                                {showArchivedTasks && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: -8 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -8 }}
+                                        transition={{ duration: 0.2 }}
+                                        className="mt-3 space-y-2"
+                                    >
+                                        {archivedTasks.length > 0 ? (
+                                            <>
+                                                <div>
+                                                    <p className="mb-1 text-xs font-bold uppercase tracking-wide text-[#8CB369]">Finalizadas</p>
+                                                    <div className="space-y-2">
+                                                        {(showAllFinalized ? finalizedTasks : finalizedTasks.slice(0, archivedPreviewLimit)).map((task) => (
+                                                            <div
+                                                                key={`archived-finalized-${task.id}`}
+                                                                className="flex items-center justify-between rounded-lg border border-white/10 bg-black/20 px-3 py-2"
+                                                            >
+                                                                <div className="min-w-0">
+                                                                    <p className="line-clamp-1 text-sm font-semibold text-white/90">{task.title || task.name}</p>
+                                                                    <p className="text-xs font-bold text-[#8CB369]">Finalizada</p>
+                                                                </div>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => handleRestoreTask(task.id)}
+                                                                    className="ml-3 rounded-md border border-white/20 px-2 py-1 text-[11px] font-bold text-white transition hover:bg-white/10"
+                                                                >
+                                                                    Reabrir
+                                                                </button>
+                                                            </div>
+                                                        ))}
+                                                        {finalizedTasks.length === 0 && (
+                                                            <p className="text-xs text-white/50">Sin tareas finalizadas.</p>
+                                                        )}
+                                                        {finalizedTasks.length > archivedPreviewLimit && (
+                                                            <div className="flex justify-end">
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => setShowAllFinalized((prev) => !prev)}
+                                                                    className="rounded-md border border-white/20 px-2 py-1 text-[11px] font-bold text-white transition hover:bg-white/10"
+                                                                >
+                                                                    {showAllFinalized ? 'Ver menos' : 'Ver todas'}
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+
+                                                <div className="pt-2">
+                                                    <p className="mb-1 text-xs font-bold uppercase tracking-wide text-[#F4A259]">Descartadas</p>
+                                                    <div className="space-y-2">
+                                                        {(showAllDiscarded ? discardedTasks : discardedTasks.slice(0, archivedPreviewLimit)).map((task) => (
+                                                            <div
+                                                                key={`archived-discarded-${task.id}`}
+                                                                className="flex items-center justify-between rounded-lg border border-white/10 bg-black/20 px-3 py-2"
+                                                            >
+                                                                <div className="min-w-0">
+                                                                    <p className="line-clamp-1 text-sm font-semibold text-white/90">{task.title || task.name}</p>
+                                                                    <p className="text-xs font-bold text-[#F4A259]">Descartada</p>
+                                                                </div>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => handleRestoreTask(task.id)}
+                                                                    className="ml-3 rounded-md border border-white/20 px-2 py-1 text-[11px] font-bold text-white transition hover:bg-white/10"
+                                                                >
+                                                                    Reabrir
+                                                                </button>
+                                                            </div>
+                                                        ))}
+                                                        {discardedTasks.length === 0 && (
+                                                            <p className="text-xs text-white/50">Sin tareas descartadas.</p>
+                                                        )}
+                                                        {discardedTasks.length > archivedPreviewLimit && (
+                                                            <div className="flex justify-end">
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => setShowAllDiscarded((prev) => !prev)}
+                                                                    className="rounded-md border border-white/20 px-2 py-1 text-[11px] font-bold text-white transition hover:bg-white/10"
+                                                                >
+                                                                    {showAllDiscarded ? 'Ver menos' : 'Ver todas'}
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <p className="text-xs text-white/60">No hay tareas archivadas.</p>
+                                        )}
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </div>
                     </div>
 
                     {/* Modal */}
                     <AddTaskModal
                         isOpen={showAddTaskModal}
+                        isSubmitting={isLoadingForm}
                         selectedTaskType={selectedTaskType}
                         onClose={() => {
                             setShowAddTaskModal(false);
@@ -245,6 +464,7 @@ export default function BoardPage() {
                     {/* Edit Modal */}
                     <EditTaskModal
                         isOpen={showEditTaskModal}
+                        isSubmitting={isLoadingForm}
                         selectedTaskType={selectedTaskType}
                         task={selectedTaskToEdit}
                         errorMessage={errorForm}

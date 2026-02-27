@@ -5,6 +5,7 @@
 import React, { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { TASK_TYPES, TASK_TYPE_SOFT_THEME, getTaskTypeList } from '../../config/taskTypes';
+import { useModalDismiss } from '../../hooks/useModalDismiss.jsx';
 
 const createInitialFormData = (taskType = 'feature') => ({
     title: '',
@@ -15,7 +16,16 @@ const createInitialFormData = (taskType = 'feature') => ({
     status: 'backlog',
 });
 
-export function AddTaskModal({ isOpen, onClose, onSubmit, projectId, selectedTaskType }) {
+export function AddTaskModal({
+    isOpen,
+    onClose,
+    onSubmit,
+    projectId,
+    selectedTaskType,
+    isSubmitting = false,
+    closeOnEsc = true,
+    closeOnBackdrop = true,
+}) {
     const [formData, setFormData] = useState(createInitialFormData(selectedTaskType || 'feature'));
 
     useEffect(() => {
@@ -55,16 +65,21 @@ export function AddTaskModal({ isOpen, onClose, onSubmit, projectId, selectedTas
         backgroundImage: `linear-gradient(135deg, ${selectedSoftTheme.headerFrom}, ${selectedSoftTheme.headerTo})`,
     };
 
+    const { handleBackdropMouseDown } = useModalDismiss({
+        isOpen,
+        onClose,
+        closeOnEsc: closeOnEsc && !isSubmitting,
+        closeOnBackdrop: closeOnBackdrop && !isSubmitting,
+    });
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        onSubmit({ ...formData, projectId });
-        setFormData(createInitialFormData(selectedTaskType || 'feature'));
-        onClose();
+        await onSubmit({ ...formData, projectId });
     };
 
     return (
@@ -72,6 +87,7 @@ export function AddTaskModal({ isOpen, onClose, onSubmit, projectId, selectedTas
             {isOpen && (
                 <motion.div
                     className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+                    onMouseDown={handleBackdropMouseDown}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
@@ -93,6 +109,7 @@ export function AddTaskModal({ isOpen, onClose, onSubmit, projectId, selectedTas
                             </div>
                             <button
                                 onClick={onClose}
+                                disabled={isSubmitting}
                                 className="text-white/70 hover:text-white text-2xl transition-colors"
                             >
                                 ✕
@@ -115,6 +132,7 @@ export function AddTaskModal({ isOpen, onClose, onSubmit, projectId, selectedTas
                                     onChange={handleChange}
                                     placeholder="Ej: Implementar login"
                                     required
+                                    disabled={isSubmitting}
                                     className="w-full px-4 py-3 border-2 rounded-xl text-white placeholder-gray-200 focus:outline-none transition-all"
                                     style={inputStyle}
                                 />
@@ -133,6 +151,7 @@ export function AddTaskModal({ isOpen, onClose, onSubmit, projectId, selectedTas
                                     onChange={handleChange}
                                     placeholder="Detalles de la tarea..."
                                     rows="3"
+                                    disabled={isSubmitting}
                                     className="w-full px-4 py-3 border-2 rounded-xl text-white placeholder-gray-200 focus:outline-none transition-all resize-none"
                                     style={inputStyle}
                                 />
@@ -149,6 +168,7 @@ export function AddTaskModal({ isOpen, onClose, onSubmit, projectId, selectedTas
                                     name="type"
                                     value={formData.type}
                                     onChange={handleChange}
+                                    disabled={isSubmitting}
                                     className="w-full px-4 py-3 border-2 rounded-xl text-white focus:outline-none transition-all"
                                     style={inputStyle}
                                 >
@@ -172,6 +192,7 @@ export function AddTaskModal({ isOpen, onClose, onSubmit, projectId, selectedTas
                                         name="priority"
                                         value={formData.priority}
                                         onChange={handleChange}
+                                        disabled={isSubmitting}
                                         className="w-full px-4 py-3 border-2 rounded-xl text-white focus:outline-none transition-all"
                                         style={inputStyle}
                                     >
@@ -193,6 +214,7 @@ export function AddTaskModal({ isOpen, onClose, onSubmit, projectId, selectedTas
                                         name="dueDate"
                                         value={formData.dueDate}
                                         onChange={handleChange}
+                                        disabled={isSubmitting}
                                         className="w-full px-4 py-3 border-2 rounded-xl text-white focus:outline-none transition-all"
                                         style={inputStyle}
                                     />
@@ -210,6 +232,7 @@ export function AddTaskModal({ isOpen, onClose, onSubmit, projectId, selectedTas
                                     name="status"
                                     value={formData.status}
                                     onChange={handleChange}
+                                    disabled={isSubmitting}
                                     className="w-full px-4 py-3 border-2 rounded-xl text-white focus:outline-none transition-all"
                                     style={inputStyle}
                                 >
@@ -226,6 +249,7 @@ export function AddTaskModal({ isOpen, onClose, onSubmit, projectId, selectedTas
                                 <button
                                     type="button"
                                     onClick={onClose}
+                                    disabled={isSubmitting}
                                     className="flex-1 py-3 px-4 border-2 text-white rounded-xl font-bold transition-all hover:bg-gray-900/60"
                                     style={secondaryButtonStyle}
                                 >
@@ -233,11 +257,12 @@ export function AddTaskModal({ isOpen, onClose, onSubmit, projectId, selectedTas
                                 </button>
                                 <button
                                     type="submit"
-                                    className="flex-1 py-3 px-4 text-white rounded-xl font-bold transition-all shadow-lg transform hover:scale-105 border-2"
+                                    disabled={isSubmitting}
+                                    className="flex-1 py-3 px-4 text-white rounded-xl font-bold transition-all shadow-lg transform hover:scale-105 border-2 disabled:opacity-60 disabled:cursor-not-allowed"
                                     style={primaryButtonStyle}
                                 >
                                     <i className="fas fa-plus mr-2"></i>
-                                    Agregar
+                                    {isSubmitting ? 'Agregando...' : 'Agregar'}
                                 </button>
                             </div>
                         </form>
