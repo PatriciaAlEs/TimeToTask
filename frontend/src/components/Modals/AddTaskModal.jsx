@@ -36,6 +36,8 @@ export function AddTaskModal({ isOpen, onClose, onSubmit, projectId, selectedTas
     const inputStyle = {
         backgroundColor: selectedSoftTheme.cardSurface,
         borderColor: selectedSoftTheme.cardBorder,
+        color: '#FFFFFF',
+        colorScheme: 'dark',
     };
 
     const secondaryButtonStyle = {
@@ -68,7 +70,7 @@ export function AddTaskModal({ isOpen, onClose, onSubmit, projectId, selectedTas
 
     return (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="backdrop-blur-lg rounded-2xl border-2 w-full max-w-md p-8 animate-fade-in" style={modalStyle}>
+            <div className="task-modal-dark backdrop-blur-lg rounded-2xl border-2 w-full max-w-md p-8 animate-fade-in" style={{ ...modalStyle, color: '#FFFFFF' }}>
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-3">
@@ -87,11 +89,12 @@ export function AddTaskModal({ isOpen, onClose, onSubmit, projectId, selectedTas
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {/* Title */}
                     <div>
-                        <label className="block text-sm font-bold text-white mb-2">
-                            <i className="fas fa-heading mr-2"></i>
+                        <label htmlFor="add-task-title" className="block text-sm font-bold text-white mb-2" style={{ color: '#FFFFFF' }}>
+                            <i className="fas fa-heading mr-2 text-white"></i>
                             Título *
                         </label>
                         <input
+                            id="add-task-title"
                             type="text"
                             name="title"
                             value={formData.title}
@@ -105,11 +108,12 @@ export function AddTaskModal({ isOpen, onClose, onSubmit, projectId, selectedTas
 
                     {/* Description */}
                     <div>
-                        <label className="block text-sm font-bold text-white mb-2">
-                            <i className="fas fa-align-left mr-2"></i>
+                        <label htmlFor="add-task-description" className="block text-sm font-bold text-white mb-2" style={{ color: '#FFFFFF' }}>
+                            <i className="fas fa-align-left mr-2 text-white"></i>
                             Descripción
                         </label>
                         <textarea
+                            id="add-task-description"
                             name="description"
                             value={formData.description}
                             onChange={handleChange}
@@ -122,11 +126,12 @@ export function AddTaskModal({ isOpen, onClose, onSubmit, projectId, selectedTas
 
                     {/* Type */}
                     <div>
-                        <label className="block text-sm font-bold text-white mb-2">
-                            <i className="fas fa-tag mr-2"></i>
+                        <label htmlFor="add-task-type" className="block text-sm font-bold text-white mb-2" style={{ color: '#FFFFFF' }}>
+                            <i className="fas fa-tag mr-2 text-white"></i>
                             Tipo de Tarea
                         </label>
                         <select
+                            id="add-task-type"
                             name="type"
                             value={formData.type}
                             onChange={handleChange}
@@ -134,7 +139,7 @@ export function AddTaskModal({ isOpen, onClose, onSubmit, projectId, selectedTas
                             style={inputStyle}
                         >
                             {getTaskTypeList().map((type) => (
-                                <option key={type.id} value={type.id} className="bg-gray-800">
+                                <option key={type.id} value={type.id} className="bg-gray-800 text-white">
                                     {type.name}
                                 </option>
                             ))}
@@ -144,30 +149,32 @@ export function AddTaskModal({ isOpen, onClose, onSubmit, projectId, selectedTas
                     <div className="grid grid-cols-2 gap-4">
                         {/* Priority */}
                         <div>
-                            <label className="block text-sm font-bold text-white mb-2">
-                                <i className="fas fa-exclamation-circle mr-2"></i>
+                            <label htmlFor="add-task-priority" className="block text-sm font-bold text-white mb-2" style={{ color: '#FFFFFF' }}>
+                                <i className="fas fa-exclamation-circle mr-2 text-white"></i>
                                 Prioridad
                             </label>
                             <select
+                                id="add-task-priority"
                                 name="priority"
                                 value={formData.priority}
                                 onChange={handleChange}
                                 className="w-full px-4 py-3 border-2 rounded-xl text-white focus:outline-none transition-all"
                                 style={inputStyle}
                             >
-                                <option value="low" className="bg-gray-800">Baja</option>
-                                <option value="medium" className="bg-gray-800">Media</option>
-                                <option value="high" className="bg-gray-800">Alta</option>
+                                <option value="low" className="bg-gray-800 text-white">Baja</option>
+                                <option value="medium" className="bg-gray-800 text-white">Media</option>
+                                <option value="high" className="bg-gray-800 text-white">Alta</option>
                             </select>
                         </div>
 
                         {/* Due Date */}
                         <div>
-                            <label className="block text-sm font-bold text-white mb-2">
-                                <i className="fas fa-calendar mr-2"></i>
+                            <label htmlFor="add-task-due-date" className="block text-sm font-bold text-white mb-2" style={{ color: '#FFFFFF' }}>
+                                <i className="fas fa-calendar mr-2 text-white"></i>
                                 Fecha límite
                             </label>
                             <input
+                                id="add-task-due-date"
                                 type="date"
                                 name="dueDate"
                                 value={formData.dueDate}
@@ -180,22 +187,23 @@ export function AddTaskModal({ isOpen, onClose, onSubmit, projectId, selectedTas
 
                     {/* Status */}
                     <div>
-                        <label className="block text-sm font-bold text-white mb-2">
-                            <i className="fas fa-tag mr-2"></i>
+                        <label htmlFor="add-task-status" className="block text-sm font-bold text-white mb-2" style={{ color: '#FFFFFF' }}>
+                            <i className="fas fa-tag mr-2 text-white"></i>
                             Estado
                         </label>
                         <select
+                            id="add-task-status"
                             name="status"
                             value={formData.status}
                             onChange={handleChange}
                             className="w-full px-4 py-3 border-2 rounded-xl text-white focus:outline-none transition-all"
                             style={inputStyle}
                         >
-                            <option value="backlog" className="bg-gray-800">Backlog</option>
-                            <option value="selected" className="bg-gray-800">Seleccionado</option>
-                            <option value="inProgress" className="bg-gray-800">En Progreso</option>
-                            <option value="inReview" className="bg-gray-800">En Revisión</option>
-                            <option value="done" className="bg-gray-800">Completado</option>
+                            <option value="backlog" className="bg-gray-800 text-white">Backlog</option>
+                            <option value="selected" className="bg-gray-800 text-white">Seleccionado</option>
+                            <option value="inProgress" className="bg-gray-800 text-white">En Progreso</option>
+                            <option value="inReview" className="bg-gray-800 text-white">En Revisión</option>
+                            <option value="done" className="bg-gray-800 text-white">Completado</option>
                         </select>
                     </div>
 

@@ -105,13 +105,21 @@ export default function BoardPage() {
     // Crear columnas dinámicas basadas en tipos de tareas
     const columns = Object.entries(TASK_TYPES).map(([typeKey, typeConfig]) => {
         const softStyle = TASK_TYPE_SOFT_THEME[typeKey] || TASK_TYPE_SOFT_THEME.default;
+        const resolvedTheme =
+            theme !== 'dark' && typeKey === 'feature'
+                ? {
+                    ...softStyle,
+                    surfaceBorder: 'rgba(151, 114, 31, 0.78)',
+                    cardBorder: 'rgba(151, 114, 31, 0.72)',
+                }
+                : softStyle;
 
         return ({
             id: typeKey,
             title: typeConfig.name,
             type: typeKey,
             icon: typeConfig.icon,
-            theme: softStyle,
+            theme: resolvedTheme,
             tasks: tasksByType[typeKey],
         });
     }); return (
@@ -150,7 +158,16 @@ export default function BoardPage() {
                             </div>
                             {showBoardInfo && (
                                 <div className="mt-3 rounded-xl border border-[#B6D1C7]/35 bg-[#1E1E1E]/70 light-theme-card p-3 text-sm text-[#E6E6E6] shadow-lg backdrop-blur">
-                                    {t('boardInfo')}
+                                    <p className="mb-2">
+                                        Esta vista organiza las tareas del proyecto en columnas para que puedas ver el
+                                        flujo de trabajo completo y actuar rápido sobre lo más importante.
+                                    </p>
+                                    <ul className="list-disc pl-5 space-y-1">
+                                        <li>Crea tareas en la columna adecuada según su tipo.</li>
+                                        <li>Arrastra tarjetas entre columnas para reflejar cambios del trabajo.</li>
+                                        <li>Edita una tarea para actualizar prioridad, fechas o detalles clave.</li>
+                                        <li>Úsalo como vista diaria para detectar bloqueos y ordenar próximos pasos.</li>
+                                    </ul>
                                 </div>
                             )}
                         </div>

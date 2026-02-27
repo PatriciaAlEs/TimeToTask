@@ -5,6 +5,7 @@
 
 import React from 'react';
 import { useLanguage } from '@/i18n/LanguageContext';
+import { useTheme } from '../../theme/ThemeContext';
 
 export function KanbanColumn({
     title,
@@ -17,6 +18,8 @@ export function KanbanColumn({
     onEditTask,
 }) {
     const { t } = useLanguage();
+    const { theme: appTheme } = useTheme();
+    const isLightMode = appTheme !== 'dark';
     const columnStyle = {
         backgroundColor: theme?.surface || 'rgba(255, 255, 255, 0.06)',
         borderColor: theme?.surfaceBorder || 'rgba(255, 255, 255, 0.20)',
@@ -33,6 +36,12 @@ export function KanbanColumn({
 
     const tagStyle = {
         backgroundColor: theme?.headerFrom || 'rgba(148, 163, 184, 0.70)',
+    };
+
+    const addTaskButtonStyle = {
+        borderColor: theme?.cardBorder || 'rgba(255, 255, 255, 0.30)',
+        backgroundColor: isLightMode ? 'rgba(30, 30, 30, 0.88)' : 'rgba(255, 255, 255, 0.90)',
+        color: isLightMode ? '#FFFFFF' : '#1f2937',
     };
 
     return (
@@ -112,8 +121,8 @@ export function KanbanColumn({
             <div className="p-3 border-t border-white/10 flex items-center justify-center">
                 <button
                     onClick={onAddTask}
-                    className="w-10 h-10 rounded-full bg-white/90 hover:bg-white text-gray-800 text-sm font-bold transition-all flex items-center justify-center shadow-lg hover:shadow-xl border-2"
-                    style={{ borderColor: theme?.cardBorder || 'rgba(255, 255, 255, 0.30)' }}
+                    className="w-10 h-10 rounded-full text-sm font-bold transition-all flex items-center justify-center shadow-lg hover:shadow-xl border-2"
+                    style={addTaskButtonStyle}
                     aria-label="Agregar tarea"
                 >
                     <i className="fas fa-plus"></i>
