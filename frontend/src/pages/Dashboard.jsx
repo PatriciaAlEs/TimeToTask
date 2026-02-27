@@ -13,6 +13,7 @@ import { ProjectModal } from '../components/Modals/ProjectModal';
 import { useTasks } from '../hooks/useTasks.jsx';
 import { useProjects } from '../hooks/useProjects.jsx';
 import { TASK_TYPES, TASK_TYPE_SOFT_THEME } from '../config/taskTypes';
+import { getCurrentWeather } from '../services/weatherService';
 
 function PieChart({ segments, total, size = 88, showSliceValues = false }) {
     const radius = size / 2;
@@ -104,9 +105,10 @@ function PieChart({ segments, total, size = 88, showSliceValues = false }) {
 }
 
 export default function DashboardPage() {
+    const configuredWeatherCity = import.meta.env.VITE_OPENWEATHER_CITY || 'Madrid,ES';
     const { projects, loading, createProject, updateProjectData, deleteProject } = useProjects();
     const { tasks, addTask } = useTasks();
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
     const { theme } = useTheme();
     const [showAddTaskModal, setShowAddTaskModal] = useState(false);
     const [showAddProjectModal, setShowAddProjectModal] = useState(false);
@@ -115,13 +117,20 @@ export default function DashboardPage() {
     const [projectToEdit, setProjectToEdit] = useState(null);
     const [expandedSection, setExpandedSection] = useState(null);
     const [showDashboardInfo, setShowDashboardInfo] = useState(false);
+    const [showWeatherHelp, setShowWeatherHelp] = useState(false);
     const [nowTimestamp, setNowTimestamp] = useState(Date.now());
     const lastTomorrowAlertRef = useRef('');
+    const lastWeatherSignatureRef = useRef('');
     const [selectedMonth, setSelectedMonth] = useState(() => {
         const now = new Date();
         const month = String(now.getMonth() + 1).padStart(2, '0');
         return `${now.getFullYear()}-${month}`;
     });
+    const [weather, setWeather] = useState(null);
+    const [weatherLoading, setWeatherLoading] = useState(false);
+    const [weatherError, setWeatherError] = useState('');
+    const weatherDetailsQuery = encodeURIComponent((weather?.city || configuredWeatherCity || '').replace(',', ' '));
+    const weatherDetailsUrl = `https://openweathermap.org/find?q=${weatherDetailsQuery}`;
 
     useEffect(() => {
         const intervalId = setInterval(() => {
@@ -130,6 +139,35 @@ export default function DashboardPage() {
 
         return () => clearInterval(intervalId);
     }, []);
+
+    const fetchWeather = async () => {
+        try {
+            setWeatherLoading(true);
+            setWeatherError('');
+            const weatherData = await getCurrentWeather(language);
+
+            const newSignature = `${weatherData.description}|${weatherData.temperature}`;
+            if (lastWeatherSignatureRef.current && lastWeatherSignatureRef.current !== newSignature) {
+                toast.info(`Cambio de clima: ${weatherData.description}, ${weatherData.temperature}°C`, {
+                    className: 'timetotask-toast',
+                    icon: '🌤️',
+                });
+            }
+
+            lastWeatherSignatureRef.current = newSignature;
+            setWeather(weatherData);
+        } catch (error) {
+            setWeatherError(error.message || 'No se pudo cargar el clima.');
+        } finally {
+            setWeatherLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchWeather();
+        const intervalId = setInterval(fetchWeather, 1000 * 60 * 15);
+        return () => clearInterval(intervalId);
+    }, [language]);
 
     const showSuccessToast = (message) => {
         toast.success(message, {
@@ -467,30 +505,84 @@ export default function DashboardPage() {
                 <div className="relative z-10 max-w-7xl mx-auto">
                     {/* Header */}
                     <div className="mb-8">
-                        <div className="mb-3 flex items-center gap-3">
-                            <span className="inline-flex items-center gap-2 rounded-full border border-[#8CB369]/45 bg-[#8CB369]/12 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[#B6D1C7]">
-                                <i className="fas fa-chart-pie"></i>
-                                {t('mainPanel')}
-                            </span>
-                            <button
-                                type="button"
-                                onClick={() => setShowDashboardInfo((prev) => !prev)}
-                                className="inline-flex h-9 w-9 items-center justify-center rounded-full border-2 bg-[#F4E285]/15 text-[#FFF6D0] transition hover:bg-[#F4E285]/25 shadow-sm"
-                                style={{ borderColor: theme === 'dark' ? 'rgba(244, 226, 133, 0.62)' : 'rgba(151, 114, 31, 0.80)' }}
-                                aria-label={t('mainPanel')}
-                                title={t('mainPanel')}
-                            >
-                                <i className="fas fa-info text-xs"></i>
-                            </button>
+                        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                            <div>
+                                <div className="mb-3 flex items-center gap-3">
+                                    <span className="inline-flex items-center gap-2 rounded-full border border-[#8CB369]/45 bg-[#8CB369]/12 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[#B6D1C7]">
+                                        <i className="fas fa-chart-pie"></i>
+                                        {t('mainPanel')}
+                                    </span>
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowDashboardInfo((prev) => !prev)}
+                                        className="inline-flex h-9 w-9 items-center justify-center rounded-full border-2 bg-[#F4E285]/15 text-[#FFF6D0] transition hover:bg-[#F4E285]/25 shadow-sm"
+                                        style={{ borderColor: theme === 'dark' ? 'rgba(244, 226, 133, 0.62)' : 'rgba(151, 114, 31, 0.80)' }}
+                                        aria-label={t('mainPanel')}
+                                        title={t('mainPanel')}
+                                    >
+                                        <i className="fas fa-info text-xs"></i>
+                                    </button>
+                                </div>
+                                <div
+                                    className="inline-block rounded-2xl border-2 bg-black/15 px-6 py-4 shadow-[0_12px_30px_rgba(0,0,0,0.38)]"
+                                    style={{ borderColor: theme === 'dark' ? 'rgba(182, 209, 199, 0.55)' : 'rgba(151, 114, 31, 0.78)' }}
+                                >
+                                    <h1 className="font-display-title text-6xl md:text-7xl font-bold mb-0 drop-shadow-lg tracking-wide bg-gradient-to-r from-[#B6D1C7] via-white to-[#F4E285] bg-clip-text text-transparent">
+                                        Dashboard
+                                    </h1>
+                                </div>
+                            </div>
+
+                            <div className="relative">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowWeatherHelp((prev) => !prev)}
+                                    className="inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm font-semibold text-white backdrop-blur-lg transition hover:bg-white/10"
+                                    style={{
+                                        borderColor: theme === 'dark' ? 'rgba(244, 226, 133, 0.42)' : 'rgba(151, 114, 31, 0.62)',
+                                        background: theme === 'dark' ? 'rgba(30,30,30,0.36)' : 'rgba(151,114,31,0.22)',
+                                    }}
+                                    title="Clima"
+                                >
+                                    <i className="fas fa-cloud-sun text-[#F4E285]"></i>
+                                    {weatherLoading && <span>Cargando clima...</span>}
+                                    {!weatherLoading && weatherError && <span className="max-w-[180px] truncate">Clima no disponible</span>}
+                                    {!weatherLoading && !weatherError && weather && (
+                                        <span className="max-w-[220px] truncate">{weather.temperature}°C · {weather.description}</span>
+                                    )}
+                                    {!weatherLoading && !weatherError && !weather && <span>Clima</span>}
+                                </button>
+
+                                {showWeatherHelp && (
+                                    <div className="mt-2 w-72 rounded-xl border border-[#F4E285]/35 bg-[#1E1E1E]/92 p-3 text-sm text-[#F4F4F4] shadow-xl">
+                                        <p className="mb-2 font-semibold text-[#FFF6D0]">Clima rápido</p>
+                                        <p className="mb-2">Aquí puedes consultar el tiempo actual de tu ciudad de referencia.</p>
+                                        <p className="mb-2 text-xs text-white/85">
+                                            Ubicación usada: <strong>{weather?.city || configuredWeatherCity}</strong>
+                                        </p>
+                                        <p className="mb-2">Si hay cambio de clima (descripción o temperatura), te mostramos una notificación automática.</p>
+                                        <div className="mt-2 flex items-center gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={fetchWeather}
+                                                className="rounded-lg border border-white/30 px-3 py-1 text-xs font-semibold text-white transition hover:bg-white/10"
+                                            >
+                                                Actualizar ahora
+                                            </button>
+                                            <a
+                                                href={weatherDetailsUrl}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                className="rounded-lg border border-[#F4E285]/45 px-3 py-1 text-xs font-semibold text-[#FFF6D0] transition hover:bg-[#F4E285]/12"
+                                            >
+                                                Ver más
+                                            </a>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                        <div
-                            className="inline-block rounded-2xl border-2 bg-black/15 px-6 py-4 shadow-[0_12px_30px_rgba(0,0,0,0.38)]"
-                            style={{ borderColor: theme === 'dark' ? 'rgba(182, 209, 199, 0.55)' : 'rgba(151, 114, 31, 0.78)' }}
-                        >
-                            <h1 className="font-display-title text-6xl md:text-7xl font-bold mb-0 drop-shadow-lg tracking-wide bg-gradient-to-r from-[#B6D1C7] via-white to-[#F4E285] bg-clip-text text-transparent">
-                                Dashboard
-                            </h1>
-                        </div>
+
                         {showDashboardInfo && (
                             <div className="mt-3 rounded-xl border border-[#F4E285]/35 bg-[#1E1E1E]/70 light-theme-card p-3 text-sm text-[#E6E6E6] shadow-lg backdrop-blur">
                                 <p className="mb-2">
