@@ -188,6 +188,58 @@ body.light-theme h6 {
   color: #111827;
 }
 
+body.light-theme .task-modal-dark,
+body.light-theme .task-modal-dark h1,
+body.light-theme .task-modal-dark h2,
+body.light-theme .task-modal-dark h3,
+body.light-theme .task-modal-dark h4,
+body.light-theme .task-modal-dark h5,
+body.light-theme .task-modal-dark h6,
+body.light-theme .task-modal-dark p,
+body.light-theme .task-modal-dark span,
+body.light-theme .task-modal-dark label,
+body.light-theme .task-modal-dark li,
+body.light-theme .task-modal-dark a,
+body.light-theme .task-modal-dark button,
+body.light-theme .task-modal-dark i,
+body.light-theme .task-modal-dark input,
+body.light-theme .task-modal-dark textarea,
+body.light-theme .task-modal-dark select,
+body.light-theme .task-modal-dark option {
+  color: #ffffff !important;
+}
+
+body.light-theme .task-modal-dark input::placeholder,
+body.light-theme .task-modal-dark textarea::placeholder {
+  color: #d1d5db !important;
+}
+
+body.light-theme .auth-dark-surface,
+body.light-theme .auth-dark-surface h1,
+body.light-theme .auth-dark-surface h2,
+body.light-theme .auth-dark-surface h3,
+body.light-theme .auth-dark-surface h4,
+body.light-theme .auth-dark-surface h5,
+body.light-theme .auth-dark-surface h6,
+body.light-theme .auth-dark-surface p,
+body.light-theme .auth-dark-surface span,
+body.light-theme .auth-dark-surface label,
+body.light-theme .auth-dark-surface li,
+body.light-theme .auth-dark-surface a,
+body.light-theme .auth-dark-surface button,
+body.light-theme .auth-dark-surface i,
+body.light-theme .auth-dark-surface input,
+body.light-theme .auth-dark-surface textarea,
+body.light-theme .auth-dark-surface select,
+body.light-theme .auth-dark-surface option {
+  color: #ffffff !important;
+}
+
+body.light-theme .auth-dark-surface input::placeholder,
+body.light-theme .auth-dark-surface textarea::placeholder {
+  color: #d1d5db !important;
+}
+
 @layer components {
   /* Botones */
   .btn {

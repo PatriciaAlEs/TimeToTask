@@ -65,7 +65,10 @@ const Home = () => {
                         </Link>
                         <Link
                             to="/login"
-                            className="group relative px-10 py-5 bg-white/15 backdrop-blur-lg text-white rounded-xl font-bold text-lg border-2 border-white/40 hover:bg-white/25 hover:border-white/60 transform hover:scale-105 transition-all duration-300 w-full sm:w-auto"
+                            className={`group relative px-10 py-5 text-white rounded-xl font-bold text-lg border-2 transform hover:scale-105 transition-all duration-300 w-full sm:w-auto ${theme === 'light'
+                                ? 'bg-gradient-to-br from-[#F4A259] via-[#E38A3B] to-[#C86F27] border-[#B85F1F] shadow-[0_12px_28px_rgba(244,162,89,0.38)] hover:shadow-[0_14px_34px_rgba(232,138,59,0.46)] hover:border-[#A6541A]'
+                                : 'bg-white/15 backdrop-blur-lg border-white/40 hover:bg-white/25 hover:border-white/60'
+                                }`}
                         >
                             <span className="flex items-center justify-center gap-2">
                                 <i className="fas fa-sign-in-alt"></i>
@@ -77,7 +80,10 @@ const Home = () => {
                     {/* Features Grid */}
                     <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto animate-slide-up animation-delay-800">
                         {/* Feature 1 */}
-                        <div className="group bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 hover:bg-white/15 hover:scale-105 transform transition-all duration-300">
+                        <div className={`group backdrop-blur-lg rounded-2xl p-6 border hover:scale-105 transform transition-all duration-300 ${theme === 'light'
+                            ? 'bg-gradient-to-br from-[#EDF8E8] to-[#F7F1DF] border-[#8CB369]/45 hover:shadow-[0_10px_28px_rgba(140,179,105,0.22)]'
+                            : 'bg-white/10 border-white/20 hover:bg-white/15'
+                            }`}>
                             <div className="text-4xl mb-4 text-accent-300 group-hover:scale-110 transition-transform">
                                 <i className="fas fa-check-circle"></i>
                             </div>
@@ -90,7 +96,10 @@ const Home = () => {
                         </div>
 
                         {/* Feature 2 */}
-                        <div className="group bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 hover:bg-white/15 hover:scale-105 transform transition-all duration-300">
+                        <div className={`group backdrop-blur-lg rounded-2xl p-6 border hover:scale-105 transform transition-all duration-300 ${theme === 'light'
+                            ? 'bg-gradient-to-br from-[#FFF2E0] to-[#F7F1DF] border-[#F4A259]/45 hover:shadow-[0_10px_28px_rgba(244,162,89,0.24)]'
+                            : 'bg-white/10 border-white/20 hover:bg-white/15'
+                            }`}>
                             <div className="text-4xl mb-4 text-secondary-300 group-hover:scale-110 transition-transform">
                                 <i className="fas fa-chart-line"></i>
                             </div>
@@ -103,7 +112,10 @@ const Home = () => {
                         </div>
 
                         {/* Feature 3 */}
-                        <div className="group bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 hover:bg-white/15 hover:scale-105 transform transition-all duration-300">
+                        <div className={`group backdrop-blur-lg rounded-2xl p-6 border hover:scale-105 transform transition-all duration-300 ${theme === 'light'
+                            ? 'bg-gradient-to-br from-[#FDEBDD] to-[#EAF4E2] border-[#BC4B51]/35 hover:shadow-[0_10px_28px_rgba(188,75,81,0.20)]'
+                            : 'bg-white/10 border-white/20 hover:bg-white/15'
+                            }`}>
                             <div className="text-4xl mb-4 text-primary-300 group-hover:scale-110 transition-transform">
                                 <i className="fas fa-users"></i>
                             </div>
@@ -124,7 +136,7 @@ const Home = () => {
             </div>
 
             {/* Additional Benefits Section */}
-            <div className={`relative backdrop-blur-sm py-20 px-4 border-t-4 border-accent-300/60 ${theme === 'dark' ? 'bg-gradient-to-br from-primary-700 via-primary-800 to-primary-900' : 'light-theme-page'}`}>
+            <div className={`relative backdrop-blur-sm py-20 px-4 border-t-4 border-accent-300/60 ${theme === 'dark' ? 'bg-gradient-to-br from-primary-700 via-primary-800 to-primary-900' : 'bg-gradient-to-br from-[#E6F3E1] via-[#F3ECD8] to-[#FDEDD8]'}`}>
                 <div className="max-w-6xl mx-auto">
                     <h2 className="text-5xl font-semibold text-white text-center mb-4 drop-shadow-lg">
                         {t('whyChoose')}
@@ -134,7 +146,10 @@ const Home = () => {
                     </p>
 
                     <div className="grid md:grid-cols-2 gap-8">
-                        <div className="flex gap-4 group">
+                        <div className={`flex gap-4 group rounded-2xl p-4 border transition-all ${theme === 'light'
+                            ? 'bg-gradient-to-br from-[#EDF8E8] to-[#F4F0E2] border-[#8CB369]/35 hover:shadow-[0_8px_20px_rgba(140,179,105,0.20)]'
+                            : ''
+                            }`}>
                             <div className="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-primary-400 to-primary-500 rounded-xl flex items-center justify-center group-hover:scale-125 group-hover:rotate-6 transition-all shadow-lg">
                                 <i className="fas fa-bolt text-white text-2xl"></i>
                             </div>
@@ -144,7 +159,10 @@ const Home = () => {
                             </div>
                         </div>
 
-                        <div className="flex gap-4 group">
+                        <div className={`flex gap-4 group rounded-2xl p-4 border transition-all ${theme === 'light'
+                            ? 'bg-gradient-to-br from-[#FFF1DE] to-[#F7F0E1] border-[#F4A259]/35 hover:shadow-[0_8px_20px_rgba(244,162,89,0.22)]'
+                            : ''
+                            }`}>
                             <div className="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-secondary-300 to-secondary-400 rounded-xl flex items-center justify-center group-hover:scale-125 group-hover:rotate-6 transition-all shadow-lg">
                                 <i className="fas fa-mobile-alt text-gray-800 text-2xl"></i>
                             </div>
@@ -154,7 +172,10 @@ const Home = () => {
                             </div>
                         </div>
 
-                        <div className="flex gap-4 group">
+                        <div className={`flex gap-4 group rounded-2xl p-4 border transition-all ${theme === 'light'
+                            ? 'bg-gradient-to-br from-[#FCE6E7] to-[#F6EFE4] border-[#BC4B51]/30 hover:shadow-[0_8px_20px_rgba(188,75,81,0.18)]'
+                            : ''
+                            }`}>
                             <div className="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-[#BC4B51] to-[#9F3E43] rounded-xl flex items-center justify-center group-hover:scale-125 group-hover:rotate-6 transition-all shadow-lg">
                                 <i className="fas fa-shield-alt text-white text-2xl"></i>
                             </div>
@@ -164,7 +185,10 @@ const Home = () => {
                             </div>
                         </div>
 
-                        <div className="flex gap-4 group">
+                        <div className={`flex gap-4 group rounded-2xl p-4 border transition-all ${theme === 'light'
+                            ? 'bg-gradient-to-br from-[#EAF4E2] to-[#F7F0E1] border-[#5B8E7D]/35 hover:shadow-[0_8px_20px_rgba(91,142,125,0.20)]'
+                            : ''
+                            }`}>
                             <div className="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-primary-400 to-primary-500 rounded-xl flex items-center justify-center group-hover:scale-125 group-hover:rotate-6 transition-all shadow-lg">
                                 <i className="fas fa-sync-alt text-white text-2xl"></i>
                             </div>
@@ -176,7 +200,10 @@ const Home = () => {
                     </div>
 
                     {/* Final CTA */}
-                    <div className="text-center mt-20 p-8 bg-white/5 backdrop-blur rounded-2xl border border-accent-300/35">
+                    <div className={`text-center mt-20 p-8 backdrop-blur rounded-2xl border ${theme === 'light'
+                        ? 'bg-gradient-to-br from-[#F1F8EC] to-[#FFF0DD] border-[#8CB369]/45 shadow-[0_12px_32px_rgba(140,179,105,0.20)]'
+                        : 'bg-white/5 border-accent-300/35'
+                        }`}>
                         <p className="text-3xl font-semibold text-white mb-2 drop-shadow-lg">{t('startNow')}</p>
                         <p className="text-gray-200 light-theme-muted mb-6">{t('startSmartly')}</p>
                         <Link
