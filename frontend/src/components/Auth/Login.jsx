@@ -71,7 +71,7 @@ export default function Login({ isModal = false, onClose = () => { } }) {
 
       <div className={`w-full max-w-md relative z-10 ${isModal ? '' : ''}`}>
         {/* Card */}
-        <div className={`${isModal ? 'bg-[#1E1E1E] border border-white/20' : 'bg-white/10 backdrop-blur-lg border border-white/20'} rounded-2xl shadow-2xl p-8`}>
+        <div className={`auth-dark-surface ${isModal ? 'bg-[#1E1E1E] border border-white/20' : 'bg-white/10 backdrop-blur-lg border border-white/20'} rounded-2xl shadow-2xl p-8`}>
           {/* Header */}
           <div className="text-center mb-6">
             <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary-400 to-secondary-400 rounded-3xl mb-4 transform hover:scale-110 hover:rotate-6 transition-all duration-300 shadow-xl">

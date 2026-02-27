@@ -493,7 +493,16 @@ export default function DashboardPage() {
                         </div>
                         {showDashboardInfo && (
                             <div className="mt-3 rounded-xl border border-[#F4E285]/35 bg-[#1E1E1E]/70 light-theme-card p-3 text-sm text-[#E6E6E6] shadow-lg backdrop-blur">
-                                {t('startWithProjectHelp')}
+                                <p className="mb-2">
+                                    Esta vista es tu centro de control: te muestra un resumen rápido de proyectos,
+                                    calendario y estado de tus tareas para que sepas qué hacer primero.
+                                </p>
+                                <ul className="list-disc pl-5 space-y-1">
+                                    <li>Usa <strong>Proyectos</strong> para organizar el trabajo por áreas o entregables.</li>
+                                    <li>Revisa el <strong>Calendario</strong> para anticipar vencimientos y evitar atrasos.</li>
+                                    <li>Consulta las <strong>Estadísticas</strong> para detectar cuellos de botella por estado, tipo o prioridad.</li>
+                                    <li>Mira <strong>Actividad reciente</strong> para seguir cambios y mantener contexto del avance.</li>
+                                </ul>
                             </div>
                         )}
                     </div>

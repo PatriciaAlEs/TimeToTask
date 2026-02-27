@@ -39,6 +39,8 @@ export function EditTaskModal({ isOpen, onClose, onSubmit, task, selectedTaskTyp
     const inputStyle = {
         backgroundColor: selectedSoftTheme.cardSurface,
         borderColor: selectedSoftTheme.cardBorder,
+        color: '#FFFFFF',
+        colorScheme: 'dark',
     };
 
     const secondaryButtonStyle = {
@@ -70,7 +72,7 @@ export function EditTaskModal({ isOpen, onClose, onSubmit, task, selectedTaskTyp
 
     return (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="backdrop-blur-lg rounded-2xl border-2 w-full max-w-md p-8 animate-fade-in" style={modalStyle}>
+            <div className="task-modal-dark backdrop-blur-lg rounded-2xl border-2 w-full max-w-md p-8 animate-fade-in" style={{ ...modalStyle, color: '#FFFFFF' }}>
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
                     <h2 className="text-2xl font-semibold drop-shadow-lg" style={headerTitleStyle}>Editar Tarea</h2>
@@ -86,8 +88,9 @@ export function EditTaskModal({ isOpen, onClose, onSubmit, task, selectedTaskTyp
                     )}
                     {/* Title */}
                     <div>
-                        <label className="block text-sm font-bold text-white mb-2">Título *</label>
+                        <label htmlFor="edit-task-title" className="block text-sm font-bold text-white mb-2" style={{ color: '#FFFFFF' }}>Título *</label>
                         <input
+                            id="edit-task-title"
                             type="text"
                             name="title"
                             value={formData.title}
@@ -100,8 +103,9 @@ export function EditTaskModal({ isOpen, onClose, onSubmit, task, selectedTaskTyp
 
                     {/* Description */}
                     <div>
-                        <label className="block text-sm font-bold text-white mb-2">Descripción</label>
+                        <label htmlFor="edit-task-description" className="block text-sm font-bold text-white mb-2" style={{ color: '#FFFFFF' }}>Descripción</label>
                         <textarea
+                            id="edit-task-description"
                             name="description"
                             value={formData.description}
                             onChange={handleChange}
@@ -113,8 +117,9 @@ export function EditTaskModal({ isOpen, onClose, onSubmit, task, selectedTaskTyp
 
                     {/* Type */}
                     <div>
-                        <label className="block text-sm font-bold text-white mb-2">Tipo de Tarea</label>
+                        <label htmlFor="edit-task-type" className="block text-sm font-bold text-white mb-2" style={{ color: '#FFFFFF' }}>Tipo de Tarea</label>
                         <select
+                            id="edit-task-type"
                             name="type"
                             value={formData.type}
                             onChange={handleChange}
@@ -122,7 +127,7 @@ export function EditTaskModal({ isOpen, onClose, onSubmit, task, selectedTaskTyp
                             style={inputStyle}
                         >
                             {Object.values(TASK_TYPES).map((type) => (
-                                <option key={type.id} value={type.id} className="bg-gray-800">
+                                <option key={type.id} value={type.id} className="bg-gray-800 text-white">
                                     {type.name}
                                 </option>
                             ))}
@@ -132,24 +137,26 @@ export function EditTaskModal({ isOpen, onClose, onSubmit, task, selectedTaskTyp
                     <div className="grid grid-cols-2 gap-4">
                         {/* Priority */}
                         <div>
-                            <label className="block text-sm font-bold text-white mb-2">Prioridad</label>
+                            <label htmlFor="edit-task-priority" className="block text-sm font-bold text-white mb-2" style={{ color: '#FFFFFF' }}>Prioridad</label>
                             <select
+                                id="edit-task-priority"
                                 name="priority"
                                 value={formData.priority}
                                 onChange={handleChange}
                                 className="w-full px-4 py-3 border-2 rounded-xl text-white focus:outline-none transition-all"
                                 style={inputStyle}
                             >
-                                <option value="low" className="bg-gray-800">Baja</option>
-                                <option value="medium" className="bg-gray-800">Media</option>
-                                <option value="high" className="bg-gray-800">Alta</option>
+                                <option value="low" className="bg-gray-800 text-white">Baja</option>
+                                <option value="medium" className="bg-gray-800 text-white">Media</option>
+                                <option value="high" className="bg-gray-800 text-white">Alta</option>
                             </select>
                         </div>
 
                         {/* Due Date */}
                         <div>
-                            <label className="block text-sm font-bold text-white mb-2">Fecha límite</label>
+                            <label htmlFor="edit-task-due-date" className="block text-sm font-bold text-white mb-2" style={{ color: '#FFFFFF' }}>Fecha límite</label>
                             <input
+                                id="edit-task-due-date"
                                 type="date"
                                 name="dueDate"
                                 value={formData.dueDate}
@@ -162,19 +169,20 @@ export function EditTaskModal({ isOpen, onClose, onSubmit, task, selectedTaskTyp
 
                     {/* Status */}
                     <div>
-                        <label className="block text-sm font-bold text-white mb-2">Estado</label>
+                        <label htmlFor="edit-task-status" className="block text-sm font-bold text-white mb-2" style={{ color: '#FFFFFF' }}>Estado</label>
                         <select
+                            id="edit-task-status"
                             name="status"
                             value={formData.status}
                             onChange={handleChange}
                             className="w-full px-4 py-3 border-2 rounded-xl text-white focus:outline-none transition-all"
                             style={inputStyle}
                         >
-                            <option value="backlog" className="bg-gray-800">Backlog</option>
-                            <option value="selected" className="bg-gray-800">Seleccionado</option>
-                            <option value="inProgress" className="bg-gray-800">En Progreso</option>
-                            <option value="inReview" className="bg-gray-800">En Revisión</option>
-                            <option value="done" className="bg-gray-800">Completado</option>
+                            <option value="backlog" className="bg-gray-800 text-white">Backlog</option>
+                            <option value="selected" className="bg-gray-800 text-white">Seleccionado</option>
+                            <option value="inProgress" className="bg-gray-800 text-white">En Progreso</option>
+                            <option value="inReview" className="bg-gray-800 text-white">En Revisión</option>
+                            <option value="done" className="bg-gray-800 text-white">Completado</option>
                         </select>
                     </div>
 
