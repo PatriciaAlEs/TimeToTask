@@ -3,6 +3,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { TASK_TYPES, TASK_TYPE_SOFT_THEME } from '../../config/taskTypes';
 
 export function EditTaskModal({ isOpen, onClose, onSubmit, task, selectedTaskType, errorMessage }) {
@@ -68,145 +69,160 @@ export function EditTaskModal({ isOpen, onClose, onSubmit, task, selectedTaskTyp
         onSubmit(task.id, { ...formData });
     };
 
-    if (!isOpen) return null;
-
     return (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="task-modal-dark backdrop-blur-lg rounded-2xl border-2 w-full max-w-md p-8 animate-fade-in" style={{ ...modalStyle, color: '#FFFFFF' }}>
-                {/* Header */}
-                <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-2xl font-semibold drop-shadow-lg" style={headerTitleStyle}>Editar Tarea</h2>
-                    <button onClick={onClose} className="text-white/70 hover:text-white text-2xl transition-colors">✕</button>
-                </div>
-
-                {/* Form */}
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    {errorMessage && (
-                        <div className="rounded-xl border border-red-400/60 bg-red-500/20 px-4 py-3 text-sm text-red-100">
-                            {errorMessage}
-                        </div>
-                    )}
-                    {/* Title */}
-                    <div>
-                        <label htmlFor="edit-task-title" className="block text-sm font-bold text-white mb-2" style={{ color: '#FFFFFF' }}>Título *</label>
-                        <input
-                            id="edit-task-title"
-                            type="text"
-                            name="title"
-                            value={formData.title}
-                            onChange={handleChange}
-                            required
-                            className="w-full px-4 py-3 border-2 rounded-xl text-white placeholder-gray-200 focus:outline-none transition-all"
-                            style={inputStyle}
-                        />
-                    </div>
-
-                    {/* Description */}
-                    <div>
-                        <label htmlFor="edit-task-description" className="block text-sm font-bold text-white mb-2" style={{ color: '#FFFFFF' }}>Descripción</label>
-                        <textarea
-                            id="edit-task-description"
-                            name="description"
-                            value={formData.description}
-                            onChange={handleChange}
-                            rows="3"
-                            className="w-full px-4 py-3 border-2 rounded-xl text-white placeholder-gray-200 focus:outline-none transition-all resize-none"
-                            style={inputStyle}
-                        />
-                    </div>
-
-                    {/* Type */}
-                    <div>
-                        <label htmlFor="edit-task-type" className="block text-sm font-bold text-white mb-2" style={{ color: '#FFFFFF' }}>Tipo de Tarea</label>
-                        <select
-                            id="edit-task-type"
-                            name="type"
-                            value={formData.type}
-                            onChange={handleChange}
-                            className="w-full px-4 py-3 border-2 rounded-xl text-white focus:outline-none transition-all"
-                            style={inputStyle}
-                        >
-                            {Object.values(TASK_TYPES).map((type) => (
-                                <option key={type.id} value={type.id} className="bg-gray-800 text-white">
-                                    {type.name}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                        {/* Priority */}
-                        <div>
-                            <label htmlFor="edit-task-priority" className="block text-sm font-bold text-white mb-2" style={{ color: '#FFFFFF' }}>Prioridad</label>
-                            <select
-                                id="edit-task-priority"
-                                name="priority"
-                                value={formData.priority}
-                                onChange={handleChange}
-                                className="w-full px-4 py-3 border-2 rounded-xl text-white focus:outline-none transition-all"
-                                style={inputStyle}
-                            >
-                                <option value="low" className="bg-gray-800 text-white">Baja</option>
-                                <option value="medium" className="bg-gray-800 text-white">Media</option>
-                                <option value="high" className="bg-gray-800 text-white">Alta</option>
-                            </select>
+        <AnimatePresence>
+            {isOpen && (
+                <motion.div
+                    className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                >
+                    <motion.div
+                        className="task-modal-dark backdrop-blur-lg rounded-2xl border-2 w-full max-w-md p-8"
+                        style={{ ...modalStyle, color: '#FFFFFF' }}
+                        initial={{ opacity: 0, y: 20, scale: 0.98 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 16, scale: 0.98 }}
+                        transition={{ type: 'spring', stiffness: 280, damping: 24 }}
+                    >
+                        {/* Header */}
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-2xl font-semibold drop-shadow-lg" style={headerTitleStyle}>Editar Tarea</h2>
+                            <button onClick={onClose} className="text-white/70 hover:text-white text-2xl transition-colors">✕</button>
                         </div>
 
-                        {/* Due Date */}
-                        <div>
-                            <label htmlFor="edit-task-due-date" className="block text-sm font-bold text-white mb-2" style={{ color: '#FFFFFF' }}>Fecha límite</label>
-                            <input
-                                id="edit-task-due-date"
-                                type="date"
-                                name="dueDate"
-                                value={formData.dueDate}
-                                onChange={handleChange}
-                                className="w-full px-4 py-3 border-2 rounded-xl text-white focus:outline-none transition-all"
-                                style={inputStyle}
-                            />
-                        </div>
-                    </div>
+                        {/* Form */}
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            {errorMessage && (
+                                <div className="rounded-xl border border-red-400/60 bg-red-500/20 px-4 py-3 text-sm text-red-100">
+                                    {errorMessage}
+                                </div>
+                            )}
+                            {/* Title */}
+                            <div>
+                                <label htmlFor="edit-task-title" className="block text-sm font-bold text-white mb-2" style={{ color: '#FFFFFF' }}>Título *</label>
+                                <input
+                                    id="edit-task-title"
+                                    type="text"
+                                    name="title"
+                                    value={formData.title}
+                                    onChange={handleChange}
+                                    required
+                                    className="w-full px-4 py-3 border-2 rounded-xl text-white placeholder-gray-200 focus:outline-none transition-all"
+                                    style={inputStyle}
+                                />
+                            </div>
 
-                    {/* Status */}
-                    <div>
-                        <label htmlFor="edit-task-status" className="block text-sm font-bold text-white mb-2" style={{ color: '#FFFFFF' }}>Estado</label>
-                        <select
-                            id="edit-task-status"
-                            name="status"
-                            value={formData.status}
-                            onChange={handleChange}
-                            className="w-full px-4 py-3 border-2 rounded-xl text-white focus:outline-none transition-all"
-                            style={inputStyle}
-                        >
-                            <option value="backlog" className="bg-gray-800 text-white">Backlog</option>
-                            <option value="selected" className="bg-gray-800 text-white">Seleccionado</option>
-                            <option value="inProgress" className="bg-gray-800 text-white">En Progreso</option>
-                            <option value="inReview" className="bg-gray-800 text-white">En Revisión</option>
-                            <option value="done" className="bg-gray-800 text-white">Completado</option>
-                        </select>
-                    </div>
+                            {/* Description */}
+                            <div>
+                                <label htmlFor="edit-task-description" className="block text-sm font-bold text-white mb-2" style={{ color: '#FFFFFF' }}>Descripción</label>
+                                <textarea
+                                    id="edit-task-description"
+                                    name="description"
+                                    value={formData.description}
+                                    onChange={handleChange}
+                                    rows="3"
+                                    className="w-full px-4 py-3 border-2 rounded-xl text-white placeholder-gray-200 focus:outline-none transition-all resize-none"
+                                    style={inputStyle}
+                                />
+                            </div>
 
-                    {/* Buttons */}
-                    <div className="flex gap-3 pt-4">
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="flex-1 py-3 px-4 border-2 text-white rounded-xl font-bold transition-all hover:bg-gray-900/60"
-                            style={secondaryButtonStyle}
-                        >
-                            Cancelar
-                        </button>
-                        <button
-                            type="submit"
-                            className="flex-1 py-3 px-4 text-white rounded-xl font-bold transition-all shadow-lg transform hover:scale-105 border-2"
-                            style={primaryButtonStyle}
-                        >
-                            <i className="fas fa-save mr-2"></i>
-                            Guardar cambios
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
+                            {/* Type */}
+                            <div>
+                                <label htmlFor="edit-task-type" className="block text-sm font-bold text-white mb-2" style={{ color: '#FFFFFF' }}>Tipo de Tarea</label>
+                                <select
+                                    id="edit-task-type"
+                                    name="type"
+                                    value={formData.type}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 border-2 rounded-xl text-white focus:outline-none transition-all"
+                                    style={inputStyle}
+                                >
+                                    {Object.values(TASK_TYPES).map((type) => (
+                                        <option key={type.id} value={type.id} className="bg-gray-800 text-white">
+                                            {type.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                {/* Priority */}
+                                <div>
+                                    <label htmlFor="edit-task-priority" className="block text-sm font-bold text-white mb-2" style={{ color: '#FFFFFF' }}>Prioridad</label>
+                                    <select
+                                        id="edit-task-priority"
+                                        name="priority"
+                                        value={formData.priority}
+                                        onChange={handleChange}
+                                        className="w-full px-4 py-3 border-2 rounded-xl text-white focus:outline-none transition-all"
+                                        style={inputStyle}
+                                    >
+                                        <option value="low" className="bg-gray-800 text-white">Baja</option>
+                                        <option value="medium" className="bg-gray-800 text-white">Media</option>
+                                        <option value="high" className="bg-gray-800 text-white">Alta</option>
+                                    </select>
+                                </div>
+
+                                {/* Due Date */}
+                                <div>
+                                    <label htmlFor="edit-task-due-date" className="block text-sm font-bold text-white mb-2" style={{ color: '#FFFFFF' }}>Fecha límite</label>
+                                    <input
+                                        id="edit-task-due-date"
+                                        type="date"
+                                        name="dueDate"
+                                        value={formData.dueDate}
+                                        onChange={handleChange}
+                                        className="w-full px-4 py-3 border-2 rounded-xl text-white focus:outline-none transition-all"
+                                        style={inputStyle}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Status */}
+                            <div>
+                                <label htmlFor="edit-task-status" className="block text-sm font-bold text-white mb-2" style={{ color: '#FFFFFF' }}>Estado</label>
+                                <select
+                                    id="edit-task-status"
+                                    name="status"
+                                    value={formData.status}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 border-2 rounded-xl text-white focus:outline-none transition-all"
+                                    style={inputStyle}
+                                >
+                                    <option value="backlog" className="bg-gray-800 text-white">Backlog</option>
+                                    <option value="selected" className="bg-gray-800 text-white">Seleccionado</option>
+                                    <option value="inProgress" className="bg-gray-800 text-white">En Progreso</option>
+                                    <option value="inReview" className="bg-gray-800 text-white">En Revisión</option>
+                                    <option value="done" className="bg-gray-800 text-white">Completado</option>
+                                </select>
+                            </div>
+
+                            {/* Buttons */}
+                            <div className="flex gap-3 pt-4">
+                                <button
+                                    type="button"
+                                    onClick={onClose}
+                                    className="flex-1 py-3 px-4 border-2 text-white rounded-xl font-bold transition-all hover:bg-gray-900/60"
+                                    style={secondaryButtonStyle}
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="flex-1 py-3 px-4 text-white rounded-xl font-bold transition-all shadow-lg transform hover:scale-105 border-2"
+                                    style={primaryButtonStyle}
+                                >
+                                    <i className="fas fa-save mr-2"></i>
+                                    Guardar cambios
+                                </button>
+                            </div>
+                        </form>
+                    </motion.div>
+                </motion.div>
+            )}
+        </AnimatePresence>
     );
 }

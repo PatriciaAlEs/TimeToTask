@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { GlobalProvider } from './store';
@@ -74,12 +75,21 @@ const AppLayout = ({ showCookieModal, saveConsent, theme }) => {
                     />
                 </Routes>
             </main>
-            {showCookieModal && (
-                <CookieConsentModal
-                    onAcceptAll={() => saveConsent('all')}
-                    onAcceptNecessary={() => saveConsent('necessary')}
-                />
-            )}
+            <AnimatePresence>
+                {showCookieModal && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                    >
+                        <CookieConsentModal
+                            onAcceptAll={() => saveConsent('all')}
+                            onAcceptNecessary={() => saveConsent('necessary')}
+                        />
+                    </motion.div>
+                )}
+            </AnimatePresence>
             <FooterHintArrow hidden={showCookieModal} />
             <ToastContainer
                 toastClassName="timetotask-toast"

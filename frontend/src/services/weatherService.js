@@ -23,17 +23,29 @@ function getWeatherErrorMessage(status, apiMessage) {
     return apiMessage || 'No se pudo obtener el clima en este momento.';
 }
 
-export async function getCurrentWeather(language = 'es') {
+export async function getCurrentWeather(language = 'es', location = {}) {
     if (!OPENWEATHER_API_KEY) {
         throw new Error('Falta VITE_OPENWEATHER_API_KEY en variables de entorno.');
     }
 
+    const hasCoordinates =
+        typeof location.lat === 'number' &&
+        Number.isFinite(location.lat) &&
+        typeof location.lon === 'number' &&
+        Number.isFinite(location.lon);
+
     const queryParams = new URLSearchParams({
-        q: OPENWEATHER_CITY,
         appid: OPENWEATHER_API_KEY,
         units: 'metric',
         lang: language,
     });
+
+    if (hasCoordinates) {
+        queryParams.set('lat', String(location.lat));
+        queryParams.set('lon', String(location.lon));
+    } else {
+        queryParams.set('q', OPENWEATHER_CITY);
+    }
 
     const response = await fetch(`${OPENWEATHER_BASE_URL}/weather?${queryParams.toString()}`);
     const payload = await response.json().catch(() => ({}));
@@ -51,6 +63,7 @@ export async function getCurrentWeather(language = 'es') {
         feelsLike: Math.round(payload?.main?.feels_like ?? 0),
         humidity: payload?.main?.humidity ?? 0,
         windSpeed: payload?.wind?.speed ?? 0,
+        visibility: payload?.visibility ?? 0,
         fetchedAt: new Date().toISOString(),
     };
 }

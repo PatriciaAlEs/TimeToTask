@@ -4,6 +4,7 @@
  */
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import { useLanguage } from '../i18n/LanguageContext';
 import { useTheme } from '../theme/ThemeContext';
@@ -13,7 +14,7 @@ import { ProjectModal } from '../components/Modals/ProjectModal';
 import { useTasks } from '../hooks/useTasks.jsx';
 import { useProjects } from '../hooks/useProjects.jsx';
 import { TASK_TYPES, TASK_TYPE_SOFT_THEME } from '../config/taskTypes';
-import { getCurrentWeather } from '../services/weatherService';
+import { getCurrentWeather, getWeatherIconUrl } from '../services/weatherService';
 
 function PieChart({ segments, total, size = 88, showSliceValues = false }) {
     const radius = size / 2;
@@ -129,8 +130,11 @@ export default function DashboardPage() {
     const [weather, setWeather] = useState(null);
     const [weatherLoading, setWeatherLoading] = useState(false);
     const [weatherError, setWeatherError] = useState('');
+    const [weatherLocationSource, setWeatherLocationSource] = useState('city');
     const weatherDetailsQuery = encodeURIComponent((weather?.city || configuredWeatherCity || '').replace(',', ' '));
     const weatherDetailsUrl = `https://openweathermap.org/find?q=${weatherDetailsQuery}`;
+    const weatherVisibilityKm = weather?.visibility ? (weather.visibility / 1000).toFixed(1) : '0.0';
+    const weatherWindKmH = weather?.windSpeed ? Math.round(weather.windSpeed * 3.6) : 0;
 
     useEffect(() => {
         const intervalId = setInterval(() => {
@@ -144,7 +148,31 @@ export default function DashboardPage() {
         try {
             setWeatherLoading(true);
             setWeatherError('');
-            const weatherData = await getCurrentWeather(language);
+            let weatherData = null;
+
+            if (typeof navigator !== 'undefined' && navigator.geolocation) {
+                try {
+                    const position = await new Promise((resolve, reject) => {
+                        navigator.geolocation.getCurrentPosition(resolve, reject, {
+                            enableHighAccuracy: false,
+                            timeout: 7000,
+                            maximumAge: 1000 * 60 * 10,
+                        });
+                    });
+
+                    weatherData = await getCurrentWeather(language, {
+                        lat: position.coords.latitude,
+                        lon: position.coords.longitude,
+                    });
+                    setWeatherLocationSource('current');
+                } catch (_geoError) {
+                    weatherData = await getCurrentWeather(language);
+                    setWeatherLocationSource('city');
+                }
+            } else {
+                weatherData = await getCurrentWeather(language);
+                setWeatherLocationSource('city');
+            }
 
             const newSignature = `${weatherData.description}|${weatherData.temperature}`;
             if (lastWeatherSignatureRef.current && lastWeatherSignatureRef.current !== newSignature) {
@@ -553,50 +581,107 @@ export default function DashboardPage() {
                                     {!weatherLoading && !weatherError && !weather && <span>Clima</span>}
                                 </button>
 
-                                {showWeatherHelp && (
-                                    <div className="mt-2 w-72 rounded-xl border border-[#F4E285]/35 bg-[#1E1E1E]/92 p-3 text-sm text-[#F4F4F4] shadow-xl">
-                                        <p className="mb-2 font-semibold text-[#FFF6D0]">Clima rápido</p>
-                                        <p className="mb-2">Aquí puedes consultar el tiempo actual de tu ciudad de referencia.</p>
-                                        <p className="mb-2 text-xs text-white/85">
-                                            Ubicación usada: <strong>{weather?.city || configuredWeatherCity}</strong>
-                                        </p>
-                                        <p className="mb-2">Si hay cambio de clima (descripción o temperatura), te mostramos una notificación automática.</p>
-                                        <div className="mt-2 flex items-center gap-2">
-                                            <button
-                                                type="button"
-                                                onClick={fetchWeather}
-                                                className="rounded-lg border border-white/30 px-3 py-1 text-xs font-semibold text-white transition hover:bg-white/10"
-                                            >
-                                                Actualizar ahora
-                                            </button>
-                                            <a
-                                                href={weatherDetailsUrl}
-                                                target="_blank"
-                                                rel="noreferrer"
-                                                className="rounded-lg border border-[#F4E285]/45 px-3 py-1 text-xs font-semibold text-[#FFF6D0] transition hover:bg-[#F4E285]/12"
-                                            >
-                                                Ver más
-                                            </a>
-                                        </div>
-                                    </div>
-                                )}
+                                <AnimatePresence>
+                                    {showWeatherHelp && (
+                                        <motion.div
+                                            className="mt-2 w-[30rem] max-w-[92vw] rounded-xl border border-[#F4E285]/35 bg-[#1E1E1E]/92 p-3 text-sm text-[#F4F4F4] shadow-xl"
+                                            initial={{ opacity: 0, y: -8, scale: 0.98 }}
+                                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                                            exit={{ opacity: 0, y: -8, scale: 0.98 }}
+                                            transition={{ duration: 0.2 }}
+                                        >
+                                            <div className="mb-2 flex items-center justify-between gap-3">
+                                                <p className="font-semibold text-[#FFF6D0]">Clima rápido</p>
+                                                <p className="text-[11px] text-white/75">
+                                                    {weatherLocationSource === 'current' ? 'Ubicación actual' : 'Ciudad configurada'}
+                                                </p>
+                                            </div>
+
+                                            <p className="mb-2 truncate text-xs text-white/85">
+                                                <strong>Ubicación:</strong> {weather?.city || configuredWeatherCity}
+                                            </p>
+
+                                            {weather && !weatherError && (
+                                                <div className="mb-2 rounded-xl border border-white/15 bg-white/5 p-2.5">
+                                                    <div className="mb-2 flex items-center gap-2">
+                                                        <img
+                                                            src={getWeatherIconUrl(weather.icon)}
+                                                            alt={weather.description}
+                                                            className="h-11 w-11 rounded-lg border border-white/10 bg-black/20"
+                                                            loading="lazy"
+                                                        />
+                                                        <div className="min-w-0">
+                                                            <p className="text-base font-semibold text-[#FFF6D0]">{weather.temperature}°C · <span className="capitalize">{weather.description}</span></p>
+                                                            <p className="text-[11px] text-white/75">Sensación de {weather.feelsLike}°C</p>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
+                                                        <div className="rounded-lg border border-white/15 bg-black/20 px-2 py-1.5 text-center">
+                                                            <p className="text-white/70">Humedad</p>
+                                                            <p className="font-semibold text-white">{weather.humidity}%</p>
+                                                        </div>
+                                                        <div className="rounded-lg border border-white/15 bg-black/20 px-2 py-1.5 text-center">
+                                                            <p className="text-white/70">Viento</p>
+                                                            <p className="font-semibold text-white">{weatherWindKmH} km/h</p>
+                                                        </div>
+                                                        <div className="rounded-lg border border-white/15 bg-black/20 px-2 py-1.5 text-center">
+                                                            <p className="text-white/70">Visibilidad</p>
+                                                            <p className="font-semibold text-white">{weatherVisibilityKm} km</p>
+                                                        </div>
+                                                        <div className="rounded-lg border border-white/15 bg-black/20 px-2 py-1.5 text-center">
+                                                            <p className="text-white/70">Actualizado</p>
+                                                            <p className="font-semibold text-white">Ahora</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            <div className="mt-1 flex items-center gap-2">
+                                                <button
+                                                    type="button"
+                                                    onClick={fetchWeather}
+                                                    className="rounded-lg border border-white/30 px-3 py-1 text-xs font-semibold text-white transition hover:bg-white/10"
+                                                >
+                                                    Actualizar ahora
+                                                </button>
+                                                <a
+                                                    href={weatherDetailsUrl}
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                    className="rounded-lg border border-[#F4E285]/45 px-3 py-1 text-xs font-semibold text-[#FFF6D0] transition hover:bg-[#F4E285]/12"
+                                                >
+                                                    Ver más
+                                                </a>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
                             </div>
                         </div>
 
-                        {showDashboardInfo && (
-                            <div className="mt-3 rounded-xl border border-[#F4E285]/35 bg-[#1E1E1E]/70 light-theme-card p-3 text-sm text-[#E6E6E6] shadow-lg backdrop-blur">
-                                <p className="mb-2">
-                                    Esta vista es tu centro de control: te muestra un resumen rápido de proyectos,
-                                    calendario y estado de tus tareas para que sepas qué hacer primero.
-                                </p>
-                                <ul className="list-disc pl-5 space-y-1">
-                                    <li>Usa <strong>Proyectos</strong> para organizar el trabajo por áreas o entregables.</li>
-                                    <li>Revisa el <strong>Calendario</strong> para anticipar vencimientos y evitar atrasos.</li>
-                                    <li>Consulta las <strong>Estadísticas</strong> para detectar cuellos de botella por estado, tipo o prioridad.</li>
-                                    <li>Mira <strong>Actividad reciente</strong> para seguir cambios y mantener contexto del avance.</li>
-                                </ul>
-                            </div>
-                        )}
+                        <AnimatePresence>
+                            {showDashboardInfo && (
+                                <motion.div
+                                    className="mt-3 rounded-xl border border-[#F4E285]/35 bg-[#1E1E1E]/70 light-theme-card p-3 text-sm text-[#E6E6E6] shadow-lg backdrop-blur"
+                                    initial={{ opacity: 0, y: -8 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -8 }}
+                                    transition={{ duration: 0.2 }}
+                                >
+                                    <p className="mb-2">
+                                        Esta vista es tu centro de control: te muestra un resumen rápido de proyectos,
+                                        calendario y estado de tus tareas para que sepas qué hacer primero.
+                                    </p>
+                                    <ul className="list-disc pl-5 space-y-1">
+                                        <li>Usa <strong>Proyectos</strong> para organizar el trabajo por áreas o entregables.</li>
+                                        <li>Revisa el <strong>Calendario</strong> para anticipar vencimientos y evitar atrasos.</li>
+                                        <li>Consulta las <strong>Estadísticas</strong> para detectar cuellos de botella por estado, tipo o prioridad.</li>
+                                        <li>Mira <strong>Actividad reciente</strong> para seguir cambios y mantener contexto del avance.</li>
+                                    </ul>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </div>
 
                     {/* Proyectos */}
@@ -905,51 +990,65 @@ export default function DashboardPage() {
                         }}
                     />
 
-                    {expandedSection && (
-                        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/70 p-4">
-                            <div className="w-full max-w-2xl rounded-2xl border border-white/25 bg-[#1E1E1E]/95 p-6 backdrop-blur-lg">
-                                <div className="mb-4 flex items-center justify-between">
-                                    <h3 className="text-2xl font-semibold text-white">{expandedSection.title} · {t('detailByArea')}</h3>
-                                    <button
-                                        type="button"
-                                        onClick={() => setExpandedSection(null)}
-                                        className="rounded-lg px-3 py-1 text-white/80 hover:bg-white/10 hover:text-white"
-                                    >
-                                        ✕
-                                    </button>
-                                </div>
-
-                                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:items-center">
-                                    <div className="flex justify-center">
-                                        <PieChart
-                                            segments={expandedSection.segments}
-                                            total={expandedSection.total}
-                                            size={260}
-                                            showSliceValues
-                                        />
+                    <AnimatePresence>
+                        {expandedSection && (
+                            <motion.div
+                                className="fixed inset-0 z-[70] flex items-center justify-center bg-black/70 p-4"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.2 }}
+                            >
+                                <motion.div
+                                    className="w-full max-w-2xl rounded-2xl border border-white/25 bg-[#1E1E1E]/95 p-6 backdrop-blur-lg"
+                                    initial={{ opacity: 0, y: 20, scale: 0.98 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                    exit={{ opacity: 0, y: 16, scale: 0.98 }}
+                                    transition={{ type: 'spring', stiffness: 280, damping: 24 }}
+                                >
+                                    <div className="mb-4 flex items-center justify-between">
+                                        <h3 className="text-2xl font-semibold text-white">{expandedSection.title} · {t('detailByArea')}</h3>
+                                        <button
+                                            type="button"
+                                            onClick={() => setExpandedSection(null)}
+                                            className="rounded-lg px-3 py-1 text-white/80 hover:bg-white/10 hover:text-white"
+                                        >
+                                            ✕
+                                        </button>
                                     </div>
 
-                                    <div className="space-y-3">
-                                        {expandedSection.segments.map((segment) => (
-                                            <div
-                                                key={`expanded-${expandedSection.id}-${segment.id}`}
-                                                className="flex items-center justify-between rounded-lg bg-white/5 px-3 py-2"
-                                            >
-                                                <div className="flex items-center gap-2">
-                                                    <span className="h-3 w-3 rounded-full" style={{ backgroundColor: segment.strokeColor }}></span>
-                                                    <span className="font-semibold text-white">{segment.label}</span>
+                                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:items-center">
+                                        <div className="flex justify-center">
+                                            <PieChart
+                                                segments={expandedSection.segments}
+                                                total={expandedSection.total}
+                                                size={260}
+                                                showSliceValues
+                                            />
+                                        </div>
+
+                                        <div className="space-y-3">
+                                            {expandedSection.segments.map((segment) => (
+                                                <div
+                                                    key={`expanded-${expandedSection.id}-${segment.id}`}
+                                                    className="flex items-center justify-between rounded-lg bg-white/5 px-3 py-2"
+                                                >
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="h-3 w-3 rounded-full" style={{ backgroundColor: segment.strokeColor }}></span>
+                                                        <span className="font-semibold text-white">{segment.label}</span>
+                                                    </div>
+                                                    <span className="font-bold text-white">{segment.value} tareas</span>
                                                 </div>
-                                                <span className="font-bold text-white">{segment.value} tareas</span>
+                                            ))}
+                                            <div className="pt-2 text-right text-sm text-white/80">
+                                                Total: <span className="font-bold text-white">{expandedSection.total} tareas</span>
                                             </div>
-                                        ))}
-                                        <div className="pt-2 text-right text-sm text-white/80">
-                                            Total: <span className="font-bold text-white">{expandedSection.total} tareas</span>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
+                                </motion.div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
             </div>
         </div>

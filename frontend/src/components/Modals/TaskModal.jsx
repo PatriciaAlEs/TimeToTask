@@ -4,6 +4,7 @@
  */
 
 import React, { useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Card, CardHeader, CardTitle, CardBody, CardFooter } from '../common/Cards';
 import { Button, ButtonPrimary, ButtonSecondary, ButtonDanger } from '../common/Buttons';
 import { Input, Textarea, Select } from '../common/Inputs';
@@ -22,89 +23,104 @@ export function TaskModal({ task, isOpen, onClose, onSave, onDelete }) {
         onSave(formData);
     };
 
-    if (!isOpen) return null;
-
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <Card className="w-full max-w-md">
-                <CardHeader>
-                    <CardTitle>{task?.id ? 'Editar Tarea' : 'Nueva Tarea'}</CardTitle>
-                </CardHeader>
+        <AnimatePresence>
+            {isOpen && (
+                <motion.div
+                    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                >
+                    <motion.div
+                        initial={{ opacity: 0, y: 20, scale: 0.98 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 16, scale: 0.98 }}
+                        transition={{ type: 'spring', stiffness: 280, damping: 24 }}
+                    >
+                        <Card className="w-full max-w-md">
+                            <CardHeader>
+                                <CardTitle>{task?.id ? 'Editar Tarea' : 'Nueva Tarea'}</CardTitle>
+                            </CardHeader>
 
-                <form onSubmit={handleSubmit}>
-                    <CardBody className="space-y-4">
-                        <Input
-                            id="key"
-                            label="Clave"
-                            value={formData.key || ''}
-                            disabled
-                        />
+                            <form onSubmit={handleSubmit}>
+                                <CardBody className="space-y-4">
+                                    <Input
+                                        id="key"
+                                        label="Clave"
+                                        value={formData.key || ''}
+                                        disabled
+                                    />
 
-                        <Input
-                            id="title"
-                            label="Título"
-                            name="title"
-                            value={formData.title || ''}
-                            onChange={handleChange}
-                            required
-                        />
+                                    <Input
+                                        id="title"
+                                        label="Título"
+                                        name="title"
+                                        value={formData.title || ''}
+                                        onChange={handleChange}
+                                        required
+                                    />
 
-                        <Textarea
-                            id="description"
-                            label="Descripción"
-                            name="description"
-                            value={formData.description || ''}
-                            onChange={handleChange}
-                            rows={4}
-                        />
+                                    <Textarea
+                                        id="description"
+                                        label="Descripción"
+                                        name="description"
+                                        value={formData.description || ''}
+                                        onChange={handleChange}
+                                        rows={4}
+                                    />
 
-                        <div className="grid grid-cols-2 gap-4">
-                            <Select
-                                id="priority"
-                                label="Prioridad"
-                                name="priority"
-                                value={formData.priority || 'medium'}
-                                onChange={handleChange}
-                                options={[
-                                    { value: 'low', label: 'Baja' },
-                                    { value: 'medium', label: 'Media' },
-                                    { value: 'high', label: 'Alta' },
-                                ]}
-                            />
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <Select
+                                            id="priority"
+                                            label="Prioridad"
+                                            name="priority"
+                                            value={formData.priority || 'medium'}
+                                            onChange={handleChange}
+                                            options={[
+                                                { value: 'low', label: 'Baja' },
+                                                { value: 'medium', label: 'Media' },
+                                                { value: 'high', label: 'Alta' },
+                                            ]}
+                                        />
 
-                            <Select
-                                id="status"
-                                label="Estado"
-                                name="status"
-                                value={formData.status || 'todo'}
-                                onChange={handleChange}
-                                options={[
-                                    { value: 'todo', label: 'Por Hacer' },
-                                    { value: 'inProgress', label: 'En Progreso' },
-                                    { value: 'review', label: 'En Revisión' },
-                                    { value: 'done', label: 'Completado' },
-                                ]}
-                            />
-                        </div>
-                    </CardBody>
+                                        <Select
+                                            id="status"
+                                            label="Estado"
+                                            name="status"
+                                            value={formData.status || 'todo'}
+                                            onChange={handleChange}
+                                            options={[
+                                                { value: 'todo', label: 'Por Hacer' },
+                                                { value: 'inProgress', label: 'En Progreso' },
+                                                { value: 'review', label: 'En Revisión' },
+                                                { value: 'done', label: 'Completado' },
+                                            ]}
+                                        />
+                                    </div>
+                                </CardBody>
 
-                    <CardFooter justify="between">
-                        <Row gap={2}>
-                            <ButtonPrimary type="submit" size="sm">
-                                Guardar
-                            </ButtonPrimary>
-                            <ButtonSecondary type="button" size="sm" onClick={onClose}>
-                                Cancelar
-                            </ButtonSecondary>
-                        </Row>
-                        {task?.id && (
-                            <ButtonDanger type="button" size="sm" onClick={() => onDelete(task.id)}>
-                                Eliminar
-                            </ButtonDanger>
-                        )}
-                    </CardFooter>
-                </form>
-            </Card>
-        </div>
+                                <CardFooter justify="between">
+                                    <Row gap={2}>
+                                        <ButtonPrimary type="submit" size="sm">
+                                            Guardar
+                                        </ButtonPrimary>
+                                        <ButtonSecondary type="button" size="sm" onClick={onClose}>
+                                            Cancelar
+                                        </ButtonSecondary>
+                                    </Row>
+                                    {task?.id && (
+                                        <ButtonDanger type="button" size="sm" onClick={() => onDelete(task.id)}>
+                                            Eliminar
+                                        </ButtonDanger>
+                                    )}
+                                </CardFooter>
+                            </form>
+                        </Card>
+                    </motion.div>
+                </motion.div>
+            )}
+        </AnimatePresence>
     );
 }

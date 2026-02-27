@@ -1,0 +1,321 @@
+0 verbose cli C:\Program Files\nodejs\node.exe C:\Users\piruj\AppData\Roaming\npm\node_modules\npm\bin\npm-cli.js
+1 info using npm@11.6.1
+2 info using node@v23.5.0
+3 silly config load:file:C:\Users\piruj\AppData\Roaming\npm\node_modules\npm\npmrc
+4 silly config load:file:C:\Users\piruj\OneDrive\Desktop\Patri\Gestor-Tareas\my-fullstack-app\frontend\.npmrc
+5 silly config load:file:C:\Users\piruj\.npmrc
+6 silly config load:file:C:\Users\piruj\AppData\Roaming\npm\etc\npmrc
+7 verbose title npm install framer-motion
+8 verbose argv "install" "framer-motion"
+9 verbose logfile logs-max:10 dir:C:\Users\piruj\OneDrive\Desktop\Patri\Gestor-Tareas\my-fullstack-app\frontend\tempnpm-cache\_logs\2026-02-27T18_31_07_255Z-
+10 verbose logfile C:\Users\piruj\OneDrive\Desktop\Patri\Gestor-Tareas\my-fullstack-app\frontend\tempnpm-cache\_logs\2026-02-27T18_31_07_255Z-debug-0.log
+11 silly logfile done cleaning log files
+12 silly packumentCache heap:4345298944 maxSize:1086324736 maxEntrySize:543162368
+13 silly idealTree buildDeps
+14 silly fetch manifest framer-motion@*
+15 silly packumentCache full:https://registry.npmjs.org/framer-motion cache-miss
+16 http fetch GET 200 https://registry.npmjs.org/framer-motion 407ms (cache miss)
+17 silly packumentCache full:https://registry.npmjs.org/framer-motion set size:undefined disposed:false
+18 silly fetch manifest @emotion/is-prop-valid@*
+19 silly packumentCache full:https://registry.npmjs.org/@emotion%2fis-prop-valid cache-miss
+20 http fetch GET 200 https://registry.npmjs.org/@emotion%2fis-prop-valid 452ms (cache miss)
+21 silly packumentCache full:https://registry.npmjs.org/@emotion%2fis-prop-valid set size:undefined disposed:false
+22 silly fetch manifest react@^18.0.0
+23 silly packumentCache full:https://registry.npmjs.org/react cache-miss
+24 http fetch GET 200 https://registry.npmjs.org/react 120ms (cache miss)
+25 silly packumentCache full:https://registry.npmjs.org/react set size:undefined disposed:false
+26 silly fetch manifest react-dom@^18.0.0
+27 silly packumentCache full:https://registry.npmjs.org/react-dom cache-miss
+28 http fetch GET 200 https://registry.npmjs.org/react-dom 139ms (cache miss)
+29 silly packumentCache full:https://registry.npmjs.org/react-dom set size:undefined disposed:false
+30 silly placeDep ROOT framer-motion@12.34.3 OK for: timetotask@1.0.0 want: *
+31 silly fetch manifest motion-dom@^12.34.3
+32 silly packumentCache full:https://registry.npmjs.org/motion-dom cache-miss
+33 silly fetch manifest motion-utils@^12.29.2
+34 silly packumentCache full:https://registry.npmjs.org/motion-utils cache-miss
+35 silly fetch manifest tslib@^2.4.0
+36 silly packumentCache full:https://registry.npmjs.org/tslib cache-miss
+37 http fetch GET 200 https://registry.npmjs.org/tslib 76ms (cache miss)
+38 silly packumentCache full:https://registry.npmjs.org/tslib set size:undefined disposed:false
+39 http fetch GET 200 https://registry.npmjs.org/motion-dom 204ms (cache miss)
+40 silly packumentCache full:https://registry.npmjs.org/motion-dom set size:undefined disposed:false
+41 http fetch GET 200 https://registry.npmjs.org/motion-utils 255ms (cache miss)
+42 silly packumentCache full:https://registry.npmjs.org/motion-utils set size:undefined disposed:false
+43 silly placeDep ROOT motion-dom@12.34.3 OK for: framer-motion@12.34.3 want: ^12.34.3
+44 silly placeDep ROOT motion-utils@12.29.2 OK for: framer-motion@12.34.3 want: ^12.29.2
+45 silly placeDep ROOT tslib@2.8.1 OK for: framer-motion@12.34.3 want: ^2.4.0
+46 silly reify moves {}
+47 silly audit bulk request {
+47 silly audit   '@alloc/quick-lru': [ '5.2.0' ],
+47 silly audit   '@babel/code-frame': [ '7.28.6' ],
+47 silly audit   '@babel/compat-data': [ '7.28.6' ],
+47 silly audit   '@babel/core': [ '7.28.6' ],
+47 silly audit   '@babel/generator': [ '7.28.6' ],
+47 silly audit   '@babel/helper-compilation-targets': [ '7.28.6' ],
+47 silly audit   '@babel/helper-globals': [ '7.28.0' ],
+47 silly audit   '@babel/helper-module-imports': [ '7.28.6' ],
+47 silly audit   '@babel/helper-module-transforms': [ '7.28.6' ],
+47 silly audit   '@babel/helper-plugin-utils': [ '7.28.6' ],
+47 silly audit   '@babel/helper-string-parser': [ '7.27.1' ],
+47 silly audit   '@babel/helper-validator-identifier': [ '7.28.5' ],
+47 silly audit   '@babel/helper-validator-option': [ '7.27.1' ],
+47 silly audit   '@babel/helpers': [ '7.28.6' ],
+47 silly audit   '@babel/parser': [ '7.28.6' ],
+47 silly audit   '@babel/plugin-transform-react-jsx-self': [ '7.27.1' ],
+47 silly audit   '@babel/plugin-transform-react-jsx-source': [ '7.27.1' ],
+47 silly audit   '@babel/template': [ '7.28.6' ],
+47 silly audit   '@babel/traverse': [ '7.28.6' ],
+47 silly audit   '@babel/types': [ '7.28.6' ],
+47 silly audit   '@esbuild/android-arm': [ '0.18.20' ],
+47 silly audit   '@esbuild/android-arm64': [ '0.18.20' ],
+47 silly audit   '@esbuild/android-x64': [ '0.18.20' ],
+47 silly audit   '@esbuild/darwin-arm64': [ '0.18.20' ],
+47 silly audit   '@esbuild/darwin-x64': [ '0.18.20' ],
+47 silly audit   '@esbuild/freebsd-arm64': [ '0.18.20' ],
+47 silly audit   '@esbuild/freebsd-x64': [ '0.18.20' ],
+47 silly audit   '@esbuild/linux-arm': [ '0.18.20' ],
+47 silly audit   '@esbuild/linux-arm64': [ '0.18.20' ],
+47 silly audit   '@esbuild/linux-ia32': [ '0.18.20' ],
+47 silly audit   '@esbuild/linux-loong64': [ '0.18.20' ],
+47 silly audit   '@esbuild/linux-mips64el': [ '0.18.20' ],
+47 silly audit   '@esbuild/linux-ppc64': [ '0.18.20' ],
+47 silly audit   '@esbuild/linux-riscv64': [ '0.18.20' ],
+47 silly audit   '@esbuild/linux-s390x': [ '0.18.20' ],
+47 silly audit   '@esbuild/linux-x64': [ '0.18.20' ],
+47 silly audit   '@esbuild/netbsd-x64': [ '0.18.20' ],
+47 silly audit   '@esbuild/openbsd-x64': [ '0.18.20' ],
+47 silly audit   '@esbuild/sunos-x64': [ '0.18.20' ],
+47 silly audit   '@esbuild/win32-arm64': [ '0.18.20' ],
+47 silly audit   '@esbuild/win32-ia32': [ '0.18.20' ],
+47 silly audit   '@esbuild/win32-x64': [ '0.18.20' ],
+47 silly audit   '@jridgewell/gen-mapping': [ '0.3.13' ],
+47 silly audit   '@jridgewell/remapping': [ '2.3.5' ],
+47 silly audit   '@jridgewell/resolve-uri': [ '3.1.2' ],
+47 silly audit   '@jridgewell/sourcemap-codec': [ '1.5.5' ],
+47 silly audit   '@jridgewell/trace-mapping': [ '0.3.31' ],
+47 silly audit   '@nodelib/fs.scandir': [ '2.1.5' ],
+47 silly audit   '@nodelib/fs.stat': [ '2.0.5' ],
+47 silly audit   '@nodelib/fs.walk': [ '1.2.8' ],
+47 silly audit   '@remix-run/router': [ '1.23.2' ],
+47 silly audit   '@vitejs/plugin-react': [ '3.1.0' ],
+47 silly audit   'any-promise': [ '1.3.0' ],
+47 silly audit   anymatch: [ '3.1.3' ],
+47 silly audit   arg: [ '5.0.2' ],
+47 silly audit   autoprefixer: [ '10.4.23' ],
+47 silly audit   axios: [ '0.21.4' ],
+47 silly audit   'baseline-browser-mapping': [ '2.9.14' ],
+47 silly audit   'binary-extensions': [ '2.3.0' ],
+47 silly audit   braces: [ '3.0.3' ],
+47 silly audit   browserslist: [ '4.28.1' ],
+47 silly audit   'camelcase-css': [ '2.0.1' ],
+47 silly audit   'caniuse-lite': [ '1.0.30001764' ],
+47 silly audit   chokidar: [ '3.6.0' ],
+47 silly audit   'glob-parent': [ '5.1.2', '6.0.2' ],
+47 silly audit   clsx: [ '2.1.1' ],
+47 silly audit   commander: [ '4.1.1' ],
+47 silly audit   'convert-source-map': [ '2.0.0' ],
+47 silly audit   cssesc: [ '3.0.0' ],
+47 silly audit   debug: [ '4.4.3' ],
+47 silly audit   didyoumean: [ '1.2.2' ],
+47 silly audit   dlv: [ '1.1.3' ],
+47 silly audit   'electron-to-chromium': [ '1.5.267' ],
+47 silly audit   esbuild: [ '0.18.20' ],
+47 silly audit   escalade: [ '3.2.0' ],
+47 silly audit   'fast-glob': [ '3.3.3' ],
+47 silly audit   fastq: [ '1.20.1' ],
+47 silly audit   'fill-range': [ '7.1.1' ],
+47 silly audit   'follow-redirects': [ '1.15.11' ],
+47 silly audit   'fraction.js': [ '5.3.4' ],
+47 silly audit   fsevents: [ '2.3.3' ],
+47 silly audit   'function-bind': [ '1.1.2' ],
+47 silly audit   gensync: [ '1.0.0-beta.2' ],
+47 silly audit   hasown: [ '2.0.2' ],
+47 silly audit   'is-binary-path': [ '2.1.0' ],
+47 silly audit   'is-core-module': [ '2.16.1' ],
+47 silly audit   'is-extglob': [ '2.1.1' ],
+47 silly audit   'is-glob': [ '4.0.3' ],
+47 silly audit   'is-number': [ '7.0.0' ],
+47 silly audit   jiti: [ '1.21.7' ],
+47 silly audit   'js-tokens': [ '4.0.0' ],
+47 silly audit   jsesc: [ '3.1.0' ],
+47 silly audit   json5: [ '2.2.3' ],
+47 silly audit   lilconfig: [ '3.1.3' ],
+47 silly audit   'lines-and-columns': [ '1.2.4' ],
+47 silly audit   'loose-envify': [ '1.4.0' ],
+47 silly audit   'lru-cache': [ '5.1.1' ],
+47 silly audit   'magic-string': [ '0.27.0' ],
+47 silly audit   merge2: [ '1.4.1' ],
+47 silly audit   micromatch: [ '4.0.8' ],
+47 silly audit   ms: [ '2.1.3' ],
+47 silly audit   mz: [ '2.7.0' ],
+47 silly audit   nanoid: [ '3.3.11' ],
+47 silly audit   'node-releases': [ '2.0.27' ],
+47 silly audit   'normalize-path': [ '3.0.0' ],
+47 silly audit   'object-assign': [ '4.1.1' ],
+47 silly audit   'object-hash': [ '3.0.0' ],
+47 silly audit   'path-parse': [ '1.0.7' ],
+47 silly audit   picocolors: [ '1.1.1' ],
+47 silly audit   picomatch: [ '2.3.1', '4.0.3' ],
+47 silly audit   pify: [ '2.3.0' ],
+47 silly audit   pirates: [ '4.0.7' ],
+47 silly audit   postcss: [ '8.5.6' ],
+47 silly audit   'postcss-import': [ '15.1.0' ],
+47 silly audit   'postcss-js': [ '4.1.0' ],
+47 silly audit   'postcss-load-config': [ '6.0.1' ],
+47 silly audit   'postcss-nested': [ '6.2.0' ],
+47 silly audit   'postcss-selector-parser': [ '6.1.2' ],
+47 silly audit   'postcss-value-parser': [ '4.2.0' ],
+47 silly audit   'queue-microtask': [ '1.2.3' ],
+47 silly audit   react: [ '18.3.1' ],
+47 silly audit   'react-dom': [ '18.3.1' ],
+47 silly audit   'react-refresh': [ '0.14.2' ],
+47 silly audit   'react-router': [ '6.30.3' ],
+47 silly audit   'react-router-dom': [ '6.30.3' ],
+47 silly audit   'react-toastify': [ '11.0.5' ],
+47 silly audit   'read-cache': [ '1.0.0' ],
+47 silly audit   readdirp: [ '3.6.0' ],
+47 silly audit   resolve: [ '1.22.11' ],
+47 silly audit   reusify: [ '1.1.0' ],
+47 silly audit   rollup: [ '3.29.5' ],
+47 silly audit   'run-parallel': [ '1.2.0' ],
+47 silly audit   scheduler: [ '0.23.2' ],
+47 silly audit   semver: [ '6.3.1' ],
+47 silly audit   'source-map-js': [ '1.2.1' ],
+47 silly audit   sucrase: [ '3.35.1' ],
+47 silly audit   'supports-preserve-symlinks-flag': [ '1.0.0' ],
+47 silly audit   tailwindcss: [ '3.4.19' ],
+47 silly audit   thenify: [ '3.3.1' ],
+47 silly audit   'thenify-all': [ '1.6.0' ],
+47 silly audit   tinyglobby: [ '0.2.15' ],
+47 silly audit   fdir: [ '6.5.0' ],
+47 silly audit   'to-regex-range': [ '5.0.1' ],
+47 silly audit   'ts-interface-checker': [ '0.1.13' ],
+47 silly audit   'update-browserslist-db': [ '1.2.3' ],
+47 silly audit   'util-deprecate': [ '1.0.2' ],
+47 silly audit   vite: [ '4.5.14' ],
+47 silly audit   yallist: [ '3.1.1' ],
+47 silly audit   'framer-motion': [ '12.34.3' ],
+47 silly audit   'motion-dom': [ '12.34.3' ],
+47 silly audit   'motion-utils': [ '12.29.2' ],
+47 silly audit   tslib: [ '2.8.1' ]
+47 silly audit }
+48 http cache tslib@https://registry.npmjs.org/tslib/-/tslib-2.8.1.tgz 0ms (cache hit)
+49 http cache motion-utils@https://registry.npmjs.org/motion-utils/-/motion-utils-12.29.2.tgz 0ms (cache hit)
+50 silly tarball no local data for tslib@https://registry.npmjs.org/tslib/-/tslib-2.8.1.tgz. Extracting by manifest.
+51 http cache framer-motion@https://registry.npmjs.org/framer-motion/-/framer-motion-12.34.3.tgz 0ms (cache hit)
+52 silly tarball no local data for motion-utils@https://registry.npmjs.org/motion-utils/-/motion-utils-12.29.2.tgz. Extracting by manifest.
+53 http cache motion-dom@https://registry.npmjs.org/motion-dom/-/motion-dom-12.34.3.tgz 0ms (cache hit)
+54 silly tarball no local data for framer-motion@https://registry.npmjs.org/framer-motion/-/framer-motion-12.34.3.tgz. Extracting by manifest.
+55 silly tarball no local data for motion-dom@https://registry.npmjs.org/motion-dom/-/motion-dom-12.34.3.tgz. Extracting by manifest.
+56 http fetch GET 200 https://registry.npmjs.org/tslib/-/tslib-2.8.1.tgz 56ms (cache miss)
+57 http fetch GET 200 https://registry.npmjs.org/motion-utils/-/motion-utils-12.29.2.tgz 169ms (cache miss)
+58 http fetch POST 200 https://registry.npmjs.org/-/npm/v1/security/advisories/bulk 204ms
+59 silly audit report {
+59 silly audit report   axios: [
+59 silly audit report     {
+59 silly audit report       id: 1111034,
+59 silly audit report       url: 'https://github.com/advisories/GHSA-jr5f-v2jv-69x6',
+59 silly audit report       title: 'axios Requests Vulnerable To Possible SSRF and Credential Leakage via Absolute URL',
+59 silly audit report       severity: 'high',
+59 silly audit report       vulnerable_versions: '<0.30.0',
+59 silly audit report       cwe: [Array],
+59 silly audit report       cvss: [Object]
+59 silly audit report     },
+59 silly audit report     {
+59 silly audit report       id: 1113274,
+59 silly audit report       url: 'https://github.com/advisories/GHSA-43fc-jf86-j433',
+59 silly audit report       title: 'Axios is Vulnerable to Denial of Service via __proto__ Key in mergeConfig',
+59 silly audit report       severity: 'high',
+59 silly audit report       vulnerable_versions: '<=0.30.2',
+59 silly audit report       cwe: [Array],
+59 silly audit report       cvss: [Object]
+59 silly audit report     },
+59 silly audit report     {
+59 silly audit report       id: 1097679,
+59 silly audit report       url: 'https://github.com/advisories/GHSA-wf5p-g6vw-rhxx',
+59 silly audit report       title: 'Axios Cross-Site Request Forgery Vulnerability',
+59 silly audit report       severity: 'moderate',
+59 silly audit report       vulnerable_versions: '>=0.8.1 <0.28.0',
+59 silly audit report       cwe: [Array],
+59 silly audit report       cvss: [Object]
+59 silly audit report     }
+59 silly audit report   ],
+59 silly audit report   esbuild: [
+59 silly audit report     {
+59 silly audit report       id: 1102341,
+59 silly audit report       url: 'https://github.com/advisories/GHSA-67mh-4wv8-2f99',
+59 silly audit report       title: 'esbuild enables any website to send any requests to the development server and read the response',
+59 silly audit report       severity: 'moderate',
+59 silly audit report       vulnerable_versions: '<=0.24.2',
+59 silly audit report       cwe: [Array],
+59 silly audit report       cvss: [Object]
+59 silly audit report     }
+59 silly audit report   ],
+59 silly audit report   rollup: [
+59 silly audit report     {
+59 silly audit report       id: 1113516,
+59 silly audit report       url: 'https://github.com/advisories/GHSA-mw96-cpmx-2vgc',
+59 silly audit report       title: 'Rollup 4 has Arbitrary File Write via Path Traversal',
+59 silly audit report       severity: 'high',
+59 silly audit report       vulnerable_versions: '>=3.0.0 <3.30.0',
+59 silly audit report       cwe: [Array],
+59 silly audit report       cvss: [Object]
+59 silly audit report     }
+59 silly audit report   ],
+59 silly audit report   vite: [
+59 silly audit report     {
+59 silly audit report       id: 1107323,
+59 silly audit report       url: 'https://github.com/advisories/GHSA-g4jq-h2w9-997c',
+59 silly audit report       title: 'Vite middleware may serve files starting with the same name with the public directory',
+59 silly audit report       severity: 'low',
+59 silly audit report       vulnerable_versions: '<=5.4.19',
+59 silly audit report       cwe: [Array],
+59 silly audit report       cvss: [Object]
+59 silly audit report     },
+59 silly audit report     {
+59 silly audit report       id: 1107327,
+59 silly audit report       url: 'https://github.com/advisories/GHSA-jqfw-vq24-v9c3',
+59 silly audit report       title: "Vite's `server.fs` settings were not applied to HTML files",
+59 silly audit report       severity: 'low',
+59 silly audit report       vulnerable_versions: '<=5.4.19',
+59 silly audit report       cwe: [Array],
+59 silly audit report       cvss: [Object]
+59 silly audit report     },
+59 silly audit report     {
+59 silly audit report       id: 1109132,
+59 silly audit report       url: 'https://github.com/advisories/GHSA-93m4-6634-74q7',
+59 silly audit report       title: 'vite allows server.fs.deny bypass via backslash on Windows',
+59 silly audit report       severity: 'moderate',
+59 silly audit report       vulnerable_versions: '>=4.5.3 <5.0.0',
+59 silly audit report       cwe: [Array],
+59 silly audit report       cvss: [Object]
+59 silly audit report     }
+59 silly audit report   ]
+59 silly audit report }
+60 silly packumentCache corgi:https://registry.npmjs.org/axios cache-miss
+61 silly packumentCache corgi:https://registry.npmjs.org/esbuild cache-miss
+62 silly packumentCache corgi:https://registry.npmjs.org/rollup cache-miss
+63 silly packumentCache corgi:https://registry.npmjs.org/vite cache-miss
+64 http fetch GET 200 https://registry.npmjs.org/axios 33ms (cache miss)
+65 silly packumentCache corgi:https://registry.npmjs.org/axios set size:undefined disposed:false
+66 http fetch GET 200 https://registry.npmjs.org/esbuild 83ms (cache miss)
+67 silly packumentCache corgi:https://registry.npmjs.org/esbuild set size:undefined disposed:false
+68 http fetch GET 200 https://registry.npmjs.org/rollup 91ms (cache miss)
+69 silly packumentCache corgi:https://registry.npmjs.org/rollup set size:undefined disposed:false
+70 http fetch GET 200 https://registry.npmjs.org/vite 147ms (cache miss)
+71 silly packumentCache corgi:https://registry.npmjs.org/vite set size:undefined disposed:false
+72 silly packumentCache corgi:https://registry.npmjs.org/@vitejs%2fplugin-react cache-miss
+73 http fetch GET 200 https://registry.npmjs.org/@vitejs%2fplugin-react 58ms (cache miss)
+74 silly packumentCache corgi:https://registry.npmjs.org/@vitejs%2fplugin-react set size:undefined disposed:false
+75 http fetch GET 200 https://registry.npmjs.org/framer-motion/-/framer-motion-12.34.3.tgz 890ms (cache miss)
+76 http fetch GET 200 https://registry.npmjs.org/motion-dom/-/motion-dom-12.34.3.tgz 1002ms (cache miss)
+77 silly ADD node_modules/tslib
+78 silly ADD node_modules/motion-utils
+79 silly ADD node_modules/motion-dom
+80 silly ADD node_modules/framer-motion
+81 verbose cwd C:\Users\piruj\OneDrive\Desktop\Patri\Gestor-Tareas\my-fullstack-app\frontend
+82 verbose os Windows_NT 10.0.26200
+83 verbose node v23.5.0
+84 verbose npm  v11.6.1
+85 verbose exit 0
+86 info ok

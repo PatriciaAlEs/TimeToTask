@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { useTheme } from '@/theme/ThemeContext';
 import Login from '@/components/Auth/Login';
@@ -286,19 +287,39 @@ const Home = () => {
                 }
             `}</style>
 
-            {isLoginModalOpen && (
-                <Login
-                    isModal
-                    onClose={() => navigate('/')}
-                />
-            )}
+            <AnimatePresence>
+                {isLoginModalOpen && (
+                    <motion.div
+                        key="login-modal"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                    >
+                        <Login
+                            isModal
+                            onClose={() => navigate('/')}
+                        />
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
-            {isRegisterModalOpen && (
-                <Register
-                    isModal
-                    onClose={() => navigate('/')}
-                />
-            )}
+            <AnimatePresence>
+                {isRegisterModalOpen && (
+                    <motion.div
+                        key="register-modal"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                    >
+                        <Register
+                            isModal
+                            onClose={() => navigate('/')}
+                        />
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

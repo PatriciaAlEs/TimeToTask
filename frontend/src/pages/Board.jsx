@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useLanguage } from '../i18n/LanguageContext';
 import { useTheme } from '../theme/ThemeContext';
 import { KanbanColumn } from '../components/Board/KanbanColumn';
@@ -156,20 +157,28 @@ export default function BoardPage() {
                                     {selectedProjectInfo ? `Board · ${selectedProjectInfo.name}` : 'Board'}
                                 </h1>
                             </div>
-                            {showBoardInfo && (
-                                <div className="mt-3 rounded-xl border border-[#B6D1C7]/35 bg-[#1E1E1E]/70 light-theme-card p-3 text-sm text-[#E6E6E6] shadow-lg backdrop-blur">
-                                    <p className="mb-2">
-                                        Esta vista organiza las tareas del proyecto en columnas para que puedas ver el
-                                        flujo de trabajo completo y actuar rápido sobre lo más importante.
-                                    </p>
-                                    <ul className="list-disc pl-5 space-y-1">
-                                        <li>Crea tareas en la columna adecuada según su tipo.</li>
-                                        <li>Arrastra tarjetas entre columnas para reflejar cambios del trabajo.</li>
-                                        <li>Edita una tarea para actualizar prioridad, fechas o detalles clave.</li>
-                                        <li>Úsalo como vista diaria para detectar bloqueos y ordenar próximos pasos.</li>
-                                    </ul>
-                                </div>
-                            )}
+                            <AnimatePresence>
+                                {showBoardInfo && (
+                                    <motion.div
+                                        className="mt-3 rounded-xl border border-[#B6D1C7]/35 bg-[#1E1E1E]/70 light-theme-card p-3 text-sm text-[#E6E6E6] shadow-lg backdrop-blur"
+                                        initial={{ opacity: 0, y: -8 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -8 }}
+                                        transition={{ duration: 0.2 }}
+                                    >
+                                        <p className="mb-2">
+                                            Esta vista organiza las tareas del proyecto en columnas para que puedas ver el
+                                            flujo de trabajo completo y actuar rápido sobre lo más importante.
+                                        </p>
+                                        <ul className="list-disc pl-5 space-y-1">
+                                            <li>Crea tareas en la columna adecuada según su tipo.</li>
+                                            <li>Arrastra tarjetas entre columnas para reflejar cambios del trabajo.</li>
+                                            <li>Edita una tarea para actualizar prioridad, fechas o detalles clave.</li>
+                                            <li>Úsalo como vista diaria para detectar bloqueos y ordenar próximos pasos.</li>
+                                        </ul>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </div>
                     </div>
 
