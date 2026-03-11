@@ -5,9 +5,9 @@
 4 silly config load:file:C:\Users\piruj\OneDrive\Desktop\Patri\Gestor-Tareas\my-fullstack-app\frontend\.npmrc
 5 silly config load:file:C:\Users\piruj\.npmrc
 6 silly config load:file:C:\Users\piruj\AppData\Roaming\npm\etc\npmrc
-7 verbose title npm run build
-8 verbose argv "run" "build"
-9 verbose logfile logs-max:10 dir:C:\Users\piruj\OneDrive\Desktop\Patri\Gestor-Tareas\my-fullstack-app\frontend\tempnpm-cache\_logs\2026-02-26T09_14_53_453Z-
-10 verbose logfile C:\Users\piruj\OneDrive\Desktop\Patri\Gestor-Tareas\my-fullstack-app\frontend\tempnpm-cache\_logs\2026-02-26T09_14_53_453Z-debug-0.log
+7 verbose title npm run dev
+8 verbose argv "run" "dev"
+9 verbose logfile logs-max:10 dir:C:\Users\piruj\OneDrive\Desktop\Patri\Gestor-Tareas\my-fullstack-app\frontend\tempnpm-cache\_logs\2026-03-11T18_42_48_755Z-
+10 verbose logfile C:\Users\piruj\OneDrive\Desktop\Patri\Gestor-Tareas\my-fullstack-app\frontend\tempnpm-cache\_logs\2026-03-11T18_42_48_755Z-debug-0.log
 11 silly logfile start cleaning logs, removing 1 files
 12 silly logfile done cleaning log files
