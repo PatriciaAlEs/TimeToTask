@@ -54,86 +54,86 @@ const Footer = () => {
                                 <i className="fas fa-globe text-white text-sm"></i>
                             </a>
                         </div>
-                            <a
-                                href="https://www.linkedin.com/in/patricia-alvarez-estevez/"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="w-10 h-10 bg-primary-400 hover:bg-primary-500 rounded-lg flex items-center justify-center transition-colors"
-                                aria-label="LinkedIn"
-                                title="LinkedIn"
-                            >
-                                <i className="fab fa-linkedin text-white text-sm"></i>
-                            </a>
-                            <a
-                                href="https://github.com/PatriciaAlEs"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="w-10 h-10 bg-primary-400 hover:bg-primary-500 rounded-lg flex items-center justify-center transition-colors"
-                                aria-label="GitHub"
-                                title="GitHub"
-                            >
-                                <i className="fab fa-github text-white text-sm"></i>
-                            </a>
-                            <a
-                                href="https://portfoliopatriciaales202603.onrender.com/"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="w-10 h-10 bg-primary-400 hover:bg-primary-500 rounded-lg flex items-center justify-center transition-colors"
-                                aria-label="Portfolio"
-                                title="Portfolio"
-                            >
-                                <i className="fas fa-globe text-white text-sm"></i>
-                            </a>
+                        <a
+                            href="https://www.linkedin.com/in/patricia-alvarez-estevez/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-10 h-10 bg-primary-400 hover:bg-primary-500 rounded-lg flex items-center justify-center transition-colors"
+                            aria-label="LinkedIn"
+                            title="LinkedIn"
+                        >
+                            <i className="fab fa-linkedin text-white text-sm"></i>
+                        </a>
+                        <a
+                            href="https://github.com/PatriciaAlEs"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-10 h-10 bg-primary-400 hover:bg-primary-500 rounded-lg flex items-center justify-center transition-colors"
+                            aria-label="GitHub"
+                            title="GitHub"
+                        >
+                            <i className="fab fa-github text-white text-sm"></i>
+                        </a>
+                        <a
+                            href="https://portfoliopatriciaales202603.onrender.com/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-10 h-10 bg-primary-400 hover:bg-primary-500 rounded-lg flex items-center justify-center transition-colors"
+                            aria-label="Portfolio"
+                            title="Portfolio"
+                        >
+                            <i className="fas fa-globe text-white text-sm"></i>
+                        </a>
 >>>>>>> c9fd2e66dfec5f75eff00c983f8c336369a8c442
-                        </div>
                     </div>
+                </div>
 
-                    {/* Producto */}
-                    <div>
-                        <h3 className="font-bold mb-4 text-lg text-accent-300">{t('product')}</h3>
-                        <ul className="space-y-2 text-gray-300 light-theme-muted">
-                            <li>
-                                <Link to={devPath(t('features'))} className="hover:text-accent-300 transition-colors text-sm">
-                                    {t('features')}
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to={devPath(t('pricing'))} className="hover:text-accent-300 transition-colors text-sm">
-                                    {t('pricing')}
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to={devPath(t('security'))} className="hover:text-accent-300 transition-colors text-sm">
-                                    {t('security')}
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to={devPath(t('roadmap'))} className="hover:text-accent-300 transition-colors text-sm">
-                                    {t('roadmap')}
-                                </Link>
-                            </li>
-                            <li>
+                {/* Producto */}
+                <div>
+                    <h3 className="font-bold mb-4 text-lg text-accent-300">{t('product')}</h3>
+                    <ul className="space-y-2 text-gray-300 light-theme-muted">
+                        <li>
+                            <Link to={devPath(t('features'))} className="hover:text-accent-300 transition-colors text-sm">
+                                {t('features')}
+                            </Link>
+                        </li>
+                        <li>
+                            <Link to={devPath(t('pricing'))} className="hover:text-accent-300 transition-colors text-sm">
+                                {t('pricing')}
+                            </Link>
+                        </li>
+                        <li>
+                            <Link to={devPath(t('security'))} className="hover:text-accent-300 transition-colors text-sm">
+                                {t('security')}
+                            </Link>
+                        </li>
+                        <li>
+                            <Link to={devPath(t('roadmap'))} className="hover:text-accent-300 transition-colors text-sm">
+                                {t('roadmap')}
+                            </Link>
+                        </li>
+                        <li>
 <<<<<<< HEAD
-                                <Link to="/" className="hover:text-accent-300 transition-colors text-sm">
+    <Link to="/" className="hover:text-accent-300 transition-colors text-sm">
 =======
                                 <Link to={devPath(t('updates'))} className="hover:text-accent-300 transition-colors text-sm">
 >>>>>>> c9fd2e66dfec5f75eff00c983f8c336369a8c442
-                                    {t('updates')}
-                                </Link>
-                            </li>
-                        </ul>
-                    </div>
+            {t('updates')}
+        </Link>
+    </li>
+                        </ul >
+                    </div >
 
-                    {/* Soporte */}
-                    <div>
+    {/* Soporte */ }
+    < div >
                         <h3 className="font-bold mb-4 text-lg text-accent-300">{t('support')}</h3>
                         <ul className="space-y-2 text-gray-300 light-theme-muted">
                             <li>
 <<<<<<< HEAD
-                                <a href="#" className="hover:text-accent-300 transition-colors text-sm">
-                                    {t('helpCenter')}
-                                </a>
-                            </li>
+<a href="#" className="hover:text-accent-300 transition-colors text-sm">
+    {t('helpCenter')}
+</a>
+                            </li >
                             <li>
                                 <a href="#" className="hover:text-accent-300 transition-colors text-sm">
                                     {t('documentation')}
@@ -155,41 +155,41 @@ const Footer = () => {
                                 </a>
 =======
                                 <Link to={devPath(t('helpCenter'))} className="hover:text-accent-300 transition-colors text-sm">
-                                    {t('helpCenter')}
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to={devPath(t('documentation'))} className="hover:text-accent-300 transition-colors text-sm">
-                                    {t('documentation')}
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to={devPath(t('api'))} className="hover:text-accent-300 transition-colors text-sm">{t('api')}</Link>
-                            </li>
-                            <li>
-                                <Link to={devPath(t('contactUs'))} className="hover:text-accent-300 transition-colors text-sm">
-                                    {t('contactUs')}
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to={devPath(t('systemStatus'))} className="hover:text-accent-300 transition-colors text-sm">
-                                    {t('systemStatus')}
-                                </Link>
+            {t('helpCenter')}
+        </Link>
+    </li>
+    <li>
+        <Link to={devPath(t('documentation'))} className="hover:text-accent-300 transition-colors text-sm">
+            {t('documentation')}
+        </Link>
+    </li>
+    <li>
+        <Link to={devPath(t('api'))} className="hover:text-accent-300 transition-colors text-sm">{t('api')}</Link>
+    </li>
+    <li>
+        <Link to={devPath(t('contactUs'))} className="hover:text-accent-300 transition-colors text-sm">
+            {t('contactUs')}
+        </Link>
+    </li>
+    <li>
+        <Link to={devPath(t('systemStatus'))} className="hover:text-accent-300 transition-colors text-sm">
+            {t('systemStatus')}
+        </Link>
 >>>>>>> c9fd2e66dfec5f75eff00c983f8c336369a8c442
-                            </li>
-                        </ul>
-                    </div>
+    </li>
+                        </ul >
+                    </div >
 
-                    {/* Empresa */}
-                    <div>
+    {/* Empresa */ }
+    < div >
                         <h3 className="font-bold mb-4 text-lg text-accent-300">{t('company')}</h3>
                         <ul className="space-y-2 text-gray-300 light-theme-muted">
                             <li>
 <<<<<<< HEAD
-                                <a href="#" className="hover:text-accent-300 transition-colors text-sm">
-                                    {t('aboutUs')}
-                                </a>
-                            </li>
+<a href="#" className="hover:text-accent-300 transition-colors text-sm">
+    {t('aboutUs')}
+</a>
+                            </li >
                             <li>
                                 <a href="#" className="hover:text-accent-300 transition-colors text-sm">
                                     {t('blog')}
@@ -211,90 +211,90 @@ const Footer = () => {
                                 </a>
 =======
                                 <Link to={devPath(t('aboutUs'))} className="hover:text-accent-300 transition-colors text-sm">
-                                    {t('aboutUs')}
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to={devPath(t('blog'))} className="hover:text-accent-300 transition-colors text-sm">
-                                    {t('blog')}
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to={devPath(t('careers'))} className="hover:text-accent-300 transition-colors text-sm">
-                                    {t('careers')}
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to={devPath(t('press'))} className="hover:text-accent-300 transition-colors text-sm">
-                                    {t('press')}
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to={devPath(t('partners'))} className="hover:text-accent-300 transition-colors text-sm">
-                                    {t('partners')}
-                                </Link>
+            {t('aboutUs')}
+        </Link>
+    </li>
+    <li>
+        <Link to={devPath(t('blog'))} className="hover:text-accent-300 transition-colors text-sm">
+            {t('blog')}
+        </Link>
+    </li>
+    <li>
+        <Link to={devPath(t('careers'))} className="hover:text-accent-300 transition-colors text-sm">
+            {t('careers')}
+        </Link>
+    </li>
+    <li>
+        <Link to={devPath(t('press'))} className="hover:text-accent-300 transition-colors text-sm">
+            {t('press')}
+        </Link>
+    </li>
+    <li>
+        <Link to={devPath(t('partners'))} className="hover:text-accent-300 transition-colors text-sm">
+            {t('partners')}
+        </Link>
 >>>>>>> c9fd2e66dfec5f75eff00c983f8c336369a8c442
-                            </li>
-                        </ul>
-                    </div>
+    </li>
+                        </ul >
+                    </div >
 
-                    {/* Legal */}
-                    <div>
+    {/* Legal */ }
+    < div >
                         <h3 className="font-bold mb-4 text-lg text-accent-300">{t('legal')}</h3>
                         <ul className="space-y-2 text-gray-300 light-theme-muted">
                             <li>
 <<<<<<< HEAD
-                                <a href="#" className="hover:text-accent-300 transition-colors text-sm">
-                                    {t('privacy')}
-                                </a>
-                            </li>
+<a href="#" className="hover:text-accent-300 transition-colors text-sm">
+    {t('privacy')}
+</a>
+                            </li >
                             <li>
                                 <a href="#" className="hover:text-accent-300 transition-colors text-sm">
                                     {t('termsOfService')}
                                 </a>
 =======
                                 <Link to={devPath(t('privacy'))} className="hover:text-accent-300 transition-colors text-sm">
-                                    {t('privacy')}
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to={devPath(t('termsOfService'))} className="hover:text-accent-300 transition-colors text-sm">
-                                    {t('termsOfService')}
-                                </Link>
+            {t('privacy')}
+        </Link>
+    </li>
+    <li>
+        <Link to={devPath(t('termsOfService'))} className="hover:text-accent-300 transition-colors text-sm">
+            {t('termsOfService')}
+        </Link>
 >>>>>>> c9fd2e66dfec5f75eff00c983f8c336369a8c442
-                            </li>
-                            <li>
-                                <Link to="/cookies" className="hover:text-accent-300 transition-colors text-sm">
-                                    {t('cookiesPolicy')}
-                                </Link>
-                            </li>
-                            <li>
+    </li>
+    <li>
+        <Link to="/cookies" className="hover:text-accent-300 transition-colors text-sm">
+            {t('cookiesPolicy')}
+        </Link>
+    </li>
+    <li>
 <<<<<<< HEAD
-                                <a href="#" className="hover:text-accent-300 transition-colors text-sm">
-                                    {t('compliance')}
-                                </a>
-                            </li>
+<a href="#" className="hover:text-accent-300 transition-colors text-sm">
+    {t('compliance')}
+</a>
+                            </li >
                             <li>
                                 <a href="#" className="hover:text-accent-300 transition-colors text-sm">
                                     {t('licenses')}
                                 </a>
 =======
                                 <Link to={devPath(t('compliance'))} className="hover:text-accent-300 transition-colors text-sm">
-                                    {t('compliance')}
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to={devPath(t('licenses'))} className="hover:text-accent-300 transition-colors text-sm">
-                                    {t('licenses')}
-                                </Link>
+            {t('compliance')}
+        </Link>
+    </li>
+    <li>
+        <Link to={devPath(t('licenses'))} className="hover:text-accent-300 transition-colors text-sm">
+            {t('licenses')}
+        </Link>
 >>>>>>> c9fd2e66dfec5f75eff00c983f8c336369a8c442
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+    </li>
+                        </ul >
+                    </div >
+                </div >
 
-                {/* Bottom Bar */}
-                <div className="border-t border-primary-700 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+    {/* Bottom Bar */ }
+    < div className = "border-t border-primary-700 pt-8 flex flex-col md:flex-row justify-between items-center gap-4" >
                     <p className="text-gray-400 light-theme-muted text-sm">
                         &copy; {currentYear} {t('appName')}. {t('copyright').replace('© 2024 TimeToTask. ', '')}
                     </p>
@@ -307,10 +307,10 @@ const Footer = () => {
                         <Link to={devPath(t('terms'))} className="hover:text-accent-300 transition-colors">{t('terms')}</Link>
 >>>>>>> c9fd2e66dfec5f75eff00c983f8c336369a8c442
                         <Link to="/cookies" className="hover:text-accent-300 transition-colors">{t('cookiesPolicy')}</Link>
-                    </div>
-                </div>
-            </div>
-        </footer>
+                    </div >
+                </div >
+            </div >
+        </footer >
     );
 };
 
