@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 from flask.cli import with_appcontext
 import click
@@ -9,6 +11,22 @@ from .routes import register_blueprints
 from .utils.responses import json_response
 
 
+def get_cors_origins():
+    origins = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3001",
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ]
+    # Añadir origen de producción desde variable de entorno
+    frontend_url = os.environ.get("FRONTEND_URL")
+    if frontend_url:
+        origins.append(frontend_url)
+    return origins
+
+
 def create_app(config_object: type[Config] = Config) -> Flask:
     app = Flask(__name__)
     app.config.from_object(config_object)
@@ -17,14 +35,7 @@ def create_app(config_object: type[Config] = Config) -> Flask:
     jwt.init_app(app)
     cors.init_app(app, resources={
         r"/*": {
-            "origins": [
-                "http://localhost:3000",
-                "http://127.0.0.1:3000",
-                "http://localhost:3001",
-                "http://127.0.0.1:3001",
-                "http://localhost:5173",
-                "http://127.0.0.1:5173",
-            ],
+            "origins": get_cors_origins(),
             "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
             "allow_headers": ["Content-Type", "Authorization"],
             "supports_credentials": True

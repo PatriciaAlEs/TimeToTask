@@ -39,26 +39,32 @@ function clearSession() {
 /**
  * Manejo centralizado de errores HTTP
  */
-function handleError(error, response) {
-  const status = response?.status || error.status;
-  const message = response?.statusText || error.message || "Error desconocido";
+function handleError(data, response) {
+  // Usar el mensaje del backend si viene en la respuesta JSON
+  const backendMessage = data?.message;
+  const status = response?.status;
 
   switch (status) {
     case 400:
-      throw new Error(`Solicitud inválida: ${message}`);
+      throw new Error(backendMessage || "Solicitud inválida.");
     case 401:
-      clearSession();
-      throw new Error("Sesión expirada. Por favor, inicia sesión de nuevo.");
+      // Si hay mensaje del backend, mostrarlo (ej: "Invalid credentials")
+      // Solo limpiar sesión si es un error de token, no de login
+      if (!backendMessage || backendMessage.includes("token") || backendMessage.includes("Token")) {
+        clearSession();
+        throw new Error("Sesión expirada. Por favor, inicia sesión de nuevo.");
+      }
+      throw new Error(backendMessage);
     case 403:
-      throw new Error("No tienes permisos para esta acción.");
+      throw new Error(backendMessage || "No tienes permisos para esta acción.");
     case 404:
-      throw new Error("Recurso no encontrado.");
+      throw new Error(backendMessage || "Recurso no encontrado.");
     case 500:
-      throw new Error("Error del servidor. Intenta más tarde.");
+      throw new Error(backendMessage || "Error del servidor. Intenta más tarde.");
     case 503:
-      throw new Error("Servidor no disponible. Intenta más tarde.");
+      throw new Error(backendMessage || "Servidor no disponible. Intenta más tarde.");
     default:
-      throw new Error(message || "Error en la solicitud");
+      throw new Error(backendMessage || "Error en la solicitud");
   }
 }
 
@@ -128,6 +134,10 @@ export async function apiCall(endpoint, method = "GET", body = null, options = {
     // Log de error en desarrollo
     if (process.env.NODE_ENV === "development") {
       console.error(`[API] ❌ Error:`, error.message);
+    }
+    // Error de red (servidor no disponible, sin conexión)
+    if (error instanceof TypeError && error.message === "Failed to fetch") {
+      throw new Error("No se pudo conectar con el servidor. Verifica que el backend esté corriendo.");
     }
     throw error;
   }

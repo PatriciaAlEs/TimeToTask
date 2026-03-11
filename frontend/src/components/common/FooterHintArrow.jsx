@@ -37,18 +37,16 @@ export default function FooterHintArrow({ hidden = false }) {
     if (hidden || isInDevelopmentPage || !showHint) {
         return null;
     }
-    return null;
-}
 
-return (
-    <button
-        type="button"
-        onClick={() => window.scrollBy({ top: window.innerHeight * 0.75, behavior: 'smooth' })}
-        className="fixed bottom-6 left-1/2 z-[55] -translate-x-1/2 rounded-full border border-accent-300/60 bg-primary-700/75 p-3 text-accent-300 shadow-xl backdrop-blur-md transition hover:bg-primary-600/85"
-        aria-label="Bajar para ver más contenido"
-        title="Hay más contenido abajo"
-    >
-        <i className="fas fa-chevron-down animate-bounce text-base"></i>
-    </button>
-);
+    return (
+        <button
+            type="button"
+            onClick={() => window.scrollBy({ top: window.innerHeight * 0.75, behavior: 'smooth' })}
+            className="fixed bottom-6 left-1/2 z-[55] -translate-x-1/2 rounded-full border border-accent-300/60 bg-primary-700/75 p-3 text-accent-300 shadow-xl backdrop-blur-md transition hover:bg-primary-600/85"
+            aria-label="Bajar para ver más contenido"
+            title="Hay más contenido abajo"
+        >
+            <i className="fas fa-chevron-down animate-bounce text-base"></i>
+        </button>
+    );
 }
