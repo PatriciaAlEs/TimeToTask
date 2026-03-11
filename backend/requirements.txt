@@ -1,9 +1,9 @@
-Flask
+Flask==3.0.3
 Flask-JWT-Extended
-Flask-SQLAlchemy
+Flask-SQLAlchemy==3.1.1
 Flask-Migrate
-Flask-CORS
+Flask-Cors==4.0.1
 PyJWT
 python-dotenv
-gunicorn
+gunicorn==21.2.0
 psycopg2-binary

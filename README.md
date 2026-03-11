@@ -70,6 +70,15 @@ La aplicación estará disponible en: **http://localhost:3000** (frontend) y **h
 - Diseño responsive con Tailwind CSS
 - Internacionalización (ES/EN)
 
-## 📄 Licencia
+## � Demo Login
+
+```
+Email:    patricia@example.com
+Password: password123
+```
+
+> Al desplegar, la base de datos se carga automáticamente con usuarios, proyectos y tareas de ejemplo.
+
+## �📄 Licencia
 
 Proyecto educativo - Gestor de Tareas

@@ -46,6 +46,19 @@ def create_app(config_object: type[Config] = Config) -> Flask:
     register_cli(app)
     register_error_handlers(app)
 
+    @app.route("/health")
+    def health():
+        return {"status": "ok"}, 200
+
+    @app.route("/api")
+    def api_info():
+        return {
+            "name": "TimeToTask API",
+            "version": "1.0",
+            "status": "running",
+            "demo_user": "patricia@example.com"
+        }
+
     # Auto-crear tablas y seed si la DB está vacía (útil para deploy en Render)
     with app.app_context():
         db.create_all()
