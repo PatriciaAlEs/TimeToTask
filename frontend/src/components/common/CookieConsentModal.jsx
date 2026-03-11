@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { useTheme } from '@/theme/ThemeContext';
@@ -8,8 +9,20 @@ export default function CookieConsentModal({ onAcceptAll, onAcceptNecessary }) {
     const { theme } = useTheme();
 
     return (
-        <div className="fixed inset-0 z-[80] bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center p-4">
-            <div className={`w-full max-w-2xl rounded-2xl border p-6 shadow-2xl ${theme === 'dark' ? 'border-white/20 bg-[#1E1E1E]/95 text-white' : 'light-theme-card'}`}>
+        <motion.div
+            className="fixed inset-0 z-[80] bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+        >
+            <motion.div
+                className={`w-full max-w-2xl rounded-2xl border p-6 shadow-2xl ${theme === 'dark' ? 'border-white/20 bg-[#1E1E1E]/95 text-white' : 'light-theme-card'}`}
+                initial={{ opacity: 0, y: 16, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 12, scale: 0.98 }}
+                transition={{ type: 'spring', stiffness: 280, damping: 24 }}
+            >
                 <h3 className="text-2xl font-semibold mb-3 light-theme-text">{t('cookiesInApp')}</h3>
                 <p className="text-gray-200 light-theme-muted mb-4 leading-relaxed">
                     {t('cookiesModalText')}
@@ -38,7 +51,7 @@ export default function CookieConsentModal({ onAcceptAll, onAcceptNecessary }) {
                         {t('acceptAll')}
                     </button>
                 </div>
-            </div>
-        </div>
+            </motion.div>
+        </motion.div>
     );
 }

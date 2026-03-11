@@ -9,8 +9,14 @@ import { useNavigate } from "react-router-dom";
 import { useGlobalContext } from "@/store";
 import { useLanguage } from "@/i18n/LanguageContext";
 import api from "@/services/api";
+import { useModalDismiss } from "@/hooks/useModalDismiss.jsx";
 
-export default function Login({ isModal = false, onClose = () => { } }) {
+export default function Login({
+  isModal = false,
+  onClose = () => { },
+  closeOnEsc = true,
+  closeOnBackdrop = true,
+}) {
   const navigate = useNavigate();
   const { setUser, setToken, setError: setGlobalError, setLoading, loading } =
     useGlobalContext();
@@ -22,6 +28,13 @@ export default function Login({ isModal = false, onClose = () => { } }) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [validationError, setValidationError] = useState("");
+
+  const { handleBackdropMouseDown } = useModalDismiss({
+    isOpen: isModal,
+    onClose,
+    closeOnEsc: closeOnEsc && !loading,
+    closeOnBackdrop: closeOnBackdrop && !loading,
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -71,7 +84,7 @@ export default function Login({ isModal = false, onClose = () => { } }) {
 
       <div className={`w-full max-w-md relative z-10 ${isModal ? '' : ''}`}>
         {/* Card */}
-        <div className={`${isModal ? 'bg-[#1E1E1E] border border-white/20' : 'bg-white/10 backdrop-blur-lg border border-white/20'} rounded-2xl shadow-2xl p-8`}>
+        <div className={`auth-dark-surface ${isModal ? 'bg-[#1E1E1E] border border-white/20' : 'bg-white/10 backdrop-blur-lg border border-white/20'} rounded-2xl shadow-2xl p-8`}>
           {/* Header */}
           <div className="text-center mb-6">
             <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary-400 to-secondary-400 rounded-3xl mb-4 transform hover:scale-110 hover:rotate-6 transition-all duration-300 shadow-xl">
@@ -218,7 +231,10 @@ export default function Login({ isModal = false, onClose = () => { } }) {
 
   if (isModal) {
     return (
-      <div className="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm flex items-center justify-center px-4 py-12 overflow-y-auto">
+      <div
+        className="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm flex items-center justify-center px-4 py-12 overflow-y-auto"
+        onMouseDown={handleBackdropMouseDown}
+      >
         {content}
       </div>
     );

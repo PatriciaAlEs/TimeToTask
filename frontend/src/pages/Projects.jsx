@@ -4,6 +4,7 @@
  */
 
 import React, { useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useLanguage } from '../i18n/LanguageContext';
 import { useTheme } from '../theme/ThemeContext';
 import { PageContainer, Section, DashboardGrid, Row } from '../components/common/Layout';
@@ -75,54 +76,62 @@ export default function ProjectsPage() {
                     </div>
 
                     {/* Formulario nuevo proyecto */}
-                    {showForm && (
-                        <div className="mb-8">
-                            <h2 className="text-3xl font-bold text-white mb-4 drop-shadow-lg">{t('createNewProject')}</h2>
-                            <div className="bg-primary-400/30 backdrop-blur-lg rounded-2xl p-6 border border-primary-400/50">
-                                <form onSubmit={handleSubmit} className="space-y-4">
-                                    <div>
-                                        <label htmlFor="name" className="block text-white font-bold mb-2">
-                                            {t('projectName')}
-                                        </label>
-                                        <input
-                                            id="name"
-                                            name="name"
-                                            type="text"
-                                            value={formData.name}
-                                            onChange={handleChange}
-                                            placeholder={t('projectName')}
-                                            required
-                                            className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/30 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-transparent transition-all"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label htmlFor="description" className="block text-white font-bold mb-2">
-                                            {t('description')}
-                                        </label>
-                                        <input
-                                            id="description"
-                                            name="description"
-                                            type="text"
-                                            value={formData.description}
-                                            onChange={handleChange}
-                                            placeholder={t('shortDescription')}
-                                            className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/30 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-transparent transition-all"
-                                        />
-                                    </div>
-                                    <div className="flex gap-3">
-                                        <button
-                                            type="submit"
-                                            disabled={loading}
-                                            className="px-6 py-3 text-white rounded-xl font-bold shadow-lg transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                                            style={{ backgroundImage: 'linear-gradient(135deg, rgba(140, 179, 105, 0.9), rgba(91, 142, 125, 0.9))' }}
-                                        >
-                                            {loading ? t('creating') : t('createProject')}
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    )}
+                    <AnimatePresence>
+                        {showForm && (
+                            <motion.div
+                                className="mb-8"
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                transition={{ duration: 0.2 }}
+                            >
+                                <h2 className="text-3xl font-bold text-white mb-4 drop-shadow-lg">{t('createNewProject')}</h2>
+                                <div className="bg-primary-400/30 backdrop-blur-lg rounded-2xl p-6 border border-primary-400/50">
+                                    <form onSubmit={handleSubmit} className="space-y-4">
+                                        <div>
+                                            <label htmlFor="name" className="block text-white font-bold mb-2">
+                                                {t('projectName')}
+                                            </label>
+                                            <input
+                                                id="name"
+                                                name="name"
+                                                type="text"
+                                                value={formData.name}
+                                                onChange={handleChange}
+                                                placeholder={t('projectName')}
+                                                required
+                                                className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/30 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-transparent transition-all"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label htmlFor="description" className="block text-white font-bold mb-2">
+                                                {t('description')}
+                                            </label>
+                                            <input
+                                                id="description"
+                                                name="description"
+                                                type="text"
+                                                value={formData.description}
+                                                onChange={handleChange}
+                                                placeholder={t('shortDescription')}
+                                                className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/30 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-transparent transition-all"
+                                            />
+                                        </div>
+                                        <div className="flex gap-3">
+                                            <button
+                                                type="submit"
+                                                disabled={loading}
+                                                className="px-6 py-3 text-white rounded-xl font-bold shadow-lg transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                style={{ backgroundImage: 'linear-gradient(135deg, rgba(140, 179, 105, 0.9), rgba(91, 142, 125, 0.9))' }}
+                                            >
+                                                {loading ? t('creating') : t('createProject')}
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
 
                     {/* Error */}
                     {error && (
@@ -150,6 +159,7 @@ export default function ProjectsPage() {
 
                     <ProjectModal
                         isOpen={showEditProjectModal}
+                        isSubmitting={loading}
                         mode="edit"
                         initialData={projectToEdit}
                         onClose={() => {

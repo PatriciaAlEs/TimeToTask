@@ -5,6 +5,7 @@
 
 import React from 'react';
 import { useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { resolveProjectColorVisual } from '../../config/projectColors';
@@ -133,40 +134,54 @@ export function ProjectList({ projects, loading, onSelectProject, onEditProject,
                 );
             })}
 
-            {projectToDelete && (
-                <div className="fixed inset-0 z-[70] bg-black/60 backdrop-blur-sm flex items-center justify-center px-4">
-                    <div className="w-full max-w-md rounded-2xl border border-red-300/40 bg-primary-900/95 p-6 shadow-2xl">
-                        <div className="mb-4 flex items-center gap-3">
-                            <div className="h-10 w-10 rounded-full bg-red-500/20 flex items-center justify-center">
-                                <i className="fas fa-exclamation-triangle text-red-300"></i>
+            <AnimatePresence>
+                {projectToDelete && (
+                    <motion.div
+                        className="fixed inset-0 z-[70] bg-black/60 backdrop-blur-sm flex items-center justify-center px-4"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                    >
+                        <motion.div
+                            className="w-full max-w-md rounded-2xl border border-red-300/40 bg-primary-900/95 p-6 shadow-2xl"
+                            initial={{ opacity: 0, y: 16, scale: 0.98 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 12, scale: 0.98 }}
+                            transition={{ type: 'spring', stiffness: 280, damping: 24 }}
+                        >
+                            <div className="mb-4 flex items-center gap-3">
+                                <div className="h-10 w-10 rounded-full bg-red-500/20 flex items-center justify-center">
+                                    <i className="fas fa-exclamation-triangle text-red-300"></i>
+                                </div>
+                                <h3 className="text-xl font-bold text-white">{t('deleteProjectQuestion')}</h3>
                             </div>
-                            <h3 className="text-xl font-bold text-white">{t('deleteProjectQuestion')}</h3>
-                        </div>
 
-                        <p className="text-sm text-gray-100 mb-1">
-                            {t('deleteProjectConfirm')}
-                        </p>
-                        <p className="text-sm text-red-200 mb-6">
-                            {t('deleteProjectWarning')}
-                        </p>
+                            <p className="text-sm text-gray-100 mb-1">
+                                {t('deleteProjectConfirm')}
+                            </p>
+                            <p className="text-sm text-red-200 mb-6">
+                                {t('deleteProjectWarning')}
+                            </p>
 
-                        <div className="flex gap-3">
-                            <button
-                                onClick={() => setProjectToDelete(null)}
-                                className="flex-1 rounded-lg bg-white/10 px-4 py-2 font-semibold text-white hover:bg-white/20 transition-all"
-                            >
-                                {t('cancel')}
-                            </button>
-                            <button
-                                onClick={handleDeleteConfirm}
-                                className="flex-1 rounded-lg bg-red-500 px-4 py-2 font-bold text-white hover:bg-red-600 transition-all"
-                            >
-                                {t('continue')}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => setProjectToDelete(null)}
+                                    className="flex-1 rounded-lg bg-white/10 px-4 py-2 font-semibold text-white hover:bg-white/20 transition-all"
+                                >
+                                    {t('cancel')}
+                                </button>
+                                <button
+                                    onClick={handleDeleteConfirm}
+                                    className="flex-1 rounded-lg bg-red-500 px-4 py-2 font-bold text-white hover:bg-red-600 transition-all"
+                                >
+                                    {t('continue')}
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

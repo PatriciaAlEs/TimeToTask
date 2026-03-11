@@ -78,7 +78,12 @@ Editar `.env.local` con los valores correctos:
 ```env
 VITE_API_URL=http://localhost:5000/api
 VITE_NODE_ENV=development
+VITE_OPENWEATHER_API_KEY=tu_api_key_openweather
+VITE_OPENWEATHER_BASE_URL=https://api.openweathermap.org/data/2.5
+VITE_OPENWEATHER_CITY=Madrid,ES
 ```
+
+Nota: si OpenWeather devuelve error 401 justo después de crear la clave, puede tardar un poco en activarse.
 
 ### 3. Iniciar servidor de desarrollo
 ```bash

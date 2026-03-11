@@ -1,4 +1,5 @@
 from datetime import datetime
+import re
 
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
@@ -7,6 +8,8 @@ from app.extensions import db
 from app.models.project import Project
 from app.models.user import User
 from app.models.task import Task
+from app.models.activity import Activity
+from app.services.activity_service import create_activity
 from app.utils.responses import json_response
 api_bp = Blueprint('api', __name__, url_prefix='/api')
 
@@ -20,6 +23,14 @@ def parse_datetime(value):
         return datetime.fromisoformat(str(value).replace('Z', '+00:00'))
     except (ValueError, TypeError):
         return None
+
+
+def format_status_label(raw_status):
+    if not raw_status:
+        return "Unknown"
+
+    with_spaces = re.sub(r'(?<!^)(?=[A-Z])', ' ', str(raw_status).replace('_', ' '))
+    return with_spaces.strip().title()
 
 
 def get_authenticated_user_id():
@@ -134,6 +145,17 @@ def create_task():
         dueDate=due_date
     )
     db.session.add(task)
+    db.session.flush()
+
+    create_activity(
+        db.session,
+        user_id=user_id,
+        task_id=task.id,
+        project_id=task.project_id,
+        activity_type='task_created',
+        message=f"Task '{task.title}' created",
+    )
+
     db.session.commit()
     return jsonify(task.to_dict()), 201
 
@@ -148,6 +170,8 @@ def update_task(task_id):
         return json_response('error', 'Task not found', code=404)
 
     data = request.get_json() or {}
+    previous_status = task.status
+
     if 'title' in data:
         task.title = data['title']
     if 'description' in data:
@@ -172,8 +196,49 @@ def update_task(task_id):
                 return json_response('error', 'Project not found', code=404)
             task.project_id = project.id
 
+    if 'status' in data and task.status != previous_status:
+        create_activity(
+            db.session,
+            user_id=user_id,
+            task_id=task.id,
+            project_id=task.project_id,
+            activity_type='status_changed',
+            message=f"Status changed to {format_status_label(task.status)}",
+        )
+
     db.session.commit()
     return jsonify(task.to_dict()), 200
+
+
+@api_bp.route('/activities', methods=['GET'])
+@jwt_required()
+def list_activities():
+    user_id = get_authenticated_user_id()
+
+    page = request.args.get('page', default=1, type=int)
+    limit = request.args.get('limit', default=50, type=int)
+
+    if page < 1:
+        page = 1
+
+    if limit < 1:
+        limit = 1
+
+    limit = min(limit, 50)
+
+    query = Activity.query.filter_by(user_id=user_id).order_by(Activity.created_at.desc())
+    total = query.count()
+
+    activities = query.offset((page - 1) * limit).limit(limit).all()
+
+    return jsonify(
+        {
+            'items': [activity.serialize() for activity in activities],
+            'page': page,
+            'limit': limit,
+            'total': total,
+        }
+    ), 200
 
 
 @api_bp.route('/tasks/<int:task_id>', methods=['DELETE'])

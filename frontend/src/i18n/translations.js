@@ -180,6 +180,7 @@ export const translations = {
                 backHome: 'Volver al inicio',
                 continueDashboard: 'Ir al dashboard',
 
+
                 // Footer
                 product: 'Producto',
                 support: 'Soporte',
@@ -368,14 +369,12 @@ export const translations = {
                 compliance: 'Compliance',
                 licenses: 'Licenses',
                 terms: 'Terms',
-<<<<<<< HEAD
-=======
-        inDevelopmentTitle: 'Page under development',
-        inDevelopmentDescription: 'We are building this section and it will be available very soon.',
-        requestedSection: 'Requested section',
-        backHome: 'Back to home',
-        continueDashboard: 'Go to dashboard',
->>>>>>> c9fd2e66dfec5f75eff00c983f8c336369a8c442
+
+                inDevelopmentTitle: 'Page under development',
+                inDevelopmentDescription: 'We are building this section and it will be available very soon.',
+                requestedSection: 'Requested section',
+                backHome: 'Back to home',
+                continueDashboard: 'Go to dashboard',
 
                 // Footer
                 product: 'Product',

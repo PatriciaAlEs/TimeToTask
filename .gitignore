@@ -1,0 +1,35 @@
+# Python / Backend
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+backend/site.db
+backend/instance/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+
+# Node / Frontend
+node_modules/
+dist/
+
+# IDEs / Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Misc
+*.log
+*.db
+tempnpm-cache/
+.qodo/

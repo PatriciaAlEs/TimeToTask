@@ -4,6 +4,7 @@
  */
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import { useLanguage } from '../i18n/LanguageContext';
 import { useTheme } from '../theme/ThemeContext';
@@ -12,7 +13,11 @@ import { AddTaskModal } from '../components/Modals/AddTaskModal';
 import { ProjectModal } from '../components/Modals/ProjectModal';
 import { useTasks } from '../hooks/useTasks.jsx';
 import { useProjects } from '../hooks/useProjects.jsx';
+import { get } from '../services/api';
 import { TASK_TYPES, TASK_TYPE_SOFT_THEME } from '../config/taskTypes';
+import { getCurrentWeather, getWeatherIconUrl } from '../services/weatherService';
+
+const ACTIVITY_PAGE_SIZE = 8;
 
 function PieChart({ segments, total, size = 88, showSliceValues = false }) {
     const radius = size / 2;
@@ -104,9 +109,10 @@ function PieChart({ segments, total, size = 88, showSliceValues = false }) {
 }
 
 export default function DashboardPage() {
+    const configuredWeatherCity = import.meta.env.VITE_OPENWEATHER_CITY || 'Madrid,ES';
     const { projects, loading, createProject, updateProjectData, deleteProject } = useProjects();
     const { tasks, addTask } = useTasks();
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
     const { theme } = useTheme();
     const [showAddTaskModal, setShowAddTaskModal] = useState(false);
     const [showAddProjectModal, setShowAddProjectModal] = useState(false);
@@ -115,13 +121,29 @@ export default function DashboardPage() {
     const [projectToEdit, setProjectToEdit] = useState(null);
     const [expandedSection, setExpandedSection] = useState(null);
     const [showDashboardInfo, setShowDashboardInfo] = useState(false);
+    const [showWeatherHelp, setShowWeatherHelp] = useState(false);
     const [nowTimestamp, setNowTimestamp] = useState(Date.now());
     const lastTomorrowAlertRef = useRef('');
+    const lastWeatherSignatureRef = useRef('');
     const [selectedMonth, setSelectedMonth] = useState(() => {
         const now = new Date();
         const month = String(now.getMonth() + 1).padStart(2, '0');
         return `${now.getFullYear()}-${month}`;
     });
+    const [weather, setWeather] = useState(null);
+    const [weatherLoading, setWeatherLoading] = useState(false);
+    const [weatherError, setWeatherError] = useState('');
+    const [recentActivities, setRecentActivities] = useState([]);
+    const [activitiesLoading, setActivitiesLoading] = useState(false);
+    const [activitiesError, setActivitiesError] = useState('');
+    const [activitiesPage, setActivitiesPage] = useState(1);
+    const [activitiesHasMore, setActivitiesHasMore] = useState(false);
+    const [activitiesLoadingMore, setActivitiesLoadingMore] = useState(false);
+    const [weatherLocationSource, setWeatherLocationSource] = useState('city');
+    const weatherDetailsQuery = encodeURIComponent((weather?.city || configuredWeatherCity || '').replace(',', ' '));
+    const weatherDetailsUrl = `https://openweathermap.org/find?q=${weatherDetailsQuery}`;
+    const weatherVisibilityKm = weather?.visibility ? (weather.visibility / 1000).toFixed(1) : '0.0';
+    const weatherWindKmH = weather?.windSpeed ? Math.round(weather.windSpeed * 3.6) : 0;
 
     useEffect(() => {
         const intervalId = setInterval(() => {
@@ -130,6 +152,104 @@ export default function DashboardPage() {
 
         return () => clearInterval(intervalId);
     }, []);
+
+    const fetchWeather = async () => {
+        try {
+            setWeatherLoading(true);
+            setWeatherError('');
+            let weatherData = null;
+
+            if (typeof navigator !== 'undefined' && navigator.geolocation) {
+                try {
+                    const position = await new Promise((resolve, reject) => {
+                        navigator.geolocation.getCurrentPosition(resolve, reject, {
+                            enableHighAccuracy: false,
+                            timeout: 7000,
+                            maximumAge: 1000 * 60 * 10,
+                        });
+                    });
+
+                    weatherData = await getCurrentWeather(language, {
+                        lat: position.coords.latitude,
+                        lon: position.coords.longitude,
+                    });
+                    setWeatherLocationSource('current');
+                } catch (_geoError) {
+                    weatherData = await getCurrentWeather(language);
+                    setWeatherLocationSource('city');
+                }
+            } else {
+                weatherData = await getCurrentWeather(language);
+                setWeatherLocationSource('city');
+            }
+
+            const newSignature = `${weatherData.description}|${weatherData.temperature}`;
+            if (lastWeatherSignatureRef.current && lastWeatherSignatureRef.current !== newSignature) {
+                toast.info(`Cambio de clima: ${weatherData.description}, ${weatherData.temperature}°C`, {
+                    className: 'timetotask-toast',
+                    icon: '🌤️',
+                });
+            }
+
+            lastWeatherSignatureRef.current = newSignature;
+            setWeather(weatherData);
+        } catch (error) {
+            setWeatherError(error.message || 'No se pudo cargar el clima.');
+        } finally {
+            setWeatherLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchWeather();
+        const intervalId = setInterval(fetchWeather, 1000 * 60 * 15);
+        return () => clearInterval(intervalId);
+    }, [language]);
+
+    const fetchRecentActivities = async (page = 1, { append = false } = {}) => {
+        try {
+            if (append) {
+                setActivitiesLoadingMore(true);
+            } else {
+                setActivitiesLoading(true);
+            }
+            setActivitiesError('');
+            const response = await get(`/activities?limit=${ACTIVITY_PAGE_SIZE}&page=${page}`);
+            const items = Array.isArray(response?.items) ? response.items : [];
+            const total = Number(response?.total) || 0;
+            const resolvedLimit = Number(response?.limit) || ACTIVITY_PAGE_SIZE;
+            const hasMore = page * resolvedLimit < total;
+
+            setRecentActivities((prev) => (append ? [...prev, ...items] : items));
+            setActivitiesPage(page);
+            setActivitiesHasMore(hasMore);
+        } catch (error) {
+            setActivitiesError(error.message || 'No se pudo cargar la actividad reciente.');
+            if (!append) {
+                setRecentActivities([]);
+                setActivitiesPage(1);
+                setActivitiesHasMore(false);
+            }
+        } finally {
+            if (append) {
+                setActivitiesLoadingMore(false);
+            } else {
+                setActivitiesLoading(false);
+            }
+        }
+    };
+
+    useEffect(() => {
+        fetchRecentActivities(1, { append: false });
+    }, [tasks]);
+
+    const handleLoadMoreActivities = () => {
+        if (activitiesLoading || activitiesLoadingMore || !activitiesHasMore) {
+            return;
+        }
+
+        fetchRecentActivities(activitiesPage + 1, { append: true });
+    };
 
     const showSuccessToast = (message) => {
         toast.success(message, {
@@ -403,15 +523,6 @@ export default function DashboardPage() {
         return null;
     }
 
-    const recentUpdates = [...tasks]
-        .filter((task) => task.updated_at || task.updatedAt || task.created_at || task.createdAt)
-        .sort((firstTask, secondTask) => {
-            const firstDate = parseTaskTimestamp(firstTask.updated_at || firstTask.updatedAt || firstTask.created_at || firstTask.createdAt) || new Date(0);
-            const secondDate = parseTaskTimestamp(secondTask.updated_at || secondTask.updatedAt || secondTask.created_at || secondTask.createdAt) || new Date(0);
-            return secondDate - firstDate;
-        })
-        .slice(0, 8);
-
     const getTimeAgoLabel = (dateValue) => {
         const date = dateValue instanceof Date ? dateValue : new Date(dateValue);
         const timestamp = date.getTime();
@@ -445,14 +556,33 @@ export default function DashboardPage() {
         return `Hace ${days} día${days === 1 ? '' : 's'}`;
     };
 
-    const latestUpdateDate = recentUpdates.length > 0
-        ? parseTaskTimestamp(
-            recentUpdates[0].updated_at ||
-            recentUpdates[0].updatedAt ||
-            recentUpdates[0].created_at ||
-            recentUpdates[0].createdAt
-        )
+    const latestUpdateDate = recentActivities.length > 0
+        ? parseTaskTimestamp(recentActivities[0].created_at)
         : null;
+
+    const getActivityVisuals = (activityType) => {
+        if (activityType === 'task_created') {
+            return {
+                icon: 'fa-plus-circle',
+                accent: '#8CB369',
+                label: 'Creación',
+            };
+        }
+
+        if (activityType === 'status_changed') {
+            return {
+                icon: 'fa-sync-alt',
+                accent: '#F4E285',
+                label: 'Estado',
+            };
+        }
+
+        return {
+            icon: 'fa-history',
+            accent: '#B6D1C7',
+            label: 'Actividad',
+        };
+    };
 
     return (
         <div className={`min-h-screen ${theme === 'dark' ? 'bg-gradient-to-br from-[#1E1E1E] via-[#2B2B2B] to-[#000000]' : 'light-theme-page'}`}>
@@ -467,35 +597,155 @@ export default function DashboardPage() {
                 <div className="relative z-10 max-w-7xl mx-auto">
                     {/* Header */}
                     <div className="mb-8">
-                        <div className="mb-3 flex items-center gap-3">
-                            <span className="inline-flex items-center gap-2 rounded-full border border-[#8CB369]/45 bg-[#8CB369]/12 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[#B6D1C7]">
-                                <i className="fas fa-chart-pie"></i>
-                                {t('mainPanel')}
-                            </span>
-                            <button
-                                type="button"
-                                onClick={() => setShowDashboardInfo((prev) => !prev)}
-                                className="inline-flex h-9 w-9 items-center justify-center rounded-full border-2 bg-[#F4E285]/15 text-[#FFF6D0] transition hover:bg-[#F4E285]/25 shadow-sm"
-                                style={{ borderColor: theme === 'dark' ? 'rgba(244, 226, 133, 0.62)' : 'rgba(151, 114, 31, 0.80)' }}
-                                aria-label={t('mainPanel')}
-                                title={t('mainPanel')}
-                            >
-                                <i className="fas fa-info text-xs"></i>
-                            </button>
-                        </div>
-                        <div
-                            className="inline-block rounded-2xl border-2 bg-black/15 px-6 py-4 shadow-[0_12px_30px_rgba(0,0,0,0.38)]"
-                            style={{ borderColor: theme === 'dark' ? 'rgba(182, 209, 199, 0.55)' : 'rgba(151, 114, 31, 0.78)' }}
-                        >
-                            <h1 className="font-display-title text-6xl md:text-7xl font-bold mb-0 drop-shadow-lg tracking-wide bg-gradient-to-r from-[#B6D1C7] via-white to-[#F4E285] bg-clip-text text-transparent">
-                                Dashboard
-                            </h1>
-                        </div>
-                        {showDashboardInfo && (
-                            <div className="mt-3 rounded-xl border border-[#F4E285]/35 bg-[#1E1E1E]/70 light-theme-card p-3 text-sm text-[#E6E6E6] shadow-lg backdrop-blur">
-                                {t('startWithProjectHelp')}
+                        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                            <div>
+                                <div className="mb-3 flex items-center gap-3">
+                                    <span className="inline-flex items-center gap-2 rounded-full border border-[#8CB369]/45 bg-[#8CB369]/12 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[#B6D1C7]">
+                                        <i className="fas fa-chart-pie"></i>
+                                        {t('mainPanel')}
+                                    </span>
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowDashboardInfo((prev) => !prev)}
+                                        className="inline-flex h-9 w-9 items-center justify-center rounded-full border-2 bg-[#F4E285]/15 text-[#FFF6D0] transition hover:bg-[#F4E285]/25 shadow-sm"
+                                        style={{ borderColor: theme === 'dark' ? 'rgba(244, 226, 133, 0.62)' : 'rgba(151, 114, 31, 0.80)' }}
+                                        aria-label={t('mainPanel')}
+                                        title={t('mainPanel')}
+                                    >
+                                        <i className="fas fa-info text-xs"></i>
+                                    </button>
+                                </div>
+                                <div
+                                    className="inline-block rounded-2xl border-2 bg-black/15 px-6 py-4 shadow-[0_12px_30px_rgba(0,0,0,0.38)]"
+                                    style={{ borderColor: theme === 'dark' ? 'rgba(182, 209, 199, 0.55)' : 'rgba(151, 114, 31, 0.78)' }}
+                                >
+                                    <h1 className="font-display-title text-6xl md:text-7xl font-bold mb-0 drop-shadow-lg tracking-wide bg-gradient-to-r from-[#B6D1C7] via-white to-[#F4E285] bg-clip-text text-transparent">
+                                        Dashboard
+                                    </h1>
+                                </div>
                             </div>
-                        )}
+
+                            <div className="relative">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowWeatherHelp((prev) => !prev)}
+                                    className="inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm font-semibold text-white backdrop-blur-lg transition hover:bg-white/10"
+                                    style={{
+                                        borderColor: theme === 'dark' ? 'rgba(244, 226, 133, 0.42)' : 'rgba(151, 114, 31, 0.62)',
+                                        background: theme === 'dark' ? 'rgba(30,30,30,0.36)' : 'rgba(151,114,31,0.22)',
+                                    }}
+                                    title="Clima"
+                                >
+                                    <i className="fas fa-cloud-sun text-[#F4E285]"></i>
+                                    {weatherLoading && <span>Cargando clima...</span>}
+                                    {!weatherLoading && weatherError && <span className="max-w-[180px] truncate">Clima no disponible</span>}
+                                    {!weatherLoading && !weatherError && weather && (
+                                        <span className="max-w-[220px] truncate">{weather.temperature}°C · {weather.description}</span>
+                                    )}
+                                    {!weatherLoading && !weatherError && !weather && <span>Clima</span>}
+                                </button>
+
+                                <AnimatePresence>
+                                    {showWeatherHelp && (
+                                        <motion.div
+                                            className="mt-2 w-[30rem] max-w-[92vw] rounded-xl border border-[#F4E285]/35 bg-[#1E1E1E]/92 p-3 text-sm text-[#F4F4F4] shadow-xl"
+                                            initial={{ opacity: 0, y: -8, scale: 0.98 }}
+                                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                                            exit={{ opacity: 0, y: -8, scale: 0.98 }}
+                                            transition={{ duration: 0.2 }}
+                                        >
+                                            <div className="mb-2 flex items-center justify-between gap-3">
+                                                <p className="font-semibold text-[#FFF6D0]">Clima rápido</p>
+                                                <p className="text-[11px] text-white/75">
+                                                    {weatherLocationSource === 'current' ? 'Ubicación actual' : 'Ciudad configurada'}
+                                                </p>
+                                            </div>
+
+                                            <p className="mb-2 truncate text-xs text-white/85">
+                                                <strong>Ubicación:</strong> {weather?.city || configuredWeatherCity}
+                                            </p>
+
+                                            {weather && !weatherError && (
+                                                <div className="mb-2 rounded-xl border border-white/15 bg-white/5 p-2.5">
+                                                    <div className="mb-2 flex items-center gap-2">
+                                                        <img
+                                                            src={getWeatherIconUrl(weather.icon)}
+                                                            alt={weather.description}
+                                                            className="h-11 w-11 rounded-lg border border-white/10 bg-black/20"
+                                                            loading="lazy"
+                                                        />
+                                                        <div className="min-w-0">
+                                                            <p className="text-base font-semibold text-[#FFF6D0]">{weather.temperature}°C · <span className="capitalize">{weather.description}</span></p>
+                                                            <p className="text-[11px] text-white/75">Sensación de {weather.feelsLike}°C</p>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
+                                                        <div className="rounded-lg border border-white/15 bg-black/20 px-2 py-1.5 text-center">
+                                                            <p className="text-white/70">Humedad</p>
+                                                            <p className="font-semibold text-white">{weather.humidity}%</p>
+                                                        </div>
+                                                        <div className="rounded-lg border border-white/15 bg-black/20 px-2 py-1.5 text-center">
+                                                            <p className="text-white/70">Viento</p>
+                                                            <p className="font-semibold text-white">{weatherWindKmH} km/h</p>
+                                                        </div>
+                                                        <div className="rounded-lg border border-white/15 bg-black/20 px-2 py-1.5 text-center">
+                                                            <p className="text-white/70">Visibilidad</p>
+                                                            <p className="font-semibold text-white">{weatherVisibilityKm} km</p>
+                                                        </div>
+                                                        <div className="rounded-lg border border-white/15 bg-black/20 px-2 py-1.5 text-center">
+                                                            <p className="text-white/70">Actualizado</p>
+                                                            <p className="font-semibold text-white">Ahora</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            <div className="mt-1 flex items-center gap-2">
+                                                <button
+                                                    type="button"
+                                                    onClick={fetchWeather}
+                                                    className="rounded-lg border border-white/30 px-3 py-1 text-xs font-semibold text-white transition hover:bg-white/10"
+                                                >
+                                                    Actualizar ahora
+                                                </button>
+                                                <a
+                                                    href={weatherDetailsUrl}
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                    className="rounded-lg border border-[#F4E285]/45 px-3 py-1 text-xs font-semibold text-[#FFF6D0] transition hover:bg-[#F4E285]/12"
+                                                >
+                                                    Ver más
+                                                </a>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+                        </div>
+
+                        <AnimatePresence>
+                            {showDashboardInfo && (
+                                <motion.div
+                                    className="mt-3 rounded-xl border border-[#F4E285]/35 bg-[#1E1E1E]/70 light-theme-card p-3 text-sm text-[#E6E6E6] shadow-lg backdrop-blur"
+                                    initial={{ opacity: 0, y: -8 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -8 }}
+                                    transition={{ duration: 0.2 }}
+                                >
+                                    <p className="mb-2">
+                                        Esta vista es tu centro de control: te muestra un resumen rápido de proyectos,
+                                        calendario y estado de tus tareas para que sepas qué hacer primero.
+                                    </p>
+                                    <ul className="list-disc pl-5 space-y-1">
+                                        <li>Usa <strong>Proyectos</strong> para organizar el trabajo por áreas o entregables.</li>
+                                        <li>Revisa el <strong>Calendario</strong> para anticipar vencimientos y evitar atrasos.</li>
+                                        <li>Consulta las <strong>Estadísticas</strong> para detectar cuellos de botella por estado, tipo o prioridad.</li>
+                                        <li>Mira <strong>Actividad reciente</strong> para seguir cambios y mantener contexto del avance.</li>
+                                    </ul>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </div>
 
                     {/* Proyectos */}
@@ -701,7 +951,7 @@ export default function DashboardPage() {
                             <div className="mb-3 flex items-center justify-between">
                                 <h3 className="text-lg font-semibold text-[#EAF4E2]">
                                     <i className="fas fa-history mr-2"></i>
-                                    {t('latestUpdates')}
+                                    Actividad reciente
                                 </h3>
                                 <span className="text-sm font-semibold text-white/80">
                                     {latestUpdateDate && !Number.isNaN(latestUpdateDate.getTime())
@@ -710,17 +960,19 @@ export default function DashboardPage() {
                                 </span>
                             </div>
 
-                            {recentUpdates.length > 0 ? (
+                            {activitiesLoading ? (
+                                <p className="text-sm text-white/70">Cargando actividad...</p>
+                            ) : activitiesError ? (
+                                <p className="text-sm text-white/70">No se pudo cargar la actividad reciente.</p>
+                            ) : recentActivities.length > 0 ? (
                                 <div className="space-y-2">
-                                    {recentUpdates.map((task) => {
-                                        const typeConfig = TASK_TYPES[task.type] || TASK_TYPES.feature;
-                                        const typeTheme = TASK_TYPE_SOFT_THEME[task.type] || TASK_TYPE_SOFT_THEME.default;
-                                        const updatedDate = parseTaskTimestamp(task.updated_at || task.updatedAt || task.created_at || task.createdAt);
-                                        const wasCompleted = isTaskCompleted(task);
+                                    {recentActivities.map((activity) => {
+                                        const visual = getActivityVisuals(activity.type);
+                                        const updatedDate = parseTaskTimestamp(activity.created_at);
 
                                         return (
                                             <div
-                                                key={`update-${task.id}`}
+                                                key={`activity-${activity.id}`}
                                                 className="flex items-center justify-between rounded-xl border px-3 py-2"
                                                 style={{
                                                     borderColor: 'rgba(140, 179, 105, 0.35)',
@@ -728,18 +980,34 @@ export default function DashboardPage() {
                                                 }}
                                             >
                                                 <div className="min-w-0">
-                                                    <p className="line-clamp-1 text-sm font-semibold text-white">{task.title || task.name}</p>
-                                                    <p className="text-xs font-semibold" style={{ color: typeTheme.headerFrom }}>{typeConfig.name}</p>
+                                                    <p className="line-clamp-1 text-sm font-semibold text-white">{activity.message}</p>
+                                                    <p className="text-xs font-semibold" style={{ color: visual.accent }}>
+                                                        <i className={`fas ${visual.icon} mr-1`}></i>
+                                                        {visual.label}
+                                                    </p>
                                                 </div>
                                                 <div className="ml-3 text-right">
                                                     <p className="text-[11px] text-white/70">{getTimeAgoLabel(updatedDate)}</p>
-                                                    <p className={`text-xs font-bold ${wasCompleted ? 'text-[#8CB369]' : 'text-[#F4E285]'}`}>
-                                                        {wasCompleted ? t('completed') : t('updated')}
+                                                    <p className="text-xs font-bold text-[#B6D1C7]">
+                                                        #{activity.id}
                                                     </p>
                                                 </div>
                                             </div>
                                         );
                                     })}
+
+                                    {activitiesHasMore && (
+                                        <div className="pt-2 flex justify-center">
+                                            <button
+                                                type="button"
+                                                onClick={handleLoadMoreActivities}
+                                                disabled={activitiesLoadingMore}
+                                                className="rounded-lg border border-[#F4E285]/45 px-3 py-1 text-xs font-semibold text-[#FFF6D0] transition hover:bg-[#F4E285]/12 disabled:opacity-60 disabled:cursor-not-allowed"
+                                            >
+                                                {activitiesLoadingMore ? 'Cargando...' : 'Ver más'}
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             ) : (
                                 <p className="text-sm text-white/70">{t('noUpdatesYet')}</p>
@@ -750,6 +1018,7 @@ export default function DashboardPage() {
                     {/* Modales */}
                     <AddTaskModal
                         isOpen={showAddTaskModal}
+                        isSubmitting={isLoadingForm}
                         onClose={() => {
                             setShowAddTaskModal(false);
                             setErrorForm(null);
@@ -773,6 +1042,7 @@ export default function DashboardPage() {
 
                     <ProjectModal
                         isOpen={showAddProjectModal}
+                        isSubmitting={isLoadingForm}
                         mode={projectToEdit ? 'edit' : 'create'}
                         initialData={projectToEdit}
                         onClose={() => {
@@ -804,51 +1074,65 @@ export default function DashboardPage() {
                         }}
                     />
 
-                    {expandedSection && (
-                        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/70 p-4">
-                            <div className="w-full max-w-2xl rounded-2xl border border-white/25 bg-[#1E1E1E]/95 p-6 backdrop-blur-lg">
-                                <div className="mb-4 flex items-center justify-between">
-                                    <h3 className="text-2xl font-semibold text-white">{expandedSection.title} · {t('detailByArea')}</h3>
-                                    <button
-                                        type="button"
-                                        onClick={() => setExpandedSection(null)}
-                                        className="rounded-lg px-3 py-1 text-white/80 hover:bg-white/10 hover:text-white"
-                                    >
-                                        ✕
-                                    </button>
-                                </div>
-
-                                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:items-center">
-                                    <div className="flex justify-center">
-                                        <PieChart
-                                            segments={expandedSection.segments}
-                                            total={expandedSection.total}
-                                            size={260}
-                                            showSliceValues
-                                        />
+                    <AnimatePresence>
+                        {expandedSection && (
+                            <motion.div
+                                className="fixed inset-0 z-[70] flex items-center justify-center bg-black/70 p-4"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.2 }}
+                            >
+                                <motion.div
+                                    className="w-full max-w-2xl rounded-2xl border border-white/25 bg-[#1E1E1E]/95 p-6 backdrop-blur-lg"
+                                    initial={{ opacity: 0, y: 20, scale: 0.98 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                    exit={{ opacity: 0, y: 16, scale: 0.98 }}
+                                    transition={{ type: 'spring', stiffness: 280, damping: 24 }}
+                                >
+                                    <div className="mb-4 flex items-center justify-between">
+                                        <h3 className="text-2xl font-semibold text-white">{expandedSection.title} · {t('detailByArea')}</h3>
+                                        <button
+                                            type="button"
+                                            onClick={() => setExpandedSection(null)}
+                                            className="rounded-lg px-3 py-1 text-white/80 hover:bg-white/10 hover:text-white"
+                                        >
+                                            ✕
+                                        </button>
                                     </div>
 
-                                    <div className="space-y-3">
-                                        {expandedSection.segments.map((segment) => (
-                                            <div
-                                                key={`expanded-${expandedSection.id}-${segment.id}`}
-                                                className="flex items-center justify-between rounded-lg bg-white/5 px-3 py-2"
-                                            >
-                                                <div className="flex items-center gap-2">
-                                                    <span className="h-3 w-3 rounded-full" style={{ backgroundColor: segment.strokeColor }}></span>
-                                                    <span className="font-semibold text-white">{segment.label}</span>
+                                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:items-center">
+                                        <div className="flex justify-center">
+                                            <PieChart
+                                                segments={expandedSection.segments}
+                                                total={expandedSection.total}
+                                                size={260}
+                                                showSliceValues
+                                            />
+                                        </div>
+
+                                        <div className="space-y-3">
+                                            {expandedSection.segments.map((segment) => (
+                                                <div
+                                                    key={`expanded-${expandedSection.id}-${segment.id}`}
+                                                    className="flex items-center justify-between rounded-lg bg-white/5 px-3 py-2"
+                                                >
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="h-3 w-3 rounded-full" style={{ backgroundColor: segment.strokeColor }}></span>
+                                                        <span className="font-semibold text-white">{segment.label}</span>
+                                                    </div>
+                                                    <span className="font-bold text-white">{segment.value} tareas</span>
                                                 </div>
-                                                <span className="font-bold text-white">{segment.value} tareas</span>
+                                            ))}
+                                            <div className="pt-2 text-right text-sm text-white/80">
+                                                Total: <span className="font-bold text-white">{expandedSection.total} tareas</span>
                                             </div>
-                                        ))}
-                                        <div className="pt-2 text-right text-sm text-white/80">
-                                            Total: <span className="font-bold text-white">{expandedSection.total} tareas</span>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
+                                </motion.div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
             </div>
         </div>
