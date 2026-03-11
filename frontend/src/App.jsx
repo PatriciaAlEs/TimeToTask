@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import InDevelopmentPage from './pages/InDevelopment';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { GlobalProvider } from './store';
@@ -15,6 +16,7 @@ import Dashboard from './pages/Dashboard';
 import Projects from './pages/Projects';
 import Board from './pages/Board';
 import CookiesPolicy from './pages/CookiesPolicy';
+<<<<<<< HEAD
 
 const COOKIE_CONSENT_KEY = 'cookie_consent_status';
 
@@ -42,13 +44,53 @@ const AppShell = () => {
 
     return (
         <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-            <Header />
-            <main className="flex-grow">
-                <Routes>
+>>>>>>> c9fd2e66dfec5f75eff00c983f8c336369a8c442
+            const COOKIE_CONSENT_KEY = 'cookie_consent_status';
+
+            const ScrollToTop = () => {
+                const {pathname, search} = useLocation();
+
+                useEffect(() => {
+                window.scrollTo(0, 0);
+                }, [pathname, search]);
+            return null;
+            };
+
+            const AppShell = () => {
+                const {theme} = useTheme();
+            const [showCookieModal, setShowCookieModal] = useState(false);
+
+                useEffect(() => {
+                    const consent = localStorage.getItem(COOKIE_CONSENT_KEY);
+            if (!consent) {
+                setShowCookieModal(true);
+                    }
+                }, []);
+
+                const saveConsent = (value) => {
+                localStorage.setItem(
+                    COOKIE_CONSENT_KEY,
+                    JSON.stringify({
+                        value,
+                        acceptedAt: new Date().toISOString(),
+                    })
+                );
+            setShowCookieModal(false);
+                };
+
+            return (
+            <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+                <ScrollToTop />
+                <Header />
+                <main className="flex-grow">
                     <Route path="/" element={<Home />} />
                     <Route path="/login" element={<Home />} />
                     <Route path="/register" element={<Home />} />
                     <Route path="/cookies" element={<CookiesPolicy />} />
+<<<<<<< HEAD
+=======
+                    <Route path="/en-desarrollo" element={<InDevelopmentPage />} />
+>>>>>>> c9fd2e66dfec5f75eff00c983f8c336369a8c442
                     <Route
                         path="/dashboard"
                         element={
@@ -73,14 +115,14 @@ const AppShell = () => {
                             </ProtectedRoute>
                         }
                     />
-                </Routes>
-            </main>
-            {showCookieModal && (
-                <CookieConsentModal
-                    onAcceptAll={() => saveConsent('all')}
-                    onAcceptNecessary={() => saveConsent('necessary')}
-                />
-            )}
+                </Routes >
+            </main >
+    { showCookieModal && (
+        <CookieConsentModal
+            onAcceptAll={() => saveConsent('all')}
+            onAcceptNecessary={() => saveConsent('necessary')}
+        />
+    )}
             <FooterHintArrow hidden={showCookieModal} />
             <ToastContainer
                 toastClassName="timetotask-toast"
@@ -96,7 +138,39 @@ const AppShell = () => {
                 theme={theme === 'dark' ? 'dark' : 'light'}
             />
             <Footer />
-        </Router>
+<<<<<<< HEAD
+=======
+        </>
+    );
+};
+
+const AppShell = () => {
+    const { theme } = useTheme();
+    const [showCookieModal, setShowCookieModal] = useState(false);
+
+    useEffect(() => {
+        const consent = localStorage.getItem(COOKIE_CONSENT_KEY);
+        if (!consent) {
+            setShowCookieModal(true);
+        }
+    }, []);
+
+    const saveConsent = (value) => {
+        localStorage.setItem(
+            COOKIE_CONSENT_KEY,
+            JSON.stringify({
+                value,
+                acceptedAt: new Date().toISOString(),
+            })
+        );
+        setShowCookieModal(false);
+    };
+
+    return (
+        <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+            <AppLayout showCookieModal={showCookieModal} saveConsent={saveConsent} theme={theme} />
+>>>>>>> c9fd2e66dfec5f75eff00c983f8c336369a8c442
+        </Router >
     );
 };
 

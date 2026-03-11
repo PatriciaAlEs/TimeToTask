@@ -174,6 +174,11 @@ export const translations = {
         compliance: 'Conformidad',
         licenses: 'Licencias',
         terms: 'Términos',
+        inDevelopmentTitle: 'Página en desarrollo',
+        inDevelopmentDescription: 'Estamos construyendo esta sección para que esté disponible muy pronto.',
+        requestedSection: 'Sección solicitada',
+        backHome: 'Volver al inicio',
+        continueDashboard: 'Ir al dashboard',
 
         // Footer
         product: 'Producto',
@@ -363,6 +368,14 @@ export const translations = {
         compliance: 'Compliance',
         licenses: 'Licenses',
         terms: 'Terms',
+<<<<<<< HEAD
+=======
+        inDevelopmentTitle: 'Page under development',
+        inDevelopmentDescription: 'We are building this section and it will be available very soon.',
+        requestedSection: 'Requested section',
+        backHome: 'Back to home',
+        continueDashboard: 'Go to dashboard',
+>>>>>>> c9fd2e66dfec5f75eff00c983f8c336369a8c442
 
         // Footer
         product: 'Product',
